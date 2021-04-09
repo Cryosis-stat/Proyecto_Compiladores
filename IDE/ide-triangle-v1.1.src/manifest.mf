@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+X-COMMENT: Main-Class will be added automatically by build
+CLASS-PATH: C:\Users\ExtremeTech\Documents\Trabajos\Compi\IDE\ide-triangle-v1.1.src\Triangle.jar
