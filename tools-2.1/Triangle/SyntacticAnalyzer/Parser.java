@@ -292,37 +292,52 @@ public class Parser {
         }
       }
       break;
-
+/*
     case Token.BEGIN:
       acceptIt();
       commandAST = parseCommand();
       accept(Token.END);
       break;
-
+*/
+    case Token.NOTHING:
+	{
+		acceptIt();
+		finish(commandPos);
+        commandAST = new EmptyCommand(commandPos);
+		break;
+	} 
+	  
     case Token.LET:
       {
         acceptIt();
         Declaration dAST = parseDeclaration();
         accept(Token.IN);
-        Command cAST = parseSingleCommand();
-        finish(commandPos);
-        commandAST = new LetCommand(dAST, cAST, commandPos);
+        commandAST = parseCommand();
+        accept(Token.END);
+		finish(commandPos);
+		commanAST = new LetCommand(dAST,cAST,commandPos);
       }
       break;
 
-    case Token.IF:
+	case Token.IF:
       {
         acceptIt();
         Expression eAST = parseExpression();
         accept(Token.THEN);
-        Command c1AST = parseSingleCommand();
+		Command c1AST = parseCommand();
+
+
         accept(Token.ELSE);
-        Command c2AST = parseSingleCommand();
-        finish(commandPos);
+        Command c2AST = parseCommand();
+		accept(Token.END);
+		finish(commandPos);
         commandAST = new IfCommand(eAST, c1AST, c2AST, commandPos);
       }
       break;
-
+	  
+	  
+	 
+/*
     case Token.WHILE:
       {
         acceptIt();
@@ -336,14 +351,14 @@ public class Parser {
 
     case Token.SEMICOLON:
     case Token.END:
-    case Token.ELSE:
+    case Token.ELSE:	
     case Token.IN:
     case Token.EOT:
 
       finish(commandPos);
       commandAST = new EmptyCommand(commandPos);
       break;
-
+*/
     default:
       syntacticError("\"%\" cannot start a command",
         currentToken.spelling);
