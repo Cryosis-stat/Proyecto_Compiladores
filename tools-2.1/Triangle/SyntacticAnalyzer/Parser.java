@@ -263,7 +263,13 @@ public class Parser {
     }
     return commandAST;
   }
-
+  Command parseRestOfIf(){
+    switch (currentToken.kind) {
+    case Token.ELSEIF
+		acceptIt();
+		parseRestOfIf();
+  }
+  
   Command parseSingleCommand() throws SyntaxError {
     Command commandAST = null; // in case there's a syntactic error
 
@@ -325,10 +331,7 @@ public class Parser {
         Expression eAST = parseExpression();
         accept(Token.THEN);
 		Command c1AST = parseCommand();
-
-
-        accept(Token.ELSE);
-        Command c2AST = parseCommand();
+        Command c2AST = parseRestOfIf();
 		accept(Token.END);
 		finish(commandPos);
         commandAST = new IfCommand(eAST, c1AST, c2AST, commandPos);
