@@ -619,12 +619,41 @@ public class Parser {
     return declarationAST;
   }
 
-  Declaration parseCompoundDeclaration() throws SyntaxError {
+  Declaration parseCompoundDeclaration() throws SyntaxError { //Falta agregar single declaration
     Declaration declarationAST = null;
 
     SourcePosition declarationPos = new SourcePosition();
     start(declarationPos);
 
+    switch (currentToken.kind) {
+
+      case Token.RECURSIVE:
+      {
+        acceptIt();
+        declarationAST = parseProcFunc();
+        accept(Token.END);
+        finish(declarationPos);
+      }    
+        break;
+      
+      case Token.PRIVATE:
+      {
+        acceptIt();
+        Declaration dAST = parseDeclaration();
+        accept(Token.IN);
+        Declaration d2AST = parseDeclaration();
+        accept(Token.END);
+        finish(declarationPos);
+        declarationAST = new PrivDeclaration(dAST, d2AST, declarationPos);
+      }
+      break;
+
+      default:
+        syntacticError("\"%\" cannot start a declaration",
+          currentToken.spelling);
+        break;
+    } 
+    return declarationAST;
   }
 
   Declaration parseSingleDeclaration() throws SyntaxError {
@@ -723,7 +752,69 @@ public class Parser {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+ProcFunc parseProcFuncs() throws SyntaxError { //Falta probar
+  ProcFunc procfuncsAST;
+
+  SourcePosition procfuncsPos = new SourcePosition();
+
+  start(procfuncs);
+  procfuncsAST = parseProcFunc();
+  do {
+    accept(Token.BAR);
+    Procfunc pf2AST = parseProcFunc();
+    finish(procfuncsPos);
+    procfuncsAST = new SequentialProcFunc(procfuncsAST, pf2AST, procfuncPos);
+  } while (currentToken.kind == Token.BAR);
+
+  return procfuncsAST;
+}
+
+
 ProcFunc parseProcFunc() throws SyntaxError {
+  ProcFunc procfuncAST;
+
+  SourcePosition procfuncPos = new SourcePosition();
+
+  start(procfunc);
+  switch(currentToken.kind) {
+    case Token.PROC:
+    {
+      acceptIt();
+      Identifier iAST = parseIdentifier();
+      accept(Token.LPAREN);
+      FormalParameterSequence fpsAST = parseFormalParameterSequence();
+      accept(Token.RPAREN);
+      accept(Token.IS);
+      Command cAST = parseCommand();
+      accept(Token.END);
+      finish(procfuncPos);
+      procfuncAST = new ProcFuncProc(iAST, fpsAST, cAST, procfuncPos);
+    }
+    break;
+
+    case Token.FUNC:
+    {
+      acceptIt();
+      Identifier iAST = parseIdentifier();
+      accept(Token.LPAREN);
+      FormalParameterSequence fpsAST = parseFormalParameterSequence();
+      accept(Token.RPAREN);
+      accept(Token.COLON);
+      TypeDenoter tAST = parseTypeDenoter();
+      accept(Token.IS);
+      Expression eAST = parseExpression();
+      finish(procfuncPos); 
+      procfuncAST = new ProcFuncFunc(iAST, fpsAST, tAST, eAST,
+        procfuncPos);      
+    }
+    break;
+
+    default:
+    syntacticError("\"%\" cannot start a proc func",
+      currentToken.spelling);
+    break;
+  }
+  return procfuncAST;
   
 }
 
