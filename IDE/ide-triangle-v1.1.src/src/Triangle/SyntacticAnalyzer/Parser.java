@@ -84,6 +84,9 @@ import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
 import Triangle.AbstractSyntaxTrees.WhileCommand;
 import jdk.internal.org.jline.reader.SyntaxError;
+import Triangle.AbstractSyntaxTrees.UntilCommand;
+import Triangle.AbstractSyntaxTrees.DoCommand;
+import Triangle.AbstractSyntaxTrees.ForCommand;
 
 public class Parser {
 
@@ -313,7 +316,7 @@ public class Parser {
     {
       acceptIt();
       finish(commandPos);
-          commandAST = new EmptyCommand(commandPos);
+      commandAST = new EmptyCommand(commandPos);
       break;
     } 
   
@@ -324,8 +327,8 @@ public class Parser {
         accept(Token.IN);
         commandAST = parseCommand();
         accept(Token.END);
-		    finish(commandPos);
-		    commanAST = new LetCommand(dAST,cAST,commandPos);
+		finish(commandPos);
+		commanAST = new LetCommand(dAST,cAST,commandPos);
       }
       break;
 
@@ -336,21 +339,63 @@ public class Parser {
         accept(Token.THEN);
         Command c1AST = parseCommand();
         Command c2AST = parseRestOfIf();
-		    accept(Token.END);
-		    finish(commandPos);
+		accept(Token.END);
+		finish(commandPos);
+		commanAST = new IfCommand(dAST,c1AST,c2AST,commandPos);
+        break;
+
       }
-      break;
-/*    
-    case Token.WHILE:
+	  case Token.LOOP:
       {
         acceptIt();
-        Expression eAST = parseExpression();
-        accept(Token.DO);
-        Command cAST = parseSingleCommand();
-        finish(commandPos);
-        commandAST = new WhileCommand(eAST, cAST, commandPos);
+		switch (currentToken.kind) 
+		{
+			case Token.WHILE:
+			{
+			    Expression eAST = parseExpression();
+				accept(Token.DO);
+				commandAST = parseCommand();
+				accept(Token.END);
+				finish(commandPos);
+				commandAST = new WhileCommand(eAST, cAST, commandPos);
+				break;
+			}
+			case Token.UNTIL:
+			{
+			    Expression eAST = parseExpression();
+				accept(Token.DO);
+				commandAST = parseCommand();
+				accept(Token.END);
+				finish(commandPos);
+				commandAST = new UntilCommand(eAST, cAST, commandPos);
+				break;
+			}
+			case Token.DO:
+			{
+			    Expression eAST = parseExpression();
+				accept(Token.DO);
+				commandAST = parseCommand();
+				accept(Token.END);
+				finish(commandPos);
+				commandAST = new DoCommand(eAST, cAST, commandPos);
+				break;
+			}
+			case Token.FOR:
+			{
+			    Expression eAST = parseExpression();
+				accept(Token.DO);
+				commandAST = parseCommand();
+				accept(Token.END);
+				finish(commandPos);
+				commandAST = new WhileCommand(eAST, cAST, commandPos);
+				break;
+			}
+		}
+
+
       }
-      break;
+/*    
+
 
     case Token.SEMICOLON:
     case Token.END:
@@ -371,6 +416,7 @@ public class Parser {
 
     return commandAST;
   }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
