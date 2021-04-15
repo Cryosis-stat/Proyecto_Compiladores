@@ -14,7 +14,6 @@
 
 package Triangle.SyntacticAnalyzer;
 
-import org.graalvm.compiler.graph.Graph.SourcePositionTracking;
 
 import Triangle.ErrorReporter;
 import Triangle.AbstractSyntaxTrees.ActualParameter;
@@ -83,10 +82,8 @@ import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
 import Triangle.AbstractSyntaxTrees.WhileCommand;
-import jdk.internal.org.jline.reader.SyntaxError;
 import Triangle.AbstractSyntaxTrees.UntilCommand;
 import Triangle.AbstractSyntaxTrees.DoCommand;
-import Triangle.AbstractSyntaxTrees.ForCommand;
 
 public class Parser {
 
@@ -269,14 +266,21 @@ public class Parser {
     }
     return commandAST;
   }
-  Command parseRestOfIf(){
+  Command parseRestOfIf() throws SyntaxError{
     switch (currentToken.kind) {
-    case Token.ELSEIF
+    case Token.ELSEIF:{
 		acceptIt();
+		Expression eAST = parseExpression();
+                accept(Token.THEN);
 		parseRestOfIf();
+		}
+	case Token.ELSE:{
+		accept(Token.END);
+	}
   }
+      return null;
   
-
+  }
   Command parseSingleCommand() throws SyntaxError {
     Command commandAST = null; // in case there's a syntactic error
 
@@ -325,10 +329,10 @@ public class Parser {
         acceptIt();
         Declaration dAST = parseDeclaration();
         accept(Token.IN);
-        commandAST = parseCommand();
+        Command cAST = parseCommand();
         accept(Token.END);
-		finish(commandPos);
-		commanAST = new LetCommand(dAST,cAST,commandPos);
+	finish(commandPos);
+	commandAST = new LetCommand(dAST,cAST,commandPos);
       }
       break;
 
@@ -339,9 +343,7 @@ public class Parser {
         accept(Token.THEN);
         Command c1AST = parseCommand();
         Command c2AST = parseRestOfIf();
-		accept(Token.END);
-		finish(commandPos);
-		commanAST = new IfCommand(dAST,c1AST,c2AST,commandPos);
+		commandAST = new IfCommand(eAST,c1AST,c2AST,commandPos);
         break;
 
       }
@@ -354,7 +356,7 @@ public class Parser {
 			{
 			    Expression eAST = parseExpression();
 				accept(Token.DO);
-				commandAST = parseCommand();
+                                Command cAST = parseCommand();
 				accept(Token.END);
 				finish(commandPos);
 				commandAST = new WhileCommand(eAST, cAST, commandPos);
@@ -364,7 +366,7 @@ public class Parser {
 			{
 			    Expression eAST = parseExpression();
 				accept(Token.DO);
-				commandAST = parseCommand();
+                                Command cAST = parseCommand();
 				accept(Token.END);
 				finish(commandPos);
 				commandAST = new UntilCommand(eAST, cAST, commandPos);
@@ -374,7 +376,7 @@ public class Parser {
 			{
 			    Expression eAST = parseExpression();
 				accept(Token.DO);
-				commandAST = parseCommand();
+                                Command cAST = parseCommand();
 				accept(Token.END);
 				finish(commandPos);
 				commandAST = new DoCommand(eAST, cAST, commandPos);
@@ -384,7 +386,7 @@ public class Parser {
 			{
 			    Expression eAST = parseExpression();
 				accept(Token.DO);
-				commandAST = parseCommand();
+                                Command cAST = parseCommand();
 				accept(Token.END);
 				finish(commandPos);
 				commandAST = new WhileCommand(eAST, cAST, commandPos);

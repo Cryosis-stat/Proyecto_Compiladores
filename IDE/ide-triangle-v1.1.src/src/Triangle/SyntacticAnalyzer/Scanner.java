@@ -186,7 +186,7 @@ public final class Scanner {
 
     case '|':
       takeIt();
-      return Token.BAR  
+      return Token.BAR;
 
     case SourceFile.EOT:
       return Token.EOT;
