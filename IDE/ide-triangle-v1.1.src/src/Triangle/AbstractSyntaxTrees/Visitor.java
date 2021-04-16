@@ -26,6 +26,10 @@ public interface Visitor {
   public abstract Object visitWhileCommand(WhileCommand ast, Object o);
   public abstract Object visitUntilCommand(UntilCommand ast, Object o);
   public abstract Object visitDoCommand(DoCommand ast, Object o);
+  public abstract Object visitElseifCommand(ElseifCommand ast, Object o);
+  public abstract Object visitForDoCommand(ForDoCommand ast, Object o);
+  public abstract Object visitForWhileCommand(ForWhileCommand ast, Object o);
+  public abstract Object visitForUntilCommand(ForUntilCommand ast, Object o);
 
 
   // Expressions
