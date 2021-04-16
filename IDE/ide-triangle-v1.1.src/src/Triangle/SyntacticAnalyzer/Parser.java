@@ -67,6 +67,7 @@ import Triangle.AbstractSyntaxTrees.RecordExpression;
 import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
+import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SimpleVname;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
@@ -735,7 +736,7 @@ public class Parser {
 
   Declaration parseCompoundDeclaration() throws SyntaxError { //Falta agregar single declaration
     Declaration declarationAST = null;
-
+    
     SourcePosition declarationPos = new SourcePosition();
     start(declarationPos);
 
@@ -758,7 +759,7 @@ public class Parser {
         Declaration d2AST = parseDeclaration();
         accept(Token.END);
         finish(declarationPos);
-        declarationAST = new PrivDeclaration(dAST, d2AST, declarationPos);
+        declarationAST = new SequentialDeclaration(dAST, d2AST, declarationPos);
       }
       break;
 
@@ -871,13 +872,13 @@ ProcFunc parseProcFuncs() throws SyntaxError { //Falta probar
 
   SourcePosition procfuncsPos = new SourcePosition();
 
-  start(procfuncs);
+  start(procfuncsPos);
   procfuncsAST = parseProcFunc();
   do {
     accept(Token.BAR);
-    Procfunc pf2AST = parseProcFunc();
+    ProcFunc pf2AST = parseProcFunc();
     finish(procfuncsPos);
-    procfuncsAST = new SequentialProcFunc(procfuncsAST, pf2AST, procfuncPos);
+    procfuncsAST = new SequentialProcFunc(procfuncsAST, pf2AST, procfuncsPos);
   } while (currentToken.kind == Token.BAR);
 
   return procfuncsAST;
@@ -889,7 +890,7 @@ ProcFunc parseProcFunc() throws SyntaxError {
 
   SourcePosition procfuncPos = new SourcePosition();
 
-  start(procfunc);
+  start(procfuncPos);
   switch(currentToken.kind) {
     case Token.PROC:
     {

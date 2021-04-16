@@ -1,5 +1,5 @@
 /*
- * @(#)VarDeclaration.java                        2.1 2003/10/07
+ * @(#)SequentialProcFunc.java                2.1 2003/10/07
  *
  * Copyright (C) 1999, 2003 D.A. Watt and D.F. Brown
  * Dept. of Computing Science, University of Glasgow, Glasgow G12 8QQ Scotland
@@ -16,26 +16,18 @@ package Triangle.AbstractSyntaxTrees;
 
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
-public class VarDeclaration extends Declaration {
+public class SequentialProcFunc extends ProcFunc {
 
-  public VarDeclaration (Identifier iAST, TypeDenoter tAST,
-                         SourcePosition thePosition) {
+  public SequentialProcFunc (ProcFunc pf1AST, ProcFunc pf2AST,
+                       SourcePosition thePosition) {
     super (thePosition);
-    I = iAST;
-    T = tAST;
+    PF1 = pf1AST;
+    PF2 = pf2AST;
   }
 
-  public VarDeclaration (Identifier iAST, Expression eAST,
-                          SourcePosition thePosition) {
-    super (thePosition);
-    I = iAST;
-    E = eAST;
-  }
   public Object visit(Visitor v, Object o) {
-    return v.visitVarDeclaration(this, o);
+    return v.visitSequentialProcFunc(this, o);
   }
 
-  public Identifier I;
-  public TypeDenoter T;
-  public Expression E;
+  public ProcFunc PF1, PF2;
 }
