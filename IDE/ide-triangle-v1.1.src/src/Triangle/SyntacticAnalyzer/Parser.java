@@ -91,6 +91,7 @@ import Triangle.AbstractSyntaxTrees.ElseifCommand;
 import Triangle.AbstractSyntaxTrees.ForDoCommand;
 import Triangle.AbstractSyntaxTrees.ForUntilCommand;
 import Triangle.AbstractSyntaxTrees.ForWhileCommand;
+import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
 
 public class Parser {
 
@@ -745,9 +746,11 @@ public class Parser {
       case Token.RECURSIVE:
       {
         acceptIt();
-        declarationAST = parseProcFunc();
+        ProcFunc proFunc = parseProcFuncs();
         accept(Token.END);
         finish(declarationPos);
+        declarationAST = new RecursiveDeclaration(proFunc, declarationPos);
+
       }    
         break;
       
@@ -886,7 +889,7 @@ ProcFunc parseProcFuncs() throws SyntaxError { //Falta probar
 
 
 ProcFunc parseProcFunc() throws SyntaxError {
-  ProcFunc procfuncAST;
+  ProcFunc procfuncAST = null;
 
   SourcePosition procfuncPos = new SourcePosition();
 
