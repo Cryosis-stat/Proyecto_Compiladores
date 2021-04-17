@@ -1,5 +1,5 @@
 /*
- * @(#)RecursiveDeclaration.java                        2.1 2003/10/07
+ * @(#)SingleDeclaration.java                        2.1 2003/10/07
  *
  * Copyright (C) 1999, 2003 D.A. Watt and D.F. Brown
  * Dept. of Computing Science, University of Glasgow, Glasgow G12 8QQ Scotland
@@ -16,19 +16,18 @@ package Triangle.AbstractSyntaxTrees;
 
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
-public class RecursiveDeclaration extends Declaration {
+public class SingleDeclaration extends Declaration {
 
-  public RecursiveDeclaration (ProcFunc proFunc,
-                         SourcePosition thePosition) {
+  public SingleDeclaration (Declaration sAST, 
+                    SourcePosition thePosition) {
     super (thePosition);
-    P = proFunc;
-  }
+    S = sAST;
 
+  }
 
   public Object visit(Visitor v, Object o) {
-    return v.visitRecursiveDeclaration(this, o);
+    return v.visitSingleDeclaration(this, o);
   }
 
-  public Identifier I;
-  public ProcFunc P;
+  public Declaration S;
 }

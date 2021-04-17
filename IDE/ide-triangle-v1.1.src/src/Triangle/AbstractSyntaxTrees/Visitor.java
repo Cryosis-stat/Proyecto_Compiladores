@@ -55,8 +55,14 @@ public interface Visitor {
   public abstract Object visitUnaryOperatorDeclaration(UnaryOperatorDeclaration ast, Object o);
   public abstract Object visitVarDeclaration(VarDeclaration ast, Object o);
   public abstract Object visitForDeclaration(ForDeclaration ast, Object o);
-  public abstract Object visitSequentialProcFunc(SequentialProcFunc ast, Object o);
   public abstract Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o);
+  public abstract Object visitSingleDeclaration(Declaration ast, Object o);  
+
+  // Proc Func
+  public abstract Object visitSequentialProcFunc(SequentialProcFunc ast, Object o);
+  public abstract Object visitFProcFunc(FProcFunc ast, Object o);
+  public abstract Object visitPProcFunc(PProcFunc ast, Object o);
+
 
   // Array Aggregates
   public abstract Object visitMultipleArrayAggregate(MultipleArrayAggregate ast, Object o);

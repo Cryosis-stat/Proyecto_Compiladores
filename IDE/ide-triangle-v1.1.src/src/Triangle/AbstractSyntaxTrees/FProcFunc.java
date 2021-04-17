@@ -1,5 +1,5 @@
 /*
- * @(#)RecursiveDeclaration.java                        2.1 2003/10/07
+ * @(#)FProcFunc.java                        2.1 2003/10/07
  *
  * Copyright (C) 1999, 2003 D.A. Watt and D.F. Brown
  * Dept. of Computing Science, University of Glasgow, Glasgow G12 8QQ Scotland
@@ -16,19 +16,23 @@ package Triangle.AbstractSyntaxTrees;
 
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
-public class RecursiveDeclaration extends Declaration {
+public class FProcFunc extends ProcFunc {
 
-  public RecursiveDeclaration (ProcFunc proFunc,
+  public FProcFunc(Identifier iAST, FormalParameterSequence fpsAST, TypeDenoter tAST, Expression eAST,
                          SourcePosition thePosition) {
     super (thePosition);
-    P = proFunc;
+    I = iAST;
+    FPS = fpsAST;
+    T = tAST;
+    E = eAST;
   }
 
-
   public Object visit(Visitor v, Object o) {
-    return v.visitRecursiveDeclaration(this, o);
+    return v.visitFProcFunc(this, o);
   }
 
   public Identifier I;
-  public ProcFunc P;
+  public FormalParameterSequence FPS;
+  public TypeDenoter T;
+  public Expression E;
 }

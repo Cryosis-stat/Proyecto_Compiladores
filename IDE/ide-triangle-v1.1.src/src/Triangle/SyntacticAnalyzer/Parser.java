@@ -39,6 +39,7 @@ import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.Expression;
+import Triangle.AbstractSyntaxTrees.FProcFunc;
 import Triangle.AbstractSyntaxTrees.FieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.FormalParameter;
 import Triangle.AbstractSyntaxTrees.FormalParameterSequence;
@@ -58,6 +59,7 @@ import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.Operator;
+import Triangle.AbstractSyntaxTrees.PProcFunc;
 import Triangle.AbstractSyntaxTrees.ProcActualParameter;
 import Triangle.AbstractSyntaxTrees.ProcDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
@@ -72,6 +74,7 @@ import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SimpleVname;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
+import Triangle.AbstractSyntaxTrees.SingleDeclaration;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
@@ -735,7 +738,7 @@ public class Parser {
     return declarationAST;
   }
 
-  Declaration parseCompoundDeclaration() throws SyntaxError { //Falta agregar single declaration
+  Declaration parseCompoundDeclaration() throws SyntaxError { 
     Declaration declarationAST = null;
     
     SourcePosition declarationPos = new SourcePosition();
@@ -767,8 +770,10 @@ public class Parser {
       break;
 
       default:
-        syntacticError("\"%\" cannot start a declaration",
-          currentToken.spelling);
+      {
+        Declaration sAST = parseSingleDeclaration();
+        declarationAST = new SingleDeclaration(sAST, declarationPos);
+      }
         break;
     } 
     return declarationAST;
@@ -906,7 +911,7 @@ ProcFunc parseProcFunc() throws SyntaxError {
       Command cAST = parseCommand();
       accept(Token.END);
       finish(procfuncPos);
-      procfuncAST = new ProcFuncProc(iAST, fpsAST, cAST, procfuncPos);
+      procfuncAST = new PProcFunc(iAST, fpsAST, cAST, procfuncPos);
     }
     break;
 
@@ -922,8 +927,7 @@ ProcFunc parseProcFunc() throws SyntaxError {
       accept(Token.IS);
       Expression eAST = parseExpression();
       finish(procfuncPos); 
-      procfuncAST = new ProcFuncFunc(iAST, fpsAST, tAST, eAST,
-        procfuncPos);      
+      procfuncAST = new FProcFunc(iAST, fpsAST, tAST, eAST, procfuncPos);      
     }
     break;
 
