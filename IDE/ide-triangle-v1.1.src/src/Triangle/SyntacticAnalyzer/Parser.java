@@ -407,11 +407,14 @@ public class Parser {
       }*/
 	  case Token.LOOP:
       {
+          System.out.println("Has loop");
         acceptIt();
 		switch (currentToken.kind) 
 		{
 			case Token.WHILE:
 			{
+                            acceptIt();
+
 			    Expression eAST = parseExpression();
 				accept(Token.DO);
                                 Command cAST = parseCommand();
@@ -422,6 +425,8 @@ public class Parser {
 			}
 			case Token.UNTIL:
 			{
+                            acceptIt();
+
 			    Expression eAST = parseExpression();
 				accept(Token.DO);
                                 Command cAST = parseCommand();
@@ -437,6 +442,7 @@ public class Parser {
                                 Command cAST = parseCommand();
                                 switch (currentToken.kind) {
                                     case Token.WHILE:{
+
                                         accept(Token.WHILE);
 
                                         Expression eAST = parseExpression();
@@ -448,6 +454,8 @@ public class Parser {
                                         break;
                                     }
                                     case Token.UNTIL:{
+                                        acceptIt();
+
                                         accept(Token.UNTIL);
 
                                         Expression eAST = parseExpression();
@@ -460,6 +468,7 @@ public class Parser {
                                     
                                 }
 
+                                        break;
 
 			}
 			case Token.FOR:
@@ -508,6 +517,7 @@ public class Parser {
                                     }
                                 }
 
+                                        break;
 
 			}
 		}
@@ -522,6 +532,9 @@ public class Parser {
     case Token.ELSE:
     case Token.IN:
     case Token.EOT:
+    case Token.WHILE:
+    case Token.DO:
+    case Token.UNTIL:
 
       finish(commandPos);
       commandAST = new EmptyCommand(commandPos);
