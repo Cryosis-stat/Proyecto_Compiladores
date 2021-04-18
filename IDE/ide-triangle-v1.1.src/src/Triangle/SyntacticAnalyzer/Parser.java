@@ -94,6 +94,7 @@ import Triangle.AbstractSyntaxTrees.ElseifCommand;
 import Triangle.AbstractSyntaxTrees.ForDoCommand;
 import Triangle.AbstractSyntaxTrees.ForUntilCommand;
 import Triangle.AbstractSyntaxTrees.ForWhileCommand;
+import Triangle.AbstractSyntaxTrees.IfElseCommand;
 import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
 
 public class Parser {
@@ -278,8 +279,10 @@ public class Parser {
     return commandAST;
   }
   Command parseRestOfIf(Command commandAST,SourcePosition commandPos) throws SyntaxError{
+
     switch (currentToken.kind) {
         case Token.ELSEIF:{
+            System.out.print("ELSEIF");
 		acceptIt();
 		Expression eAST = parseExpression();
                 accept(Token.THEN);
@@ -288,6 +291,8 @@ public class Parser {
 		parseRestOfIf(commandAST,commandPos);
 		}
         }
+                      System.out.print(" NOELSEIF");
+
       return  commandAST;
         
   }
@@ -326,6 +331,7 @@ public class Parser {
       accept(Token.END);
       break;
 */
+      
     case Token.NOTHING:
     {
       acceptIt();
@@ -353,11 +359,45 @@ public class Parser {
         Expression eAST = parseExpression();
         accept(Token.THEN);
         Command c1AST = parseCommand();
+
         Command c2AST = parseRestOfIf(commandAST,commandPos);
-	commandAST = new IfCommand(eAST,c1AST,c2AST,commandPos);
+        accept(Token.ELSE);
+        Command c3AST = parseCommand();
+        accept(Token.END);
+	finish(commandPos);
+
+        if(c2AST == null){
+            commandAST = new IfCommand(eAST,c1AST,c3AST,commandPos);
+        }else{
+            commandAST = new IfElseCommand(eAST,c1AST,c2AST,c3AST,commandPos);
+
+        }
+
         break;
 
       }
+      /*case Token.ELSEIF:
+      {
+        acceptIt();
+        Expression eAST = parseExpression();
+        accept(Token.THEN);
+        Command c1AST = parseCommand();
+        Command c2AST = parseRestOfIf(commandAST,commandPos);
+        accept(Token.ELSE);
+        Command c3AST = parseCommand();
+        accept(Token.END);
+	finish(commandPos);
+
+        if(c2AST == null){
+            commandAST = new IfCommand(eAST,c1AST,c3AST,commandPos);
+        }else{
+            commandAST = new IfElseCommand(eAST,c1AST,c2AST,c3AST,commandPos);
+
+        }
+
+        break;
+
+      }*/
 	  case Token.LOOP:
       {
         acceptIt();
@@ -467,7 +507,7 @@ public class Parser {
 
 
       }
-/*    
+   
 
 
     case Token.SEMICOLON:
@@ -479,7 +519,7 @@ public class Parser {
       finish(commandPos);
       commandAST = new EmptyCommand(commandPos);
       break;
-*/
+
     default:
       syntacticError("\"%\" cannot start a command",
         currentToken.spelling);

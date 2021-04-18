@@ -53,6 +53,7 @@ import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
 import Triangle.AbstractSyntaxTrees.Identifier;
 import Triangle.AbstractSyntaxTrees.IfCommand;
+import Triangle.AbstractSyntaxTrees.IfElseCommand;
 import Triangle.AbstractSyntaxTrees.IfExpression;
 import Triangle.AbstractSyntaxTrees.IntTypeDenoter;
 import Triangle.AbstractSyntaxTrees.IntegerExpression;
@@ -80,6 +81,7 @@ import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SimpleVname;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
+import Triangle.AbstractSyntaxTrees.SingleDeclaration;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
@@ -115,6 +117,7 @@ public final class Checker implements Visitor {
   }
 
 
+
   public Object visitCallCommand(CallCommand ast, Object o) {
 
     Declaration binding = (Declaration) ast.I.visit(this, null);
@@ -142,7 +145,14 @@ public final class Checker implements Visitor {
     ast.C2.visit(this, null);
     return null;
   }
-
+    public Object visitIfElseCommand(IfElseCommand ast, Object o) {
+    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C1.visit(this, null);
+    ast.C2.visit(this, null);
+        
+    return null;    }
   public Object visitLetCommand(LetCommand ast, Object o) {
     idTable.openScope();
     ast.D.visit(this, null);
@@ -153,6 +163,7 @@ public final class Checker implements Visitor {
 
   public Object visitSequentialCommand(SequentialCommand ast, Object o) {
     ast.C1.visit(this, null);
+    
     ast.C2.visit(this, null);
     return null;
   }
@@ -340,7 +351,11 @@ public final class Checker implements Visitor {
     ast.D2.visit(this, null);
     return null;
   }
-
+    public Object visitSingleDeclaration(SingleDeclaration ast, Object o) {
+        ast.S.visit(this, null);
+        return null;
+    }
+    
   public Object visitTypeDeclaration(TypeDeclaration ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
     idTable.enter (ast.I.spelling, ast);
@@ -997,11 +1012,6 @@ public final class Checker implements Visitor {
     }
 
 
-    @Override
-    public Object visitSingleDeclaration(Declaration ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 
     @Override
     public Object visitFProcFunc(FProcFunc ast, Object o) {
@@ -1013,4 +1023,6 @@ public final class Checker implements Visitor {
     public Object visitPProcFunc(PProcFunc ast, Object o) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+
 }
