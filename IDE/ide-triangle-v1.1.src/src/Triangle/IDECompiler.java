@@ -13,6 +13,13 @@ import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.SyntacticAnalyzer.Parser;
 import Triangle.ContextualAnalyzer.Checker;
 import Triangle.CodeGenerator.Encoder;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 
@@ -30,6 +37,9 @@ public class IDECompiler {
      * Creates a new instance of IDECompiler.
      *
      */
+    
+
+    
     public IDECompiler() {
     }
     
@@ -39,13 +49,25 @@ public class IDECompiler {
      * @param sourceName Path to the source file.
      * @return True if compilation was succesful.
      */
-    public boolean compileProgram(String sourceName) {
+    public boolean compileProgram(String sourceName) throws IOException {
         System.out.println("********** " +
                            "Triangle Compiler (IDE-Triangle 1.0)" +
                            " **********");
         
+        
+        
+        
         System.out.println("Syntactic Analysis ...");
+                System.out.println("Generando  Html ...");
+
+        /*sourceName*/
+        HTMLGenerator htmlGen = new HTMLGenerator();
+        
+        htmlGen.ParseHtml(sourceName);
+        htmlGen.createFile();
         SourceFile source = new SourceFile(sourceName);
+                        
+        
         Scanner scanner = new Scanner(source);
         report = new IDEReporter();
         Parser parser = new Parser(scanner, report);

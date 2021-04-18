@@ -145,8 +145,84 @@ public final class Checker implements Visitor {
     ast.C2.visit(this, null);
     return null;
   }
-      @Override
-    public Object visitElseifCommand(ElseifCommand ast, Object o) {
+
+  
+    public Object visitUntilCommand(UntilCommand ast, Object o) {
+    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+
+    return null;    }
+
+    @Override
+    public Object visitDoCommand(DoCommand ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+
+
+    return null;    }
+
+    @Override
+    public Object visitForDeclaration(ForDeclaration ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.E.visit(this, null);
+    ast.I.visit(this, null);
+
+    return null;    }
+
+
+
+    @Override
+    public Object visitForDoCommand(ForDoCommand ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+    ast.E1.visit(this, null);
+    ast.I.visit(this, null);
+
+    return null;    }
+
+    @Override
+    public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+    ast.E1.visit(this, null);
+    ast.E2.visit(this, null);
+    ast.I.visit(this, null);
+
+    return null;    }
+
+    @Override
+    public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+    ast.E1.visit(this, null);
+    ast.E2.visit(this, null);
+    ast.I.visit(this, null);
+
+    return null;   
+    }
+  
+  
+  
+  
+  
+  public Object visitElseifCommand(ElseifCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     if (! eType.equals(StdEnvironment.booleanType))
       reporter.reportError("Boolean expression expected here", "", ast.E.position);
@@ -974,37 +1050,7 @@ public final class Checker implements Visitor {
 
   }
 
-    @Override
-    public Object visitUntilCommand(UntilCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitDoCommand(DoCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitForDeclaration(ForDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-
-
-    @Override
-    public Object visitForDoCommand(ForDoCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public Object visitSequentialProcFunc(SequentialProcFunc ast, Object o) {

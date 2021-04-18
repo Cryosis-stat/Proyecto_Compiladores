@@ -278,11 +278,10 @@ public class Parser {
     }
     return commandAST;
   }
-  Command parseRestOfIf(Command commandAST,SourcePosition commandPos) throws SyntaxError{
+  /*Command parseRestOfIf(Command commandAST,SourcePosition commandPos) throws SyntaxError{
 
     switch (currentToken.kind) {
         case Token.ELSEIF:{
-            System.out.print("ELSEIF");
 		acceptIt();
 		Expression eAST = parseExpression();
                 accept(Token.THEN);
@@ -291,11 +290,10 @@ public class Parser {
 		parseRestOfIf(commandAST,commandPos);
 		}
         }
-                      System.out.print(" NOELSEIF");
 
       return  commandAST;
         
-  }
+  }*/
   Command parseSingleCommand() throws SyntaxError {
     Command commandAST = null; // in case there's a syntactic error
 
@@ -354,11 +352,11 @@ public class Parser {
       }
     case Token.ELSEIF:
       {
-		acceptIt();
-		Expression eAST = parseExpression();
-                accept(Token.THEN);
-                 Command c1AST = parseCommand();
-                commandAST = new ElseifCommand(eAST, c1AST, commandPos);
+	acceptIt();
+	Expression eAST = parseExpression();
+        accept(Token.THEN);
+        Command c1AST = parseCommand();
+        commandAST = new ElseifCommand(eAST, c1AST, commandPos);
 		
 
         break;
@@ -383,28 +381,8 @@ public class Parser {
         break;
 
       }
-      /*case Token.ELSEIF:
-      {
-        acceptIt();
-        Expression eAST = parseExpression();
-        accept(Token.THEN);
-        Command c1AST = parseCommand();
-        Command c2AST = parseRestOfIf(commandAST,commandPos);
-        accept(Token.ELSE);
-        Command c3AST = parseCommand();
-        accept(Token.END);
-	finish(commandPos);
 
-        if(c2AST == null){
-            commandAST = new IfCommand(eAST,c1AST,c3AST,commandPos);
-        }else{
-            commandAST = new IfElseCommand(eAST,c1AST,c2AST,c3AST,commandPos);
-
-        }
-
-        break;
-
-      }*/
+      
 	  case Token.LOOP:
       {
           System.out.println("Has loop");
