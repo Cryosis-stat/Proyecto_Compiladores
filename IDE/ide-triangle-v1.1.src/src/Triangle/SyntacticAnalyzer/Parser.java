@@ -352,7 +352,18 @@ public class Parser {
         break;
 
       }
+    case Token.ELSEIF:
+      {
+		acceptIt();
+		Expression eAST = parseExpression();
+                accept(Token.THEN);
+                 Command c1AST = parseCommand();
+                commandAST = new ElseifCommand(eAST, c1AST, commandPos);
+		
 
+        break;
+
+      }
     case Token.IF:
       {
         acceptIt();
@@ -360,18 +371,14 @@ public class Parser {
         accept(Token.THEN);
         Command c1AST = parseCommand();
 
-        Command c2AST = parseRestOfIf(commandAST,commandPos);
+        //Command c2AST = parseRestOfIf(commandAST,commandPos);
         accept(Token.ELSE);
         Command c3AST = parseCommand();
         accept(Token.END);
 	finish(commandPos);
 
-        if(c2AST == null){
             commandAST = new IfCommand(eAST,c1AST,c3AST,commandPos);
-        }else{
-            commandAST = new IfElseCommand(eAST,c1AST,c2AST,c3AST,commandPos);
 
-        }
 
         break;
 

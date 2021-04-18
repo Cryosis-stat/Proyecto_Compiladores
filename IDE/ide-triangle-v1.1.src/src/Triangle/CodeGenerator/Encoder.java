@@ -141,7 +141,22 @@ public final class Encoder implements Visitor {
     patch(jumpAddr, nextInstrAddr);
     return null;
   }
+    public Object visitElseifCommand(ElseifCommand ast, Object o) {
+    Frame frame = (Frame) o;
+    int jumpifAddr, jumpAddr;
 
+    Integer valSize = (Integer) ast.E.visit(this, frame);
+    jumpifAddr = nextInstrAddr;
+    emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, 0);
+    ast.C1.visit(this, frame);
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    patch(jumpifAddr, nextInstrAddr);
+    patch(jumpAddr, nextInstrAddr);
+    return null;    
+    }
+    
+    
   public Object visitLetCommand(LetCommand ast, Object o) {
     Frame frame = (Frame) o;
     int extraSize = ((Integer) ast.D.visit(this, frame)).intValue();
@@ -1032,11 +1047,8 @@ public final class Encoder implements Visitor {
     }
 
     @Override
-    public Object visitElseifCommand(ElseifCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
+
     public Object visitForDoCommand(ForDoCommand ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

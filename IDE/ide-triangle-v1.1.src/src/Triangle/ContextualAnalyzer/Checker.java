@@ -145,6 +145,14 @@ public final class Checker implements Visitor {
     ast.C2.visit(this, null);
     return null;
   }
+      @Override
+    public Object visitElseifCommand(ElseifCommand ast, Object o) {
+    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C1.visit(this, null);
+    return null;    }
+  
     public Object visitIfElseCommand(IfElseCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     if (! eType.equals(StdEnvironment.booleanType))
@@ -257,6 +265,7 @@ public final class Checker implements Visitor {
     ast.type = e2Type;
     return ast.type;
   }
+
 
   public Object visitIntegerExpression(IntegerExpression ast, Object o) {
     ast.type = StdEnvironment.integerType;
@@ -980,10 +989,6 @@ public final class Checker implements Visitor {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Object visitElseifCommand(ElseifCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
 
     @Override
