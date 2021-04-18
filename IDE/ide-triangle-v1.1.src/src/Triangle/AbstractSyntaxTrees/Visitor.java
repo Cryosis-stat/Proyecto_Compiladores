@@ -30,6 +30,7 @@ public interface Visitor {
   public abstract Object visitForDoCommand(ForDoCommand ast, Object o);
   public abstract Object visitForWhileCommand(ForWhileCommand ast, Object o);
   public abstract Object visitForUntilCommand(ForUntilCommand ast, Object o);
+  public abstract Object visitIfElseCommand(IfElseCommand ast, Object o);
 
 
   // Expressions
@@ -56,7 +57,7 @@ public interface Visitor {
   public abstract Object visitVarDeclaration(VarDeclaration ast, Object o);
   public abstract Object visitForDeclaration(ForDeclaration ast, Object o);
   public abstract Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o);
-  public abstract Object visitSingleDeclaration(Declaration ast, Object o);  
+   public abstract Object visitSingleDeclaration(SingleDeclaration ast, Object o);
 
   // Proc Func
   public abstract Object visitSequentialProcFunc(SequentialProcFunc ast, Object o);
@@ -118,6 +119,9 @@ public interface Visitor {
 
   // Programs
   public abstract Object visitProgram(Program ast, Object o);
+
+
+
 
 
 }
