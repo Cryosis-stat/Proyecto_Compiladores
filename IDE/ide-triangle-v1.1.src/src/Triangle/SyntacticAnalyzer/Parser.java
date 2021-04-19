@@ -95,7 +95,11 @@ import Triangle.AbstractSyntaxTrees.ForDoCommand;
 import Triangle.AbstractSyntaxTrees.ForUntilCommand;
 import Triangle.AbstractSyntaxTrees.ForWhileCommand;
 import Triangle.AbstractSyntaxTrees.IfElseCommand;
+import Triangle.AbstractSyntaxTrees.LongIdentifier;
+import Triangle.AbstractSyntaxTrees.PackageDeclaration;
+import Triangle.AbstractSyntaxTrees.PackageIdentifier;
 import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
+import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
 
 public class Parser {
 
@@ -156,23 +160,17 @@ public class Parser {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  public Program parseProgram() {
+  public Program parseProgram() throws SyntaxError{
 
     Program programAST = null;
 
-    previousTokenPosition.start = 0;
-    previousTokenPosition.finish = 0;
-    currentToken = lexicalAnalyser.scan();
-
-    try {
-      Command cAST = parseCommand();
-      programAST = new Program(cAST, previousTokenPosition);
-      if (currentToken.kind != Token.EOT) {
-        syntacticError("\"%\" not expected after end of program",
-          currentToken.spelling);
-      }
-    }
-    catch (SyntaxError s) { return null; }
+    SourcePosition programPos = new SourcePosition();
+    start(programPos);
+      PackageDeclaration pDecAST = parsePackageDeclaration();
+      if(currentToken.kind == Token.SEMICOLON){
+            pDecAST = parsePackageDeclaration();
+        }
+    Command cAST = parseCommand();
     return programAST;
   }
 
@@ -1257,4 +1255,59 @@ ProcFunc parseProcFunc() throws SyntaxError {
     }
     return fieldAST;
   }
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+// Package Declaration
+//
+///////////////////////////////////////////////////////////////////////////////
+
+  PackageDeclaration parsePackageDeclaration () throws  SyntaxError {
+      PackageDeclaration packageDeclarationAST = null;
+      
+      SourcePosition pDecPos = new SourcePosition();
+
+      start(pDecPos);
+    
+      acceptIt();
+      PackageIdentifier pIdentAST = parsePackageIdentifier();
+      accept(Token.IS);
+      Declaration dAST = parseDeclaration();
+      accept(Token.END);
+      finish(pDecPos);
+      return packageDeclarationAST;
+  }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Package Identifier
+//
+///////////////////////////////////////////////////////////////////////////////
+
+    PackageIdentifier parsePackageIdentifier () throws SyntaxError {
+        PackageIdentifier packageIdentifierAST = null;
+        Identifier iAST = parseIdentifier();
+        packageIdentifierAST = parseRestOfPackageIdentifier(iAST);
+        return packageIdentifierAST;
+    }
+    
+    PackageIdentifier parseRestOfPackageIdentifier (Identifier identifierAST) throws  SyntaxError {
+        SourcePosition packageIdentifierPos = new SourcePosition();
+        packageIdentifierPos = identifierAST.position;
+        PackageIdentifier pAST = new SimplePackageIdentifier(identifierAST, packageIdentifierPos);
+        
+        return pAST;
+    }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Long Identifier
+//
+///////////////////////////////////////////////////////////////////////////////
+    
+    LongIdentifier parseLongIdentifier () throws SyntaxError {
+        LongIdentifier longIdentifierAST = null;
+        return longIdentifierAST;
+    }
 }

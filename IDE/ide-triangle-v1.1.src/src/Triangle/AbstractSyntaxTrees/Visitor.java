@@ -120,7 +120,8 @@ public interface Visitor {
   // Programs
   public abstract Object visitProgram(Program ast, Object o);
 
-
+  // SimplePackageIdentifier
+  public abstract Object visitSimplePackageIdentifier (SimplePackageIdentifier ast, Object o);
 
 
 
