@@ -49,7 +49,7 @@ public class IDECompiler {
      * @param sourceName Path to the source file.
      * @return True if compilation was succesful.
      */
-    public boolean compileProgram(String sourceName) throws IOException {
+    public boolean compileProgram(String sourceName) throws IOException, Exception {
         System.out.println("********** " +
                            "Triangle Compiler (IDE-Triangle 1.0)" +
                            " **********");
@@ -66,7 +66,8 @@ public class IDECompiler {
         htmlGen.ParseHtml(sourceName);
         htmlGen.createFile();
         SourceFile source = new SourceFile(sourceName);
-                        
+                       
+
         
         Scanner scanner = new Scanner(source);
         report = new IDEReporter();
@@ -74,6 +75,10 @@ public class IDECompiler {
         boolean success = false;
         
         rootAST = parser.parseProgram();
+        
+        XMLGenerator xml = new XMLGenerator();
+        xml.generateXML(sourceName, rootAST);
+        
         if (report.numErrors == 0) {
             /*System.out.println("Contextual Analysis ...");
             Checker checker = new Checker(report);

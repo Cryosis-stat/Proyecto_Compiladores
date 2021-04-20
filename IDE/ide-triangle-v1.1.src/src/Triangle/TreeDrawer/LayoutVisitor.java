@@ -75,6 +75,7 @@ import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
+import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SimpleVname;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
@@ -107,6 +108,11 @@ public class LayoutVisitor implements Visitor {
   }
 
   // Commands
+  
+  public Object visitSimplePackageIdentifier(SimplePackageIdentifier ast, Object obj){
+      return layoutUnary("SimplePack", ast.I);
+  }
+  
   public Object visitAssignCommand(AssignCommand ast, Object obj) {
     return layoutBinary("AssignCom.", ast.V, ast.E);
   }

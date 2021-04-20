@@ -26,11 +26,15 @@ import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyExpression;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
+import Triangle.AbstractSyntaxTrees.FProcFunc;
+import Triangle.AbstractSyntaxTrees.ForDeclaration;
+import Triangle.AbstractSyntaxTrees.ForUntilCommand;
 import Triangle.AbstractSyntaxTrees.FuncActualParameter;
 import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
 import Triangle.AbstractSyntaxTrees.Identifier;
 import Triangle.AbstractSyntaxTrees.IfCommand;
+import Triangle.AbstractSyntaxTrees.IfElseCommand;
 import Triangle.AbstractSyntaxTrees.IfExpression;
 import Triangle.AbstractSyntaxTrees.IntTypeDenoter;
 import Triangle.AbstractSyntaxTrees.IntegerExpression;
@@ -43,18 +47,23 @@ import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.Operator;
+import Triangle.AbstractSyntaxTrees.PProcFunc;
 import Triangle.AbstractSyntaxTrees.ProcActualParameter;
 import Triangle.AbstractSyntaxTrees.ProcDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
 import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.AbstractSyntaxTrees.RecordExpression;
 import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
+import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
+import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
+import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SimpleVname;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
+import Triangle.AbstractSyntaxTrees.SingleDeclaration;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
@@ -88,6 +97,10 @@ public class TreeVisitor implements Visitor {
     
     // <editor-fold defaultstate="collapsed" desc=" Commands ">    
     // Commands  
+    public Object visitSimplePackageIdentifier(SimplePackageIdentifier ast, Object o){
+        return(createUnary("Package Identifier", ast.I));
+    }
+    
     public Object visitAssignCommand(AssignCommand ast, Object o) {
         return(createBinary("Assign Command", ast.V, ast.E));
     }
@@ -115,6 +128,11 @@ public class TreeVisitor implements Visitor {
     public Object visitWhileCommand(WhileCommand ast, Object obj) {
         return(createBinary("While Command", ast.E, ast.C));
     }
+    
+    public Object visitIfElseCommand(IfElseCommand ast, Object obj){        
+        return(createQuaternary("If Else Command", ast.E, ast.C1, ast.C2, ast.C3));
+    }
+    
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc=" Expressions ">
@@ -166,6 +184,10 @@ public class TreeVisitor implements Visitor {
     
     // <editor-fold defaultstate="collapsed" desc=" Declarations ">
     // Declarations
+    public Object visitSingleDeclaration(SingleDeclaration ast, Object obj){
+        return(createUnary("Single Declaration", ast.S));
+    }
+    
     public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast, Object obj) {
         return(createQuaternary("Binary Operator Declaration", ast.O, ast.ARG1, ast.ARG2, ast.RES));
     }
@@ -197,6 +219,31 @@ public class TreeVisitor implements Visitor {
     public Object visitVarDeclaration(VarDeclaration ast, Object obj) {
         return(createBinary("Variable Declaration", ast.I, ast.T));
     }
+    
+    public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object obj){
+        return(createBinary("Recursive Declaration", ast.I, ast.P));
+    }
+    
+    public Object visitForDeclaration(ForDeclaration ast, Object obj){        
+        return(createBinary("For Declaration", ast.I, ast.E));
+    }
+    
+    public Object visitForUntilCommand(ForUntilCommand ast, Object obj){
+        return(createQuinternary("For Until Command", ast.I, ast.E, ast.E1, ast.E2, ast.C));
+    }
+    
+    public Object visitPProcFunc(PProcFunc ast, Object obj){
+        return(createTernary("Procedure Proc Func", ast.I, ast.FPS, ast.C));
+    }
+    
+    public Object visitFProcFunc(FProcFunc ast, Object obj){
+        return(createQuaternary("Procedure Proc Func", ast.I, ast.FPS,ast.T, ast.E));
+    }
+    
+    public Object visitSequentialProcFunc(SequentialProcFunc ast, Object obj){
+        return(createBinary("Sequential Proc Func", ast.PF1, ast.PF2));
+    }
+    
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
@@ -436,5 +483,25 @@ public class TreeVisitor implements Visitor {
         
         return(t);             
     }
+    
+    /**
+     * Creates a quaternary tree node.
+     * @param caption The tree's caption (text to be shown when the tree is drawn).
+     * @param child1 The first children node.
+     * @param child2 The second children node.
+     * @param child3 The third children node.
+     * @param child4 The fourth children node.
+     * @return The tree node.
+     */
+    public DefaultMutableTreeNode createQuinternary(String caption, AST child1, AST child2, AST child3, AST child4, AST child5) {
+        DefaultMutableTreeNode t = new DefaultMutableTreeNode(caption);
+        t.add((DefaultMutableTreeNode)child1.visit(this, null));
+        t.add((DefaultMutableTreeNode)child2.visit(this, null));
+        t.add((DefaultMutableTreeNode)child3.visit(this, null));
+        t.add((DefaultMutableTreeNode)child4.visit(this, null));
+        t.add((DefaultMutableTreeNode)child5.visit(this, null));
+        
+        return(t);             
+    }    
     // </editor-fold>
 }

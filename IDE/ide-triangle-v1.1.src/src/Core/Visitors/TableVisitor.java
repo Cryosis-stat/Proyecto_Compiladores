@@ -26,6 +26,7 @@ import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyExpression;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
+import Triangle.AbstractSyntaxTrees.FProcFunc;
 import Triangle.AbstractSyntaxTrees.FuncActualParameter;
 import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
@@ -43,6 +44,7 @@ import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.Operator;
+import Triangle.AbstractSyntaxTrees.PProcFunc;
 import Triangle.AbstractSyntaxTrees.ProcActualParameter;
 import Triangle.AbstractSyntaxTrees.ProcDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
@@ -51,6 +53,8 @@ import Triangle.AbstractSyntaxTrees.RecordExpression;
 import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
+import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
+import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SimpleVname;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
@@ -94,6 +98,13 @@ public class TableVisitor implements Visitor {
 
   // <editor-fold defaultstate="collapsed" desc=" Commands ">
   // Commands
+    
+  public Object visitSimplePackageIdentifier(SimplePackageIdentifier ast, Object o){
+      ast.I.visit(this, null);
+      
+      return(null);
+  }  
+    
   public Object visitAssignCommand(AssignCommand ast, Object o) { 
       ast.V.visit(this, null);
       ast.E.visit(this, null);
@@ -306,6 +317,44 @@ public class TableVisitor implements Visitor {
       } catch (NullPointerException e) { }
       
       ast.T.visit(this, null);
+      return(null);
+  }
+  
+  public Object visitPProcFunc(PProcFunc ast, Object o){
+    try {
+      addIdentifier(ast.I.spelling, "KnownRoutine", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownRoutine)ast.entity).address.level, 
+              ((KnownRoutine)ast.entity).address.displacement, 
+              -1);
+      } catch (NullPointerException e) { }
+      
+      ast.FPS.visit(this, null);
+      ast.C.visit(this, null);
+            
+      return(null);     
+  }
+  
+  public Object visitFProcFunc(FProcFunc ast, Object o){
+    try {
+      addIdentifier(ast.I.spelling, 
+              "KnownRoutine", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownRoutine)ast.entity).address.level, 
+              ((KnownRoutine)ast.entity).address.displacement, 
+              -1);      
+      } catch (NullPointerException e) { }
+      ast.T.visit(this, null);            
+      ast.FPS.visit(this, null);
+      ast.E.visit(this, null);
+            
+      return(null);
+  }
+  
+  public Object visitSequentialProcFunc(SequentialProcFunc ast, Object o){
+      ast.PF1.visit(this, null);
+      ast.PF2.visit(this, null);
+      
       return(null);
   }
   
