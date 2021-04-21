@@ -163,14 +163,17 @@ public class Parser {
   public Program parseProgram() throws SyntaxError{
 
     Program programAST = null;
-
-    SourcePosition programPos = new SourcePosition();
-    start(programPos);
-      PackageDeclaration pDecAST = parsePackageDeclaration();
-      if(currentToken.kind == Token.SEMICOLON){
+      try {
+          SourcePosition programPos = new SourcePosition();
+          start(programPos);
+          PackageDeclaration pDecAST = parsePackageDeclaration();
+          if(currentToken.kind == Token.SEMICOLON){
             pDecAST = parsePackageDeclaration();
-        }
-    Command cAST = parseCommand();
+          }
+          Command cAST = parseCommand();
+      } catch (Exception e) {
+          syntacticError("Package Declaration expected here", "");
+      }
     return programAST;
   }
 
