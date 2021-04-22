@@ -20,18 +20,25 @@ import Triangle.AbstractSyntaxTrees.CharacterLiteral;
 import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
+import Triangle.AbstractSyntaxTrees.DoCommand;
 import Triangle.AbstractSyntaxTrees.DotVname;
+import Triangle.AbstractSyntaxTrees.ElseifCommand;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyExpression;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
 import Triangle.AbstractSyntaxTrees.FProcFunc;
+import Triangle.AbstractSyntaxTrees.ForDeclaration;
+import Triangle.AbstractSyntaxTrees.ForDoCommand;
+import Triangle.AbstractSyntaxTrees.ForUntilCommand;
+import Triangle.AbstractSyntaxTrees.ForWhileCommand;
 import Triangle.AbstractSyntaxTrees.FuncActualParameter;
 import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
 import Triangle.AbstractSyntaxTrees.Identifier;
 import Triangle.AbstractSyntaxTrees.IfCommand;
+import Triangle.AbstractSyntaxTrees.IfElseCommand;
 import Triangle.AbstractSyntaxTrees.IfExpression;
 import Triangle.AbstractSyntaxTrees.IntTypeDenoter;
 import Triangle.AbstractSyntaxTrees.IntegerExpression;
@@ -51,6 +58,7 @@ import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
 import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.AbstractSyntaxTrees.RecordExpression;
 import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
+import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
@@ -59,6 +67,7 @@ import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SimpleVname;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
+import Triangle.AbstractSyntaxTrees.SingleDeclaration;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
@@ -66,6 +75,7 @@ import Triangle.AbstractSyntaxTrees.SubscriptVname;
 import Triangle.AbstractSyntaxTrees.TypeDeclaration;
 import Triangle.AbstractSyntaxTrees.UnaryExpression;
 import Triangle.AbstractSyntaxTrees.UnaryOperatorDeclaration;
+import Triangle.AbstractSyntaxTrees.UntilCommand;
 import Triangle.AbstractSyntaxTrees.VarActualParameter;
 import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
@@ -151,6 +161,41 @@ public class TableVisitor implements Visitor {
       
       return(null);
   }
+    
+    @Override
+    public Object visitUntilCommand(UntilCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public Object visitDoCommand(DoCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public Object visitElseifCommand(ElseifCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitForDoCommand(ForDoCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitIfElseCommand(IfElseCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc=" Expressions ">
@@ -227,6 +272,12 @@ public class TableVisitor implements Visitor {
   
   // <editor-fold defaultstate="collapsed" desc=" Declarations ">
   // Declarations
+  public Object visitSingleDeclaration(SingleDeclaration ast, Object o){
+      ast.S.visit(this, null);
+      return(null);
+  }
+  
+  
   public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast, Object o) {        
       return(null);
   }
@@ -319,6 +370,18 @@ public class TableVisitor implements Visitor {
       ast.T.visit(this, null);
       return(null);
   }
+   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o){
+      try {
+      addIdentifier(ast.I.spelling, 
+              "KnownAddress", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownAddress)ast.entity).address.level, 
+              ((KnownAddress)ast.entity).address.displacement, 
+              -1);
+      } catch (NullPointerException e) { }
+      ast.P.visit(this, null);
+      return(null);
+   }
   
   public Object visitPProcFunc(PProcFunc ast, Object o){
     try {
@@ -357,7 +420,11 @@ public class TableVisitor implements Visitor {
       
       return(null);
   }
-  
+ 
+    @Override
+    public Object visitForDeclaration(ForDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }  
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
@@ -671,4 +738,5 @@ public class TableVisitor implements Visitor {
   // <editor-fold defaultstate="collapsed" desc=" Attributes ">
     private DefaultTableModel model;
     // </editor-fold>
+
 }

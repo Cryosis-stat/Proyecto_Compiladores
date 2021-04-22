@@ -20,7 +20,9 @@ import Triangle.AbstractSyntaxTrees.CharacterLiteral;
 import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
+import Triangle.AbstractSyntaxTrees.DoCommand;
 import Triangle.AbstractSyntaxTrees.DotVname;
+import Triangle.AbstractSyntaxTrees.ElseifCommand;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyExpression;
@@ -28,7 +30,9 @@ import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
 import Triangle.AbstractSyntaxTrees.FProcFunc;
 import Triangle.AbstractSyntaxTrees.ForDeclaration;
+import Triangle.AbstractSyntaxTrees.ForDoCommand;
 import Triangle.AbstractSyntaxTrees.ForUntilCommand;
+import Triangle.AbstractSyntaxTrees.ForWhileCommand;
 import Triangle.AbstractSyntaxTrees.FuncActualParameter;
 import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
@@ -71,6 +75,7 @@ import Triangle.AbstractSyntaxTrees.SubscriptVname;
 import Triangle.AbstractSyntaxTrees.TypeDeclaration;
 import Triangle.AbstractSyntaxTrees.UnaryExpression;
 import Triangle.AbstractSyntaxTrees.UnaryOperatorDeclaration;
+import Triangle.AbstractSyntaxTrees.UntilCommand;
 import Triangle.AbstractSyntaxTrees.VarActualParameter;
 import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
@@ -133,6 +138,25 @@ public class TreeVisitor implements Visitor {
         return(createQuaternary("If Else Command", ast.E, ast.C1, ast.C2, ast.C3));
     }
     
+    public Object visitForWhileCommand(ForWhileCommand ast, Object obj){
+        return(createQuinternary("For While Command", ast.I, ast.E, ast.E1, ast.E2, ast.C));
+    }
+    
+    public Object visitUntilCommand(UntilCommand ast, Object o) {
+        return(createBinary("Until Command", ast.E, ast.C));
+    }
+
+    public Object visitDoCommand(DoCommand ast, Object o) {
+        return(createBinary("Do Command", ast.E, ast.C));
+    }
+
+    public Object visitElseifCommand(ElseifCommand ast, Object o) {
+        return(createBinary("Else If Command", ast.E, ast.C1));
+    }
+
+    public Object visitForDoCommand(ForDoCommand ast, Object o) {
+        return(createQuaternary("For Do Command", ast.I, ast.E, ast.E1, ast.C));
+    }
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc=" Expressions ">
@@ -180,6 +204,8 @@ public class TreeVisitor implements Visitor {
     public Object visitVnameExpression(VnameExpression ast, Object obj) {
         return(createUnary("Vname Expression", ast.V));
     }
+    
+
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc=" Declarations ">
@@ -504,4 +530,5 @@ public class TreeVisitor implements Visitor {
         return(t);             
     }    
     // </editor-fold>
+
 }
