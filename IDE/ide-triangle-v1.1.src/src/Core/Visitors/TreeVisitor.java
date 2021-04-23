@@ -511,12 +511,13 @@ public class TreeVisitor implements Visitor {
     }
     
     /**
-     * Creates a quaternary tree node.
+     * Creates a quinternary tree node.
      * @param caption The tree's caption (text to be shown when the tree is drawn).
      * @param child1 The first children node.
      * @param child2 The second children node.
      * @param child3 The third children node.
      * @param child4 The fourth children node.
+     * @param child5 The fifth children node
      * @return The tree node.
      */
     public DefaultMutableTreeNode createQuinternary(String caption, AST child1, AST child2, AST child3, AST child4, AST child5) {

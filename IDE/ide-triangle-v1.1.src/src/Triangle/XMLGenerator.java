@@ -6,6 +6,7 @@
 package Triangle;
 
 import Triangle.AbstractSyntaxTrees.Program;
+import Triangle.AbstractSyntaxTrees.Visitor;
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class XMLGenerator {
             
             BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
             
-            //root.visit(v, bf)
+            //root.visit(v, bf);
             
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
