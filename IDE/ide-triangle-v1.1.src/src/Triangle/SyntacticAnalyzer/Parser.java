@@ -283,10 +283,10 @@ public class Parser {
     }
     return commandAST;
   }
-  /*Command parseRestOfIf(Command commandAST,SourcePosition commandPos) throws SyntaxError{
+  Command parseRestOfIf(Command commandAST,SourcePosition commandPos) throws SyntaxError{
 
     switch (currentToken.kind) {
-        case Token.ELSEIF:{
+        case Token.ELSIF:{
 		acceptIt();
 		Expression eAST = parseExpression();
                 accept(Token.THEN);
@@ -298,7 +298,7 @@ public class Parser {
 
       return  commandAST;
         
-  }*/
+  }
   Command parseSingleCommand() throws SyntaxError {
     Command commandAST = null; // in case there's a syntactic error
 
@@ -355,18 +355,7 @@ public class Parser {
         break;
 
       }
-    case Token.ELSEIF:
-      {
-	acceptIt();
-	Expression eAST = parseExpression();
-        accept(Token.THEN);
-        Command c1AST = parseCommand();
-        commandAST = new ElseifCommand(eAST, c1AST, commandPos);
-		
 
-        break;
-
-      }
     case Token.IF:
       {
         acceptIt();
@@ -374,7 +363,7 @@ public class Parser {
         accept(Token.THEN);
         Command c1AST = parseCommand();
 
-        //Command c2AST = parseRestOfIf(commandAST,commandPos);
+        Command c2AST = parseRestOfIf(commandAST,commandPos);
         accept(Token.ELSE);
         Command c3AST = parseCommand();
         accept(Token.END);
@@ -437,7 +426,6 @@ public class Parser {
                                         break;
                                     }
                                     case Token.UNTIL:{
-                                        acceptIt();
 
                                         accept(Token.UNTIL);
 
@@ -511,13 +499,6 @@ public class Parser {
 
 
     case Token.SEMICOLON:
-    case Token.END:
-    case Token.ELSE:
-    case Token.IN:
-    case Token.EOT:
-    case Token.WHILE:
-    case Token.DO:
-    case Token.UNTIL:
 
       finish(commandPos);
       commandAST = new EmptyCommand(commandPos);

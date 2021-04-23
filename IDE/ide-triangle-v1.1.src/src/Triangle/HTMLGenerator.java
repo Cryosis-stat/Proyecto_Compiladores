@@ -29,7 +29,7 @@ public class HTMLGenerator {
     
     void ParseHtml(String code) throws IOException{
     fileName = code;
-    List<String> lines = Files.readAllLines(Paths.get(code), StandardCharsets.UTF_8);
+    List<String> lines = Files.readAllLines(Paths.get(code), StandardCharsets.ISO_8859_1);
     ArrayList<String[]> matrix = new ArrayList<String[]>(); // Create an ArrayList object
     String[] splited = {};
 

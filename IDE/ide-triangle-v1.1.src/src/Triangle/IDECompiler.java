@@ -58,7 +58,6 @@ public class IDECompiler {
         
         
         System.out.println("Syntactic Analysis ...");
-                System.out.println("Generando  Html ...");
 
         /*sourceName*/
 
@@ -94,9 +93,12 @@ public class IDECompiler {
         }
 
         if (success){
+           System.out.println("Generando  Html ...");
+
             HTMLGenerator htmlGen = new HTMLGenerator();
             htmlGen.ParseHtml(sourceName);
             htmlGen.createFile();
+
             System.out.println("Compilation was successful.");
 
         }
