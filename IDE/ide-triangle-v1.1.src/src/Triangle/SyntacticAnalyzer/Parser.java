@@ -100,6 +100,8 @@ import Triangle.AbstractSyntaxTrees.PackageDeclaration;
 import Triangle.AbstractSyntaxTrees.PackageIdentifier;
 import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
 import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Parser {
 
@@ -160,20 +162,22 @@ public class Parser {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  public Program parseProgram() throws SyntaxError{
-
+  public Program parseProgram() {
     Program programAST = null;
-      try {
-          SourcePosition programPos = new SourcePosition();
-          start(programPos);
-          PackageDeclaration pDecAST = parsePackageDeclaration();
-          if(currentToken.kind == Token.SEMICOLON){
-            pDecAST = parsePackageDeclaration();
-          }
-          Command cAST = parseCommand();
-      } catch (Exception e) {
-          syntacticError("Package Declaration expected here", "");
+
+    previousTokenPosition.start = 0;
+    previousTokenPosition.finish = 0;
+    currentToken = lexicalAnalyser.scan();
+
+    try {
+      Command cAST = parseCommand();
+      programAST = new Program(cAST, previousTokenPosition);
+      if (currentToken.kind != Token.EOT) {
+        syntacticError("\"%\" not expected after end of program",
+          currentToken.spelling);
       }
+    }
+    catch (SyntaxError s) { return null; }
     return programAST;
   }
 

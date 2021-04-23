@@ -61,10 +61,7 @@ public class IDECompiler {
                 System.out.println("Generando  Html ...");
 
         /*sourceName*/
-        HTMLGenerator htmlGen = new HTMLGenerator();
-        
-        htmlGen.ParseHtml(sourceName);
-        htmlGen.createFile();
+
         SourceFile source = new SourceFile(sourceName);
                        
 
@@ -90,13 +87,20 @@ public class IDECompiler {
                 
                 if (report.numErrors == 0) {
                     //encoder.saveObjectProgram(sourceName.replace(".tri", ".tam"));
+
                     success = true;
                 }
             }
         }
 
-        if (success)
+        if (success){
+            HTMLGenerator htmlGen = new HTMLGenerator();
+            htmlGen.ParseHtml(sourceName);
+            htmlGen.createFile();
             System.out.println("Compilation was successful.");
+
+        }
+
         else
             System.out.println("Compilation was unsuccessful.");
         

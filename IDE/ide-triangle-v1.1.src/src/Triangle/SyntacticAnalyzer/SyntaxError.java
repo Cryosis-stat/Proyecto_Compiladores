@@ -16,7 +16,7 @@ package Triangle.SyntacticAnalyzer;
 
 class SyntaxError extends Exception {
 
-  SyntaxError() {
+  public SyntaxError() {
     super();
   };
 
