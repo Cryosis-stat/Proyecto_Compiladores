@@ -11,11 +11,16 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  *
  * @author irsac
  */
-public abstract class LongIdentifier extends AST {
-    public LongIdentifier (SourcePosition thePosition) {
+public class LongIdentifier extends AST {
+    public LongIdentifier (Identifier pacIdentAST, Identifier iAST, SourcePosition thePosition) {
     super (thePosition);
-    duplicated = false;
+    P = pacIdentAST;
+    I = iAST;
   }
+    
+    public Object visit(Visitor v, Object o) {
+        return v.visitLongIdentifier(this, o);
+    }
 
-  public boolean duplicated;
+  public Identifier P, I;
 }

@@ -45,6 +45,7 @@ import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
+import Triangle.AbstractSyntaxTrees.LongIdentifier;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
@@ -52,6 +53,7 @@ import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.Operator;
 import Triangle.AbstractSyntaxTrees.PProcFunc;
+import Triangle.AbstractSyntaxTrees.PackageDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcActualParameter;
 import Triangle.AbstractSyntaxTrees.ProcDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
@@ -105,6 +107,7 @@ public class TableVisitor implements Visitor {
     /** Creates a new instance of TableDetails */
     public TableVisitor() {        
     }
+    
 
   // <editor-fold defaultstate="collapsed" desc=" Commands ">
   // Commands
@@ -697,6 +700,7 @@ public class TableVisitor implements Visitor {
   // <editor-fold defaultstate="collapsed" desc=" Table Creation Methods ">
   // Programs
   public Object visitProgram(Program ast, Object o) { 
+      ast.P.visit(this, null);
       ast.C.visit(this, null);
       
       return(null);
@@ -738,5 +742,24 @@ public class TableVisitor implements Visitor {
   // <editor-fold defaultstate="collapsed" desc=" Attributes ">
     private DefaultTableModel model;
     // </editor-fold>
+    
+  // <editor-fold defaultstate="collapsed" desc=" Program ">
+  // Program
+    
+  public Object visitPackageDeclaration(PackageDeclaration ast, Object o){
+      ast.I.visit(this, null);
+      ast.D.visit(this, null);
+      
+      return(null);
+  }
+  
+  public Object visitLongIdentifier(LongIdentifier ast, Object o){
+      ast.P.visit(this, null);
+      ast.I.visit(this, null);
+      
+      return(null);
+  }
+  
+  // </editor-fold>
 
 }

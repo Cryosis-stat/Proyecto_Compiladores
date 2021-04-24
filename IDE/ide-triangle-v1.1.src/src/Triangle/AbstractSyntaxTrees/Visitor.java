@@ -123,6 +123,12 @@ public interface Visitor {
   // SimplePackageIdentifier
   public abstract Object visitSimplePackageIdentifier (SimplePackageIdentifier ast, Object o);
 
+  // Package-Declaration
+  public abstract Object visitPackageDeclaration(PackageDeclaration aThis, Object o);
+
+  //Long-Identifier
+  public abstract Object visitLongIdentifier(LongIdentifier aThis, Object o);
+
 
 
 }

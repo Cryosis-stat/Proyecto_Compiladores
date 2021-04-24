@@ -45,6 +45,7 @@ import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
+import Triangle.AbstractSyntaxTrees.LongIdentifier;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
@@ -52,6 +53,7 @@ import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.Operator;
 import Triangle.AbstractSyntaxTrees.PProcFunc;
+import Triangle.AbstractSyntaxTrees.PackageDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcActualParameter;
 import Triangle.AbstractSyntaxTrees.ProcDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
@@ -429,7 +431,7 @@ public class TreeVisitor implements Visitor {
     }
     
     public Object visitProgram(Program ast, Object obj) {
-        return(createUnary("Program", ast.C));
+        return(createBinary("Program", ast.P, ast.C));
     }
     // </editor-fold>
 
@@ -532,4 +534,14 @@ public class TreeVisitor implements Visitor {
     }    
     // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
+    // Array Aggregates
+    public Object visitPackageDeclaration(PackageDeclaration ast, Object obj){
+        return(createBinary("Package Declaration", ast.I, ast.D));
+    }
+    
+    public Object visitLongIdentifier(LongIdentifier ast, Object obj){
+        return(createBinary("Long Identifier", ast.P, ast.I));
+    }
+    // </editor-fold>
 }

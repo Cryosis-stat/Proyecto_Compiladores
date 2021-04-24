@@ -170,8 +170,18 @@ public class Parser {
     currentToken = lexicalAnalyser.scan();
 
     try {
+        PackageDeclaration pacDecAST = null;
+        while(currentToken.kind == Token.PACKAGE){
+            pacDecAST = parsePackageDeclaration();
+            if(currentToken.kind != Token.SEMICOLON){
+                syntacticError("; expected after end of program",
+                        currentToken.spelling);
+            }else{
+                acceptIt();
+            }
+        }
       Command cAST = parseCommand();
-      programAST = new Program(cAST, previousTokenPosition);
+      programAST = new Program(pacDecAST, cAST, previousTokenPosition);
       if (currentToken.kind != Token.EOT) {
         syntacticError("\"%\" not expected after end of program",
           currentToken.spelling);
@@ -1258,11 +1268,12 @@ ProcFunc parseProcFunc() throws SyntaxError {
       start(pDecPos);
     
       acceptIt();
-      PackageIdentifier pIdentAST = parsePackageIdentifier();
+      Identifier pIdentAST = parseIdentifier();
       accept(Token.IS);
       Declaration dAST = parseDeclaration();
       accept(Token.END);
       finish(pDecPos);
+      packageDeclarationAST = new PackageDeclaration(pIdentAST, dAST, pDecPos);
       return packageDeclarationAST;
   }
 
@@ -1296,6 +1307,17 @@ ProcFunc parseProcFunc() throws SyntaxError {
     
     LongIdentifier parseLongIdentifier () throws SyntaxError {
         LongIdentifier longIdentifierAST = null;
+        SourcePosition pDecPos = new SourcePosition();
+        start(pDecPos);
+        
+        Identifier iAST = parseIdentifier();
+        Identifier pacIdentAST = null;
+        if(currentToken.kind == Token.DOLLAR){
+            pacIdentAST = iAST;
+            iAST = parseIdentifier();
+        }
+        finish(pDecPos);
+        longIdentifierAST = new LongIdentifier(pacIdentAST, iAST, pDecPos);
         return longIdentifierAST;
     }
 }
