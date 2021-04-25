@@ -5,12 +5,14 @@
  */
 package Triangle;
 
+import Core.Visitors.TreeVisitor;
 import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -27,36 +29,50 @@ import org.w3c.dom.Element;
 public class XMLGenerator {
     
     private String filename;
-   
+    DefaultMutableTreeNode ast;
+    String element;     
+    Element elem;
     void generateXML(String code, Program root) throws Exception{
+        
         try {
-            filename = code;
+            filename = code.substring(0, code.length()-4);
             FileWriter archivo = new FileWriter(filename+".xml");  
             
-            BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+           
             
-            //root.visit(v, bf);
-            
+            TreeVisitor vis = new TreeVisitor(); 
+            ast = (DefaultMutableTreeNode)vis.visitProgram(root, null);            
+                        
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.newDocument();
-            /*Element rootElement = document.createElement("Program");
-            document.appendChild(rootElement);
             
+            
+            //Element rootElement = document.createElement(ast.toString());
+            //document.appendChild(rootElement);
+            //rootElement.appendChild(elem);
+           /* 
+            DefaultMutableTreeNode current;
+            DefaultMutableTreeNode currentSib;
+            System.out.println(ast.toString());
+            current = ast.getNextNode();
+                        
 
+            //elem = document.createElement(ast.getChildAt(c).toString());
+                                
+            */                       
+            //elem.appendChild(document.createTextNode(data));
+            //rootElement.appendChild(elem);
 
-            String element;
-            String data;
-            Element em = document.createElement(element);
-            em.appendChild(document.createTextNode(data));
-            rootElement.appendChild(em);
-*/
             
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(document);
             StreamResult result =  new StreamResult(archivo);
-            transformer.transform(source, result);                
+            transformer.transform(source, result);   
+            archivo.append("\n");
+            leerArbol(ast, archivo);
+            
             archivo.close();
     
         } catch (IOException e) {
@@ -64,4 +80,19 @@ public class XMLGenerator {
           e.printStackTrace();
         }
     } 
+    
+    void leerArbol(DefaultMutableTreeNode nodo, FileWriter archivo) throws IOException{
+        if (nodo == null){
+            return;            
+        }
+        
+        archivo.append("<"+nodo.toString()+">\n");
+        
+        for(int i = 0; i < nodo.getChildCount(); i++){
+            leerArbol((DefaultMutableTreeNode)nodo.getChildAt(i), archivo);
+        }
+        archivo.append("</"+nodo.toString()+">\n");
+        
+
+    }
 }

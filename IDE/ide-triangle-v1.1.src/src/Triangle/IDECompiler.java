@@ -72,8 +72,6 @@ public class IDECompiler {
         
         rootAST = parser.parseProgram();
         
-        XMLGenerator xml = new XMLGenerator();
-        xml.generateXML(sourceName, rootAST);
         
         if (report.numErrors == 0) {
             /*System.out.println("Contextual Analysis ...");
@@ -98,6 +96,10 @@ public class IDECompiler {
             HTMLGenerator htmlGen = new HTMLGenerator();
             htmlGen.ParseHtml(sourceName);
             htmlGen.createFile();
+            
+            System.out.println("Generando XML ...");
+            XMLGenerator xml = new XMLGenerator();
+            xml.generateXML(sourceName, rootAST);            
 
             System.out.println("Compilation was successful.");
 
