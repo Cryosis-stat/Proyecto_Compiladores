@@ -90,15 +90,21 @@ import Triangle.AbstractSyntaxTrees.VnameExpression;
 import Triangle.AbstractSyntaxTrees.WhileCommand;
 import Triangle.AbstractSyntaxTrees.UntilCommand;
 import Triangle.AbstractSyntaxTrees.DoCommand;
+import Triangle.AbstractSyntaxTrees.DollarLongIdentifier;
+import Triangle.AbstractSyntaxTrees.DollarVname;
 import Triangle.AbstractSyntaxTrees.ElseifCommand;
 import Triangle.AbstractSyntaxTrees.ForDoCommand;
 import Triangle.AbstractSyntaxTrees.ForUntilCommand;
 import Triangle.AbstractSyntaxTrees.ForWhileCommand;
 import Triangle.AbstractSyntaxTrees.IfElseCommand;
+import Triangle.AbstractSyntaxTrees.LongCommand;
+import Triangle.AbstractSyntaxTrees.LongExpression;
 import Triangle.AbstractSyntaxTrees.LongIdentifier;
+import Triangle.AbstractSyntaxTrees.LongTypeDenoter;
 import Triangle.AbstractSyntaxTrees.PackageDeclaration;
 import Triangle.AbstractSyntaxTrees.PackageIdentifier;
 import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
+import Triangle.AbstractSyntaxTrees.SimpleLongIdentifier;
 import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -324,10 +330,20 @@ public class Parser {
           acceptIt();
           ActualParameterSequence apsAST = parseActualParameterSequence();
           accept(Token.RPAREN);
+          LongIdentifier lAST = new SimpleLongIdentifier(iAST, iAST.position);
           finish(commandPos);
-          commandAST = new CallCommand(iAST, apsAST, commandPos);
+          commandAST = new LongCommand(lAST, apsAST, commandPos);
+          //commandAST = new CallCommand(iAST, apsAST, commandPos);
 
-        } else {
+        } else if (currentToken.kind == Token.DOLLAR) {
+            acceptIt();
+            LongIdentifier lAST= parseRestOfLongIdentifier(iAST);
+            accept(Token.LPAREN);
+            ActualParameterSequence apsAST = parseActualParameterSequence();
+            accept(Token.RPAREN);
+            finish(commandPos);
+            commandAST = new LongCommand(lAST, apsAST, commandPos);
+        }else {
 
           Vname vAST = parseRestOfVname(iAST);
           accept(Token.BECOMES);
@@ -638,10 +654,21 @@ public class Parser {
           acceptIt();
           ActualParameterSequence apsAST = parseActualParameterSequence();
           accept(Token.RPAREN);
+          LongIdentifier lAST = new SimpleLongIdentifier(iAST, expressionPos);
           finish(expressionPos);
-          expressionAST = new CallExpression(iAST, apsAST, expressionPos);
+          expressionAST = new LongExpression(lAST, apsAST, expressionPos);
+          //expressionAST = new CallExpression(iAST, apsAST, expressionPos);
 
-        } else {
+        } else if (currentToken.kind == Token.DOLLAR){
+            acceptIt();
+            LongIdentifier lAST = parseRestOfLongIdentifier(iAST);
+            accept(Token.LPAREN);
+            ActualParameterSequence apsAST = parseActualParameterSequence();
+            accept(Token.RPAREN);
+            finish(expressionPos);
+            expressionAST = new LongExpression(lAST, apsAST, expressionPos);
+            //expressionAST = new RecordExpression(raAST, expressionPos);
+        }else {
           Vname vAST = parseRestOfVname(iAST);
           finish(expressionPos);
           expressionAST = new VnameExpression(vAST, expressionPos);
@@ -721,9 +748,17 @@ public class Parser {
 ///////////////////////////////////////////////////////////////////////////////
 
   Vname parseVname () throws SyntaxError {
+    SourcePosition vnamePos = new SourcePosition();
     Vname vnameAST = null; // in case there's a syntactic error
     Identifier iAST = parseIdentifier();
-    vnameAST = parseRestOfVname(iAST);
+    if(currentToken.kind == Token.DOLLAR){
+        acceptIt();
+        Identifier i2AST = parseIdentifier();
+        Vname vAST = parseRestOfVname(i2AST);
+        vnameAST = new DollarVname(iAST, vAST, iAST.position);
+    }else{
+        vnameAST = parseRestOfVname(iAST);
+    }
     return vnameAST;
   }
 
@@ -749,7 +784,7 @@ public class Parser {
     }
     return vAST;
   }
-
+  
 ///////////////////////////////////////////////////////////////////////////////
 //
 // DECLARATIONS
@@ -1197,9 +1232,13 @@ ProcFunc parseProcFunc() throws SyntaxError {
 
     case Token.IDENTIFIER:
       {
-        Identifier iAST = parseIdentifier();
+        LongIdentifier lAST = parseLongIdentifier();
         finish(typePos);
-        typeAST = new SimpleTypeDenoter(iAST, typePos);
+        typeAST = new LongTypeDenoter(lAST, typePos);
+        
+        /*Identifier iAST = parseIdentifier();
+        finish(typePos);
+        typeAST = new SimpleTypeDenoter(iAST, typePos);*/
       }
       break;
 
@@ -1225,7 +1264,7 @@ ProcFunc parseProcFunc() throws SyntaxError {
       break;
 
     default:
-      syntacticError("\"%\" cannot start a type denoter",
+        syntacticError("\"%\" cannot start a type denoter",
         currentToken.spelling);
       break;
 
@@ -1267,7 +1306,7 @@ ProcFunc parseProcFunc() throws SyntaxError {
 
       start(pDecPos);
     
-      acceptIt();
+      accept(Token.PACKAGE);
       Identifier pIdentAST = parseIdentifier();
       accept(Token.IS);
       Declaration dAST = parseDeclaration();
@@ -1311,13 +1350,23 @@ ProcFunc parseProcFunc() throws SyntaxError {
         start(pDecPos);
         
         Identifier iAST = parseIdentifier();
-        Identifier pacIdentAST = null;
         if(currentToken.kind == Token.DOLLAR){
-            pacIdentAST = iAST;
-            iAST = parseIdentifier();
+            acceptIt();
+            longIdentifierAST = parseRestOfLongIdentifier(iAST);
+        }else{
+            finish(pDecPos);
+            longIdentifierAST = new SimpleLongIdentifier(iAST, pDecPos);
         }
-        finish(pDecPos);
-        longIdentifierAST = new LongIdentifier(pacIdentAST, iAST, pDecPos);
         return longIdentifierAST;
     }
+    
+    LongIdentifier parseRestOfLongIdentifier(Identifier identifierAST) throws SyntaxError {
+        LongIdentifier lAST = null;
+        SourcePosition longPos = new SourcePosition();
+        longPos = identifierAST.position;
+        Identifier iAST = parseIdentifier();
+        lAST = new DollarLongIdentifier(identifierAST, iAST, longPos);
+        finish(longPos);
+        return lAST;
+  }
 }
