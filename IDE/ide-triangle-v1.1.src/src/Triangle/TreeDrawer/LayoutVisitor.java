@@ -410,11 +410,29 @@ public class LayoutVisitor implements Visitor {
     return layoutBinary("Sub.Vname",
         ast.V, ast.E);
   }
+  
+  public Object visitDollarVname(DollarVname ast, Object o) {
+      return layoutBinary("Dol.Vname", ast.I, ast.V);
+  }
 
 
   // Programs
   public Object visitProgram(Program ast, Object obj) {
     return layoutBinary("Program", ast.P, ast.C);
+  }
+  
+  // Package
+  public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+        return layoutBinary("PackageDec.", ast.I, ast.D);
+    }
+  
+  //
+  public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
+      return layoutUnary("Simp.LongIdentifier", ast.I);
+  }
+  
+  public Object visitDollarLongIdentifier(DollarLongIdentifier ast, Object o) {
+      return layoutBinary("DollarLongIdentifier", ast.P, ast.I);
   }
 
   private DrawingTree layoutCaption (String name) {
@@ -648,26 +666,6 @@ public class LayoutVisitor implements Visitor {
 
     @Override
     public Object visitIfElseCommand(IfElseCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitPackageDeclaration(PackageDeclaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitDollarVname(DollarVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitDollarLongIdentifier(DollarLongIdentifier ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -9,16 +9,16 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
 
 public class DollarVname extends Vname{
     
-    public DollarVname (Vname vAST, Identifier iAST, SourcePosition thePosition) {
+    public DollarVname (Identifier iAST, Vname vAST, SourcePosition thePosition) {
         super (thePosition);
-        V = vAST;
         I = iAST;
+        V = vAST;
     }
     
     public Object visit (Visitor v, Object o) {
         return v.visitDollarVname(this, o);
     }
     
-    public Vname V;
     public Identifier I;
+    public Vname V;
 }
