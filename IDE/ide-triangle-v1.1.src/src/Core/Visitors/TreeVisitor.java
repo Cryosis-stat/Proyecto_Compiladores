@@ -21,6 +21,8 @@ import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
 import Triangle.AbstractSyntaxTrees.DoCommand;
+import Triangle.AbstractSyntaxTrees.DollarLongIdentifier;
+import Triangle.AbstractSyntaxTrees.DollarVname;
 import Triangle.AbstractSyntaxTrees.DotVname;
 import Triangle.AbstractSyntaxTrees.ElseifCommand;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
@@ -45,7 +47,10 @@ import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
+import Triangle.AbstractSyntaxTrees.LongCommand;
+import Triangle.AbstractSyntaxTrees.LongExpression;
 import Triangle.AbstractSyntaxTrees.LongIdentifier;
+import Triangle.AbstractSyntaxTrees.LongTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
@@ -64,6 +69,7 @@ import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
+import Triangle.AbstractSyntaxTrees.SimpleLongIdentifier;
 import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SimpleVname;
@@ -126,6 +132,10 @@ public class TreeVisitor implements Visitor {
     
     public Object visitLetCommand(LetCommand ast, Object obj) {
         return(createBinary("Let Command", ast.D, ast.C));
+    }
+    
+    public Object visitLongCommand(LongCommand ast, Object obj){
+        return(createBinary("Long Command", ast.L, ast.APS));
     }
     
     public Object visitSequentialCommand(SequentialCommand ast, Object obj) {
@@ -193,6 +203,10 @@ public class TreeVisitor implements Visitor {
     
     public Object visitLetExpression(LetExpression ast, Object obj) {
         return(createBinary("Let Expression", ast.D, ast.E));
+    }
+    
+    public Object visitLongExpression(LongExpression ast, Object obj){
+        return(createBinary("Long Expression", ast.L, ast.APS));
     }
     
     public Object visitRecordExpression(RecordExpression ast, Object obj) {
@@ -388,6 +402,10 @@ public class TreeVisitor implements Visitor {
         return(createUnary("Record Type Denoter", ast.FT));
     }
     
+    public Object visitLongTypeDenoter (LongTypeDenoter ast, Object obj) {
+        return(createUnary("Long Type Denoter", ast.L));
+    }
+    
     public Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object obj) {
         return(createTernary("Multiple Field Type Denoter", ast.I, ast.T, ast.FT));
     }
@@ -418,6 +436,9 @@ public class TreeVisitor implements Visitor {
     
     // <editor-fold defaultstate="collapsed" desc=" Values or Variable Names ">
     // Values or Variable Names
+    public Object visitDollarVname(DollarVname ast, Object obj){
+        return(createBinary("Package Identifier Vname", ast.I, ast.V));
+    }
     public Object visitDotVname(DotVname ast, Object obj) {
         return(createBinary("Dot Vname", ast.I, ast.V));
     }
@@ -540,8 +561,13 @@ public class TreeVisitor implements Visitor {
         return(createBinary("Package Declaration", ast.I, ast.D));
     }
     
-    public Object visitLongIdentifier(LongIdentifier ast, Object obj){
+    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object obj){
+        return(createUnary("Long Identifier", ast.I));
+    }
+    
+    public Object visitDollarLongIdentifier(DollarLongIdentifier ast, Object o){
         return(createBinary("Long Identifier", ast.P, ast.I));
     }
+    
     // </editor-fold>
 }

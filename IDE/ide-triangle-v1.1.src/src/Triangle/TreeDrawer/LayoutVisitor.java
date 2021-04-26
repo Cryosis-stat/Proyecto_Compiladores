@@ -34,6 +34,8 @@ import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
 import Triangle.AbstractSyntaxTrees.Declaration;
 import Triangle.AbstractSyntaxTrees.DoCommand;
+import Triangle.AbstractSyntaxTrees.DollarLongIdentifier;
+import Triangle.AbstractSyntaxTrees.DollarVname;
 import Triangle.AbstractSyntaxTrees.DotVname;
 import Triangle.AbstractSyntaxTrees.ElseifCommand;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
@@ -58,7 +60,10 @@ import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
+import Triangle.AbstractSyntaxTrees.LongCommand;
+import Triangle.AbstractSyntaxTrees.LongExpression;
 import Triangle.AbstractSyntaxTrees.LongIdentifier;
+import Triangle.AbstractSyntaxTrees.LongTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
@@ -77,6 +82,7 @@ import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
+import Triangle.AbstractSyntaxTrees.SimpleLongIdentifier;
 import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SimpleVname;
@@ -134,6 +140,10 @@ public class LayoutVisitor implements Visitor {
   public Object visitLetCommand(LetCommand ast, Object obj) {
     return layoutBinary("LetCom.", ast.D, ast.C);
   }
+  
+  public Object visitLongCommand(LongCommand ast, Object obj){
+      return layoutBinary("LongCom.", ast.L, ast.APS);
+  }
 
   public Object visitSequentialCommand(SequentialCommand ast, Object obj) {
     return layoutBinary("Seq.Com.", ast.C1, ast.C2);
@@ -175,6 +185,10 @@ public class LayoutVisitor implements Visitor {
 
   public Object visitLetExpression(LetExpression ast, Object obj) {
     return layoutBinary("LetExpr.", ast.D, ast.E);
+  }
+  
+  public Object visitLongExpression(LongExpression ast, Object obj){
+      return layoutBinary("LongExpr.", ast.L, ast.APS);
   }
 
   public Object visitRecordExpression(RecordExpression ast, Object obj) {
@@ -352,6 +366,9 @@ public class LayoutVisitor implements Visitor {
     return layoutUnary("Rec.TypeD.", ast.FT);
   }
 
+  public Object visitLongTypeDenoter (LongTypeDenoter ast, Object obj) {
+      return layoutUnary("Long TypeD.", ast.L);
+  }
 
   public Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object obj) {
     return layoutTernary("Mult.F.TypeD.", ast.I, ast.T, ast.FT);
@@ -640,7 +657,17 @@ public class LayoutVisitor implements Visitor {
     }
 
     @Override
-    public Object visitLongIdentifier(LongIdentifier aThis, Object o) {
+    public Object visitDollarVname(DollarVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitDollarLongIdentifier(DollarLongIdentifier ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

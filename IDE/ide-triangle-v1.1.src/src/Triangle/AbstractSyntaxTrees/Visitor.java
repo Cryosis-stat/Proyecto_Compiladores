@@ -22,6 +22,7 @@ public interface Visitor {
   public abstract Object visitEmptyCommand(EmptyCommand ast, Object o);
   public abstract Object visitIfCommand(IfCommand ast, Object o);
   public abstract Object visitLetCommand(LetCommand ast, Object o);
+  public abstract Object visitLongCommand(LongCommand ast, Object o);
   public abstract Object visitSequentialCommand(SequentialCommand ast, Object o);
   public abstract Object visitWhileCommand(WhileCommand ast, Object o);
   public abstract Object visitUntilCommand(UntilCommand ast, Object o);
@@ -42,6 +43,7 @@ public interface Visitor {
   public abstract Object visitIfExpression(IfExpression ast, Object o);
   public abstract Object visitIntegerExpression(IntegerExpression ast, Object o);
   public abstract Object visitLetExpression(LetExpression ast, Object o);
+  public abstract Object visitLongExpression(LongExpression ast, Object o);
   public abstract Object visitRecordExpression(RecordExpression ast, Object o);
   public abstract Object visitUnaryExpression(UnaryExpression ast, Object o);
   public abstract Object visitVnameExpression(VnameExpression ast, Object o);
@@ -103,6 +105,7 @@ public interface Visitor {
   public abstract Object visitIntTypeDenoter(IntTypeDenoter ast, Object o);
   public abstract Object visitRecordTypeDenoter(RecordTypeDenoter ast, Object o);
 
+  public abstract Object visitLongTypeDenoter(LongTypeDenoter ast, Object o);
   public abstract Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object o);
   public abstract Object visitSingleFieldTypeDenoter(SingleFieldTypeDenoter ast, Object o);
 
@@ -113,6 +116,7 @@ public interface Visitor {
   public abstract Object visitOperator(Operator ast, Object o);
 
   // Value-or-variable names
+  public abstract Object visitDollarVname(DollarVname ast, Object o);
   public abstract Object visitDotVname(DotVname ast, Object o);
   public abstract Object visitSimpleVname(SimpleVname ast, Object o);
   public abstract Object visitSubscriptVname(SubscriptVname ast, Object o);
@@ -127,8 +131,8 @@ public interface Visitor {
   public abstract Object visitPackageDeclaration(PackageDeclaration aThis, Object o);
 
   //Long-Identifier
-  public abstract Object visitLongIdentifier(LongIdentifier aThis, Object o);
+  public abstract Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o);
 
-
+  public abstract Object visitDollarLongIdentifier (DollarLongIdentifier ast, Object o);
 
 }
