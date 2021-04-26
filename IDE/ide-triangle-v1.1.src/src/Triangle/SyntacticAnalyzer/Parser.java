@@ -315,6 +315,7 @@ public class Parser {
       return  commandAST;
         
   }
+  
   Command parseSingleCommand() throws SyntaxError {
     Command commandAST = null; // in case there's a syntactic error
 
