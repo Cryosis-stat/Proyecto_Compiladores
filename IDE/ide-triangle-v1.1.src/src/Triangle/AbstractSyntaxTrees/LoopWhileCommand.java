@@ -9,22 +9,21 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
 
 /**
  *
- * @author Walter
+ * @author Carlos
  */
-public class ForDeclaration extends Declaration{
-
-  public ForDeclaration (Identifier iAST, Expression eAST,
-                    SourcePosition thePosition) {
+public class LoopWhileCommand extends Command{
+    
+  public LoopWhileCommand (Expression eAST, Command cAST, SourcePosition thePosition) {
     super (thePosition);
-    I = iAST;
     E = eAST;
+    C = cAST;
   }
 
   public Object visit(Visitor v, Object o) {
-    return v.visitForDeclaration(this, o);
+    return v.visitLoopWhileCommand(this, o);
   }
 
-  public Identifier I;
   public Expression E;
-  
+  public Command C;
+    
 }

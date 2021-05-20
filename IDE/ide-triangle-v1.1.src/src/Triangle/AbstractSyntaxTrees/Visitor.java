@@ -22,17 +22,16 @@ public interface Visitor {
   public abstract Object visitEmptyCommand(EmptyCommand ast, Object o);
   public abstract Object visitIfCommand(IfCommand ast, Object o);
   public abstract Object visitLetCommand(LetCommand ast, Object o);
-  public abstract Object visitLongCommand(LongCommand ast, Object o);
   public abstract Object visitSequentialCommand(SequentialCommand ast, Object o);
-  public abstract Object visitWhileCommand(WhileCommand ast, Object o);
-  public abstract Object visitUntilCommand(UntilCommand ast, Object o);
-  public abstract Object visitDoCommand(DoCommand ast, Object o);
-  public abstract Object visitElseifCommand(ElseifCommand ast, Object o);
-  public abstract Object visitForDoCommand(ForDoCommand ast, Object o);
+  //public abstract Object visitWhileCommand(WhileCommand ast, Object o);
+  // new commands
+  public abstract Object visitLoopWhileCommand(LoopWhileCommand ast, Object o);
+  public abstract Object visitLoopUntilCommand(LoopUntilCommand ast, Object o);
+  public abstract Object visitLoopDoWhileCommand(LoopDoWhileCommand ast, Object o);
+  public abstract Object visitLoopDoUntilCommand(LoopDoUntilCommand ast, Object o);
+  public abstract Object visitForCommand(ForCommand ast, Object o);
   public abstract Object visitForWhileCommand(ForWhileCommand ast, Object o);
   public abstract Object visitForUntilCommand(ForUntilCommand ast, Object o);
-  public abstract Object visitIfElseCommand(IfElseCommand ast, Object o);
-
 
   // Expressions
   public abstract Object visitArrayExpression(ArrayExpression ast, Object o);
@@ -43,7 +42,6 @@ public interface Visitor {
   public abstract Object visitIfExpression(IfExpression ast, Object o);
   public abstract Object visitIntegerExpression(IntegerExpression ast, Object o);
   public abstract Object visitLetExpression(LetExpression ast, Object o);
-  public abstract Object visitLongExpression(LongExpression ast, Object o);
   public abstract Object visitRecordExpression(RecordExpression ast, Object o);
   public abstract Object visitUnaryExpression(UnaryExpression ast, Object o);
   public abstract Object visitVnameExpression(VnameExpression ast, Object o);
@@ -53,19 +51,16 @@ public interface Visitor {
   public abstract Object visitConstDeclaration(ConstDeclaration ast, Object o);
   public abstract Object visitFuncDeclaration(FuncDeclaration ast, Object o);
   public abstract Object visitProcDeclaration(ProcDeclaration ast, Object o);
+  public abstract Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o);
+  public abstract Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o);
   public abstract Object visitSequentialDeclaration(SequentialDeclaration ast, Object o);
   public abstract Object visitTypeDeclaration(TypeDeclaration ast, Object o);
   public abstract Object visitUnaryOperatorDeclaration(UnaryOperatorDeclaration ast, Object o);
   public abstract Object visitVarDeclaration(VarDeclaration ast, Object o);
+  public abstract Object visitVarInitDeclaration(VarInitDeclaration ast, Object o);
+  
   public abstract Object visitForDeclaration(ForDeclaration ast, Object o);
-  public abstract Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o);
-   public abstract Object visitSingleDeclaration(SingleDeclaration ast, Object o);
-
-  // Proc Func
-  public abstract Object visitSequentialProcFunc(SequentialProcFunc ast, Object o);
-  public abstract Object visitFProcFunc(FProcFunc ast, Object o);
-  public abstract Object visitPProcFunc(PProcFunc ast, Object o);
-
+  public abstract Object visitPackageDeclaration(PackageDeclaration ast, Object o);
 
   // Array Aggregates
   public abstract Object visitMultipleArrayAggregate(MultipleArrayAggregate ast, Object o);
@@ -104,8 +99,7 @@ public interface Visitor {
   public abstract Object visitSimpleTypeDenoter(SimpleTypeDenoter ast, Object o);
   public abstract Object visitIntTypeDenoter(IntTypeDenoter ast, Object o);
   public abstract Object visitRecordTypeDenoter(RecordTypeDenoter ast, Object o);
-
-  public abstract Object visitLongTypeDenoter(LongTypeDenoter ast, Object o);
+  public abstract Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o); 
   public abstract Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object o);
   public abstract Object visitSingleFieldTypeDenoter(SingleFieldTypeDenoter ast, Object o);
 
@@ -114,25 +108,27 @@ public interface Visitor {
   public abstract Object visitIdentifier(Identifier ast, Object o);
   public abstract Object visitIntegerLiteral(IntegerLiteral ast, Object o);
   public abstract Object visitOperator(Operator ast, Object o);
+  public abstract Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o);
+  public abstract Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o);
 
   // Value-or-variable names
-  public abstract Object visitDollarVname(DollarVname ast, Object o);
-  public abstract Object visitDotVname(DotVname ast, Object o);
-  public abstract Object visitSimpleVname(SimpleVname ast, Object o);
-  public abstract Object visitSubscriptVname(SubscriptVname ast, Object o);
+  public abstract Object visitDotVarName(DotVarName ast, Object o);
+  public abstract Object visitSimpleVarName(SimpleVarName ast, Object o);
+  public abstract Object visitSubscriptVarName(SubscriptVarName ast, Object o);
 
   // Programs
   public abstract Object visitProgram(Program ast, Object o);
 
-  // SimplePackageIdentifier
-  public abstract Object visitSimplePackageIdentifier (SimplePackageIdentifier ast, Object o);
+  public abstract Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o);
 
-  // Package-Declaration
-  public abstract Object visitPackageDeclaration(PackageDeclaration aThis, Object o);
+  public abstract Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o);
 
-  //Long-Identifier
-  public abstract Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o);
+  public abstract Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o);
 
-  public abstract Object visitDollarLongIdentifier (DollarLongIdentifier ast, Object o);
-
+    
+    
+    //Vname
+  public abstract Object visitSingleVname(SingleVname ast, Object o);
+  public abstract Object visitCompoundVname(CompoundVname ast, Object o);
+    
 }

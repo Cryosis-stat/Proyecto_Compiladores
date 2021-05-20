@@ -7,11 +7,14 @@ package Triangle.AbstractSyntaxTrees;
 
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
-public abstract class PackageIdentifier extends AST {
-    public PackageIdentifier (SourcePosition thePosition) {
-    super (thePosition);
-    duplicated = false;
-  }
-
-  public boolean duplicated;
+/**
+ *
+ * @author Carlos
+ */
+public class PackageIdentifier extends Identifier{
+    
+    public PackageIdentifier(String theSpelling, SourcePosition thePosition) {
+        super(theSpelling, thePosition);
+    }
+    
 }

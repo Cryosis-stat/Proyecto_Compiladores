@@ -11,20 +11,19 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  *
  * @author Walter
  */
-public class ForDeclaration extends Declaration{
-
-  public ForDeclaration (Identifier iAST, Expression eAST,
-                    SourcePosition thePosition) {
+public class ForCommand extends Command {
+   public ForCommand (ForDeclaration fAST, Expression eAST, Command cAST, SourcePosition thePosition) {
     super (thePosition);
-    I = iAST;
+    F = fAST;
     E = eAST;
+    C = cAST;
   }
 
   public Object visit(Visitor v, Object o) {
-    return v.visitForDeclaration(this, o);
+    return v.visitForCommand(this, o);
   }
 
-  public Identifier I;
+  public ForDeclaration F;
   public Expression E;
-  
+  public Command C;
 }

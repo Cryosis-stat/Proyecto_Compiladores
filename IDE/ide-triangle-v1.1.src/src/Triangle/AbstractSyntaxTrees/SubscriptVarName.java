@@ -1,5 +1,5 @@
 /*
- * @(#)SequentialProcFunc.java                2.1 2003/10/07
+ * @(#)SubscriptVarName.java                        2.1 2003/10/07
  *
  * Copyright (C) 1999, 2003 D.A. Watt and D.F. Brown
  * Dept. of Computing Science, University of Glasgow, Glasgow G12 8QQ Scotland
@@ -16,18 +16,18 @@ package Triangle.AbstractSyntaxTrees;
 
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
-public class SequentialProcFunc extends ProcFunc {
+public class SubscriptVarName extends VarName {
 
-  public SequentialProcFunc (ProcFunc pf1AST, ProcFunc pf2AST,
-                       SourcePosition thePosition) {
+  public SubscriptVarName (VarName vAST, Expression eAST, SourcePosition thePosition) {
     super (thePosition);
-    PF1 = pf1AST;
-    PF2 = pf2AST;
+    V = vAST;
+    E = eAST;
   }
 
-  public Object visit(Visitor v, Object o) {
-    return v.visitSequentialProcFunc(this, o);
+  public Object visit (Visitor v, Object o) {
+    return v.visitSubscriptVarName(this, o);
   }
 
-  public ProcFunc PF1, PF2;
+  public Expression E;
+  public VarName V;
 }

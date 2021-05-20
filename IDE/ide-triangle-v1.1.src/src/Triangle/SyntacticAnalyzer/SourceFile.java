@@ -14,8 +14,6 @@
 
 package Triangle.SyntacticAnalyzer;
 
-import java.io.File;
-
 public class SourceFile {
 
   public static final char EOL = '\n';
@@ -38,11 +36,6 @@ public class SourceFile {
     }
   }
 
-  public File getFile(){
-      return sourceFile;
-  }
-  
-          
   char getSource() {
     try {
       int c = source.read();

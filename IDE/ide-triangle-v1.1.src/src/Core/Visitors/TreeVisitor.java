@@ -17,22 +17,20 @@ import Triangle.AbstractSyntaxTrees.CallExpression;
 import Triangle.AbstractSyntaxTrees.CharTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CharacterExpression;
 import Triangle.AbstractSyntaxTrees.CharacterLiteral;
+import Triangle.AbstractSyntaxTrees.CompoundLongIdentifier;
+import Triangle.AbstractSyntaxTrees.CompoundVname;
 import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
-import Triangle.AbstractSyntaxTrees.DoCommand;
-import Triangle.AbstractSyntaxTrees.DollarLongIdentifier;
-import Triangle.AbstractSyntaxTrees.DollarVname;
-import Triangle.AbstractSyntaxTrees.DotVname;
-import Triangle.AbstractSyntaxTrees.ElseifCommand;
+import Triangle.AbstractSyntaxTrees.DotVarName;
+import Triangle.AbstractSyntaxTrees.Declaration;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyExpression;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
-import Triangle.AbstractSyntaxTrees.FProcFunc;
+import Triangle.AbstractSyntaxTrees.ForCommand;
 import Triangle.AbstractSyntaxTrees.ForDeclaration;
-import Triangle.AbstractSyntaxTrees.ForDoCommand;
 import Triangle.AbstractSyntaxTrees.ForUntilCommand;
 import Triangle.AbstractSyntaxTrees.ForWhileCommand;
 import Triangle.AbstractSyntaxTrees.FuncActualParameter;
@@ -40,56 +38,57 @@ import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
 import Triangle.AbstractSyntaxTrees.Identifier;
 import Triangle.AbstractSyntaxTrees.IfCommand;
-import Triangle.AbstractSyntaxTrees.IfElseCommand;
 import Triangle.AbstractSyntaxTrees.IfExpression;
 import Triangle.AbstractSyntaxTrees.IntTypeDenoter;
 import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
-import Triangle.AbstractSyntaxTrees.LongCommand;
-import Triangle.AbstractSyntaxTrees.LongExpression;
-import Triangle.AbstractSyntaxTrees.LongIdentifier;
-import Triangle.AbstractSyntaxTrees.LongTypeDenoter;
+import Triangle.AbstractSyntaxTrees.LongIdentifierTypeDenoter;
+import Triangle.AbstractSyntaxTrees.LoopDoUntilCommand;
+import Triangle.AbstractSyntaxTrees.LoopDoWhileCommand;
+import Triangle.AbstractSyntaxTrees.LoopUntilCommand;
+import Triangle.AbstractSyntaxTrees.LoopWhileCommand;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.Operator;
-import Triangle.AbstractSyntaxTrees.PProcFunc;
 import Triangle.AbstractSyntaxTrees.PackageDeclaration;
+import Triangle.AbstractSyntaxTrees.PrivateCompound_Declaration;
 import Triangle.AbstractSyntaxTrees.ProcActualParameter;
 import Triangle.AbstractSyntaxTrees.ProcDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
+import Triangle.AbstractSyntaxTrees.ProcFuncFuncDeclaration;
+import Triangle.AbstractSyntaxTrees.ProcFuncProcDeclaration;
 import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.AbstractSyntaxTrees.RecordExpression;
 import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
-import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
+import Triangle.AbstractSyntaxTrees.RecursiveCompound_Declaration;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
-import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
 import Triangle.AbstractSyntaxTrees.SimpleLongIdentifier;
-import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
+import Triangle.AbstractSyntaxTrees.SequentialProcFuncDeclaration;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SimpleVname;
+import Triangle.AbstractSyntaxTrees.SimpleVarName;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
-import Triangle.AbstractSyntaxTrees.SingleDeclaration;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
-import Triangle.AbstractSyntaxTrees.SubscriptVname;
+import Triangle.AbstractSyntaxTrees.SingleVname;
+import Triangle.AbstractSyntaxTrees.SubscriptVarName;
 import Triangle.AbstractSyntaxTrees.TypeDeclaration;
 import Triangle.AbstractSyntaxTrees.UnaryExpression;
 import Triangle.AbstractSyntaxTrees.UnaryOperatorDeclaration;
-import Triangle.AbstractSyntaxTrees.UntilCommand;
 import Triangle.AbstractSyntaxTrees.VarActualParameter;
 import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
+import Triangle.AbstractSyntaxTrees.VarInitDeclaration;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
+//import Triangle.AbstractSyntaxTrees.WhileCommand;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -110,10 +109,6 @@ public class TreeVisitor implements Visitor {
     
     // <editor-fold defaultstate="collapsed" desc=" Commands ">    
     // Commands  
-    public Object visitSimplePackageIdentifier(SimplePackageIdentifier ast, Object o){
-        return(createUnary("Package Identifier", ast.I));
-    }
-    
     public Object visitAssignCommand(AssignCommand ast, Object o) {
         return(createBinary("Assign Command", ast.V, ast.E));
     }
@@ -134,42 +129,51 @@ public class TreeVisitor implements Visitor {
         return(createBinary("Let Command", ast.D, ast.C));
     }
     
-    public Object visitLongCommand(LongCommand ast, Object obj){
-        return(createBinary("Long Command", ast.L, ast.APS));
-    }
-    
     public Object visitSequentialCommand(SequentialCommand ast, Object obj) {
         return(createBinary("Sequential Command", ast.C1, ast.C2));
     }
     
-    public Object visitWhileCommand(WhileCommand ast, Object obj) {
-        return(createBinary("While Command", ast.E, ast.C));
-    }
-    
-    public Object visitIfElseCommand(IfElseCommand ast, Object obj){        
-        return(createQuaternary("If Else Command", ast.E, ast.C1, ast.C2, ast.C3));
-    }
-    
-    public Object visitForWhileCommand(ForWhileCommand ast, Object obj){
-        return(createQuinternary("For While Command", ast.I, ast.E, ast.E1, ast.E2, ast.C));
-    }
-    
-    public Object visitUntilCommand(UntilCommand ast, Object o) {
-        return(createBinary("Until Command", ast.E, ast.C));
-    }
-
-    public Object visitDoCommand(DoCommand ast, Object o) {
-        return(createBinary("Do Command", ast.E, ast.C));
-    }
-
-    public Object visitElseifCommand(ElseifCommand ast, Object o) {
-        return(createBinary("Else If Command", ast.E, ast.C1));
-    }
-
-    public Object visitForDoCommand(ForDoCommand ast, Object o) {
-        return(createQuaternary("For Do Command", ast.I, ast.E, ast.E1, ast.C));
-    }
+//    public Object visitWhileCommand(WhileCommand ast, Object obj) {
+//        return(createBinary("While Command", ast.E, ast.C));
+//    }
     // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc=" New Commands ">  
+    // New Commands
+    public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
+        return(createBinary("LoopWhile Command", ast.E, ast.C));
+    }
+
+    public Object visitLoopUntilCommand(LoopUntilCommand ast, Object o) {
+        return(createBinary("LoopUntil Command", ast.E, ast.C));
+    }
+
+    public Object visitLoopDoWhileCommand(LoopDoWhileCommand ast, Object o) {
+      return(createBinary("LoopDoWhile Command", ast.C, ast.E));
+    }
+
+    public Object visitLoopDoUntilCommand(LoopDoUntilCommand ast, Object o) {
+      return(createBinary("LoopDoUntil Command", ast.C, ast.E));
+    }
+    
+    public Object visitForCommand(ForCommand ast, Object o) {
+      return(createTernary("For Command", ast.F, ast.E, ast.C));
+    }
+
+    public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
+      return(createQuaternary("ForWhile Command", ast.F, ast.E1, ast.E2, ast.C));
+    }
+
+    public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
+      return(createQuaternary("ForUntil Command", ast.F, ast.E1, ast.E2, ast.C));
+    }
+    
+    // </editor-fold>
+    
+    @Override
+    public Object visitForDeclaration(ForDeclaration ast, Object o) {
+      return(createBinary("For Declaration", ast.I, ast.E));
+    }
     
     // <editor-fold defaultstate="collapsed" desc=" Expressions ">
     // Expressions
@@ -205,10 +209,6 @@ public class TreeVisitor implements Visitor {
         return(createBinary("Let Expression", ast.D, ast.E));
     }
     
-    public Object visitLongExpression(LongExpression ast, Object obj){
-        return(createBinary("Long Expression", ast.L, ast.APS));
-    }
-    
     public Object visitRecordExpression(RecordExpression ast, Object obj) {
         return(createUnary("Record Expression", ast.RA));
     }
@@ -220,16 +220,10 @@ public class TreeVisitor implements Visitor {
     public Object visitVnameExpression(VnameExpression ast, Object obj) {
         return(createUnary("Vname Expression", ast.V));
     }
-    
-
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc=" Declarations ">
     // Declarations
-    public Object visitSingleDeclaration(SingleDeclaration ast, Object obj){
-        return(createUnary("Single Declaration", ast.S));
-    }
-    
     public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast, Object obj) {
         return(createQuaternary("Binary Operator Declaration", ast.O, ast.ARG1, ast.ARG2, ast.RES));
     }
@@ -261,31 +255,6 @@ public class TreeVisitor implements Visitor {
     public Object visitVarDeclaration(VarDeclaration ast, Object obj) {
         return(createBinary("Variable Declaration", ast.I, ast.T));
     }
-    
-    public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object obj){
-        return(createBinary("Recursive Declaration", ast.I, ast.P));
-    }
-    
-    public Object visitForDeclaration(ForDeclaration ast, Object obj){        
-        return(createBinary("For Declaration", ast.I, ast.E));
-    }
-    
-    public Object visitForUntilCommand(ForUntilCommand ast, Object obj){
-        return(createQuinternary("For Until Command", ast.I, ast.E, ast.E1, ast.E2, ast.C));
-    }
-    
-    public Object visitPProcFunc(PProcFunc ast, Object obj){
-        return(createTernary("Procedure Proc Func", ast.I, ast.FPS, ast.C));
-    }
-    
-    public Object visitFProcFunc(FProcFunc ast, Object obj){
-        return(createQuaternary("Procedure Proc Func", ast.I, ast.FPS,ast.T, ast.E));
-    }
-    
-    public Object visitSequentialProcFunc(SequentialProcFunc ast, Object obj){
-        return(createBinary("Sequential Proc Func", ast.PF1, ast.PF2));
-    }
-    
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
@@ -402,10 +371,6 @@ public class TreeVisitor implements Visitor {
         return(createUnary("Record Type Denoter", ast.FT));
     }
     
-    public Object visitLongTypeDenoter (LongTypeDenoter ast, Object obj) {
-        return(createUnary("Long Type Denoter", ast.L));
-    }
-    
     public Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object obj) {
         return(createTernary("Multiple Field Type Denoter", ast.I, ast.T, ast.FT));
     }
@@ -436,23 +401,21 @@ public class TreeVisitor implements Visitor {
     
     // <editor-fold defaultstate="collapsed" desc=" Values or Variable Names ">
     // Values or Variable Names
-    public Object visitDollarVname(DollarVname ast, Object obj){
-        return(createBinary("Package Identifier Vname", ast.I, ast.V));
-    }
-    public Object visitDotVname(DotVname ast, Object obj) {
+    public Object visitDotVarName(DotVarName ast, Object obj) {
         return(createBinary("Dot Vname", ast.I, ast.V));
     }
     
-    public Object visitSimpleVname(SimpleVname ast, Object obj) {
+    public Object visitSimpleVarName(SimpleVarName ast, Object obj) {
         return(createUnary("Simple Vname", ast.I));
     }
     
-    public Object visitSubscriptVname(SubscriptVname ast, Object obj) {
+    public Object visitSubscriptVarName(SubscriptVarName ast, Object obj) {
         return(createBinary("Subscript Vname", ast.V, ast.E));
     }
     
     public Object visitProgram(Program ast, Object obj) {
-        return(createBinary("Program", ast.P, ast.C));
+        //return(createUnary("Program", ast.C));
+        return null;
     }
     // </editor-fold>
 
@@ -532,42 +495,65 @@ public class TreeVisitor implements Visitor {
         
         return(t);             
     }
-    
-    /**
-     * Creates a quinternary tree node.
-     * @param caption The tree's caption (text to be shown when the tree is drawn).
-     * @param child1 The first children node.
-     * @param child2 The second children node.
-     * @param child3 The third children node.
-     * @param child4 The fourth children node.
-     * @param child5 The fifth children node
-     * @return The tree node.
-     */
-    public DefaultMutableTreeNode createQuinternary(String caption, AST child1, AST child2, AST child3, AST child4, AST child5) {
-        DefaultMutableTreeNode t = new DefaultMutableTreeNode(caption);
-        t.add((DefaultMutableTreeNode)child1.visit(this, null));
-        t.add((DefaultMutableTreeNode)child2.visit(this, null));
-        t.add((DefaultMutableTreeNode)child3.visit(this, null));
-        t.add((DefaultMutableTreeNode)child4.visit(this, null));
-        t.add((DefaultMutableTreeNode)child5.visit(this, null));
-        
-        return(t);             
-    }    
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
-    // Array Aggregates
-    public Object visitPackageDeclaration(PackageDeclaration ast, Object obj){
-        return(createBinary("Package Declaration", ast.I, ast.D));
+    @Override
+    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object obj){
-        return(createUnary("Long Identifier", ast.I));
+
+    @Override
+    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    public Object visitDollarLongIdentifier(DollarLongIdentifier ast, Object o){
-        return(createBinary("Long Identifier", ast.P, ast.I));
+
+    @Override
+    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    // </editor-fold>
+
+    @Override
+    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+	
+	@Override
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+	@Override
+    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSingleVname(SingleVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitCompoundVname(CompoundVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

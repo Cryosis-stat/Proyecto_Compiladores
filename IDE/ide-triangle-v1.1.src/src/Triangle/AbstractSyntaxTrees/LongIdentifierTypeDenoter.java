@@ -11,19 +11,19 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  *
  * @author Carlos
  */
-public class PackageDeclaration extends Declaration{
-    public PackageDeclaration (Identifier iAST, Declaration dAST,
-  		   SourcePosition thePosition) {
+public class LongIdentifierTypeDenoter extends TypeDenoter {
+    public LongIdentifierTypeDenoter (LongIdentifier iAST, SourcePosition thePosition) {
     super (thePosition);
     I = iAST;
-    D = dAST;
   }
 
   public Object visit (Visitor v, Object o) {
-    return v.visitPackageDeclaration(this, o);
+    return v.visitLongIdentifierTypeDenoter(this, o);
   }
 
-  public Identifier I;
-  public Declaration D;
+  public boolean equals (Object obj) {
+    return false; // should not happen
+  }
 
+  public LongIdentifier I;
 }

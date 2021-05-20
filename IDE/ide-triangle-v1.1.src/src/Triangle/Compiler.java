@@ -21,7 +21,7 @@ import Triangle.SyntacticAnalyzer.Parser;
 import Triangle.SyntacticAnalyzer.Scanner;
 import Triangle.SyntacticAnalyzer.SourceFile;
 import Triangle.TreeDrawer.Drawer;
-
+import ArchivosSalida.Writer;
 /**
  * The main driver class for the Triangle compiler.
  *
@@ -100,6 +100,7 @@ public class Compiler {
 	boolean successful = (reporter.numErrors == 0);
         if (successful) {
             encoder.saveObjectProgram(objectName);
+            
             System.out.println("Compilation was successful.");
         } else {
             System.out.println("Compilation was unsuccessful.");

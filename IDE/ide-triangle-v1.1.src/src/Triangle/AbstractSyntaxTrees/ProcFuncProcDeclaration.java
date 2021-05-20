@@ -9,21 +9,22 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
 
 /**
  *
- * @author Carlos
+ * @author david
  */
-public class PackageDeclaration extends Declaration{
-    public PackageDeclaration (Identifier iAST, Declaration dAST,
-  		   SourcePosition thePosition) {
+public class ProcFuncProcDeclaration extends Declaration {
+    public ProcFuncProcDeclaration (Identifier iAST, FormalParameterSequence fpsAST,
+  		   Command cAST, SourcePosition thePosition) {
     super (thePosition);
     I = iAST;
-    D = dAST;
+    FPS = fpsAST;
+    C = cAST;
   }
 
   public Object visit (Visitor v, Object o) {
-    return v.visitPackageDeclaration(this, o);
+    return v.visitProcFuncProcDeclaration(this, o);
   }
 
   public Identifier I;
-  public Declaration D;
-
+  public FormalParameterSequence FPS;
+  public Command C;
 }

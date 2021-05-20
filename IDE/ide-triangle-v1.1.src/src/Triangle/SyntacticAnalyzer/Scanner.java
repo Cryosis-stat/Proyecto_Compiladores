@@ -14,6 +14,12 @@
 
 package Triangle.SyntacticAnalyzer;
 
+import ArchivosSalida.EscrituraFicheroHTML;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public final class Scanner {
 
@@ -21,8 +27,10 @@ public final class Scanner {
   private boolean debug;
 
   private char currentChar;
-  private StringBuffer currentSpelling;
+  private StringBuffer currentSpelling; //el que agrega todos los caracteres
   private boolean currentlyScanningToken;
+    //Para la creacion del HTML
+  public EscrituraFicheroHTML ficheroHTML;
 
   private boolean isLetter(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
@@ -45,6 +53,15 @@ public final class Scanner {
 ///////////////////////////////////////////////////////////////////////////////
 
   public Scanner(SourceFile source) {
+      
+      try {
+          //inicialización del archivo => source.sourceFile.getName() es el nombre del archivo
+          ficheroHTML = new EscrituraFicheroHTML(source.sourceFile.getName());
+      } catch (FileNotFoundException ex) {
+          Logger.getLogger(Scanner.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    ficheroHTML.inicializarArchivo();
+      
     sourceFile = source;
     currentChar = sourceFile.getSource();
     debug = false;
@@ -60,7 +77,7 @@ public final class Scanner {
   private void takeIt() {
     if (currentlyScanningToken)
       currentSpelling.append(currentChar);
-    currentChar = sourceFile.getSource();
+    currentChar = sourceFile.getSource();   
   }
 
   // scanSeparator skips a single separator.
@@ -69,22 +86,47 @@ public final class Scanner {
     switch (currentChar) {
     case '!':
       {
+        StringBuffer comentario = new StringBuffer();
+        comentario.append(currentChar);
+        
         takeIt();
-        while ((currentChar != SourceFile.EOL) && (currentChar != SourceFile.EOT))
-          takeIt();
+        while ((currentChar != SourceFile.EOL) && (currentChar != SourceFile.EOT)) {
+            comentario.append(currentChar);
+            takeIt();
+        }
         if (currentChar == SourceFile.EOL)
           takeIt();
+        //Aquí toma todo lo recolectado en el StringBuffer y lo pone entre etiquetas.
+        ficheroHTML.addEtiqueta("<font color='#00b300'>"+comentario.toString()+"</font><br>");
       }
       break;
 
-    case ' ': case '\n': case '\r': case '\t':
-      takeIt();
-      break;
+    case ' ':
+    {
+        ficheroHTML.addEtiqueta("&nbsp;&nbsp;");
+        takeIt();  
+        break;
+    }
+    
+    case '\t':
+    {
+        ficheroHTML.addEtiqueta("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        takeIt();  
+        break;
+    }
+    
+    case '\n': case '\r':
+     {
+        ficheroHTML.addEtiqueta("<br>\n");
+        takeIt();  
+        break;
+     }
+      
     }
   }
 
   private int scanToken() {
-
+ 
     switch (currentChar) {
 
     case 'a':  case 'b':  case 'c':  case 'd':  case 'e':
@@ -98,25 +140,25 @@ public final class Scanner {
     case 'K':  case 'L':  case 'M':  case 'N':  case 'O':
     case 'P':  case 'Q':  case 'R':  case 'S':  case 'T':
     case 'U':  case 'V':  case 'W':  case 'X':  case 'Y':
-    case 'Z':
-      takeIt();
+    case 'Z': 
+      takeIt();       
       while (isLetter(currentChar) || isDigit(currentChar))
         takeIt();
       return Token.IDENTIFIER;
-
+      
     case '0':  case '1':  case '2':  case '3':  case '4':
-    case '5':  case '6':  case '7':  case '8':  case '9':
+    case '5':  case '6':  case '7':  case '8':  case '9':     
       takeIt();
       while (isDigit(currentChar))
-        takeIt();
+        takeIt();       
       return Token.INTLITERAL;
-
+      
     case '+':  case '-':  case '*': case '/':  case '=':
     case '<':  case '>':  case '\\':  case '&':  case '@':
     case '%':  case '^':  case '?':
       takeIt();
       while (isOperator(currentChar))
-        takeIt();
+          takeIt();
       return Token.OPERATOR;
 
     case '\'':
@@ -130,19 +172,15 @@ public final class Scanner {
 
     case '.':
       takeIt();
-      if (currentChar == '.'){
-        takeIt();
-        return Token.RANGE;
-      } else
-        return Token.DOT;
+      return Token.DOT;
 
     case ':':
       takeIt();
       if (currentChar == '=') {
         takeIt();
         return Token.BECOMES;
-      } else
-        return Token.COLON;
+      } else 
+           return Token.COLON;
 
     case ';':
       takeIt();
@@ -179,21 +217,24 @@ public final class Scanner {
     case '}':
       takeIt();
       return Token.RCURLY;
-
+     
+    case '|':
+      takeIt();
+      return Token.PIPE;
+      
     case '$':
       takeIt();
       return Token.DOLLAR;
 
-    case '|':
-      takeIt();
-      return Token.BAR;
-
     case SourceFile.EOT:
-      return Token.EOT;
+     {
+       ficheroHTML.finalizarArchivo();
+       return Token.EOT;
+     }
 
     default:
-      takeIt();
-      return Token.ERROR;
+        takeIt();
+        return Token.ERROR;          
     }
   }
 
@@ -216,9 +257,26 @@ public final class Scanner {
     pos.start = sourceFile.getCurrentLine();
 
     kind = scanToken();
-
+    
     pos.finish = sourceFile.getCurrentLine();
     tok = new Token(kind, currentSpelling.toString(), pos);
+    
+    //System.out.println(tok.toString()); //aqui me devuelve el que es
+    switch (tok.kind) {
+        case 0: case 1: //estos son los Numeros y caracteres
+            ficheroHTML.addEtiqueta("<font color='#0000cd'>"+ tok.spelling +"</font>");
+            break;
+        case 4: case 5: case 6: case 7: case 8: case 9: case 10: //palabras reservadas
+        case 11: case 12: case 13: case 14: case 15: case 16: case 17:
+        case 18: case 19: case 20: case 21: case 22: case 23: case 24:
+        case 25: case 26: case 27: case 28: case 29: case 30: case 31:
+            ficheroHTML.addEtiqueta("<font style='padding-left:1em'><b>"+ tok.spelling +"</b>");
+            break;
+        default: //todo lo demas
+            ficheroHTML.addEtiqueta( tok.spelling );
+            break;
+    }
+    
     if (debug)
       System.out.println(tok);
     return tok;

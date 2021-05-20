@@ -36,23 +36,20 @@ import Triangle.AbstractSyntaxTrees.CallExpression;
 import Triangle.AbstractSyntaxTrees.CharTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CharacterExpression;
 import Triangle.AbstractSyntaxTrees.CharacterLiteral;
+import Triangle.AbstractSyntaxTrees.CompoundLongIdentifier;
+import Triangle.AbstractSyntaxTrees.CompoundVname;
 import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
 import Triangle.AbstractSyntaxTrees.Declaration;
-import Triangle.AbstractSyntaxTrees.DoCommand;
-import Triangle.AbstractSyntaxTrees.DollarLongIdentifier;
-import Triangle.AbstractSyntaxTrees.DollarVname;
-import Triangle.AbstractSyntaxTrees.DotVname;
-import Triangle.AbstractSyntaxTrees.ElseifCommand;
+import Triangle.AbstractSyntaxTrees.DotVarName;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyExpression;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
-import Triangle.AbstractSyntaxTrees.FProcFunc;
+import Triangle.AbstractSyntaxTrees.ForCommand;
 import Triangle.AbstractSyntaxTrees.ForDeclaration;
-import Triangle.AbstractSyntaxTrees.ForDoCommand;
 import Triangle.AbstractSyntaxTrees.ForUntilCommand;
 import Triangle.AbstractSyntaxTrees.ForWhileCommand;
 import Triangle.AbstractSyntaxTrees.FuncActualParameter;
@@ -60,61 +57,62 @@ import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
 import Triangle.AbstractSyntaxTrees.Identifier;
 import Triangle.AbstractSyntaxTrees.IfCommand;
-import Triangle.AbstractSyntaxTrees.IfElseCommand;
 import Triangle.AbstractSyntaxTrees.IfExpression;
 import Triangle.AbstractSyntaxTrees.IntTypeDenoter;
 import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
-import Triangle.AbstractSyntaxTrees.LongCommand;
-import Triangle.AbstractSyntaxTrees.LongExpression;
-import Triangle.AbstractSyntaxTrees.LongIdentifier;
-import Triangle.AbstractSyntaxTrees.LongTypeDenoter;
+import Triangle.AbstractSyntaxTrees.LongIdentifierTypeDenoter;
+import Triangle.AbstractSyntaxTrees.LoopDoUntilCommand;
+import Triangle.AbstractSyntaxTrees.LoopDoWhileCommand;
+import Triangle.AbstractSyntaxTrees.LoopUntilCommand;
+import Triangle.AbstractSyntaxTrees.LoopWhileCommand;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.Operator;
-import Triangle.AbstractSyntaxTrees.PProcFunc;
 import Triangle.AbstractSyntaxTrees.PackageDeclaration;
+import Triangle.AbstractSyntaxTrees.PrivateCompound_Declaration;
 import Triangle.AbstractSyntaxTrees.ProcActualParameter;
 import Triangle.AbstractSyntaxTrees.ProcDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
+import Triangle.AbstractSyntaxTrees.ProcFuncFuncDeclaration;
+import Triangle.AbstractSyntaxTrees.ProcFuncProcDeclaration;
 import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.AbstractSyntaxTrees.RecordExpression;
 import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
-import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
+import Triangle.AbstractSyntaxTrees.RecursiveCompound_Declaration;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
-import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
 import Triangle.AbstractSyntaxTrees.SimpleLongIdentifier;
-import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
+import Triangle.AbstractSyntaxTrees.SequentialProcFuncDeclaration;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SimpleVname;
+import Triangle.AbstractSyntaxTrees.SimpleVarName;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
-import Triangle.AbstractSyntaxTrees.SingleDeclaration;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
-import Triangle.AbstractSyntaxTrees.SubscriptVname;
+import Triangle.AbstractSyntaxTrees.SingleVname;
+import Triangle.AbstractSyntaxTrees.SubscriptVarName;
 import Triangle.AbstractSyntaxTrees.TypeDeclaration;
 import Triangle.AbstractSyntaxTrees.UnaryExpression;
 import Triangle.AbstractSyntaxTrees.UnaryOperatorDeclaration;
-import Triangle.AbstractSyntaxTrees.UntilCommand;
 import Triangle.AbstractSyntaxTrees.VarActualParameter;
 import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
+import Triangle.AbstractSyntaxTrees.VarInitDeclaration;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
+//import Triangle.AbstractSyntaxTrees.WhileCommand;
 
 public final class Encoder implements Visitor {
 
-
+/**
   // Commands
   public Object visitAssignCommand(AssignCommand ast, Object o) {
     Frame frame = (Frame) o;
@@ -123,7 +121,7 @@ public final class Encoder implements Visitor {
 		valSize.intValue());
     return null;
   }
-
+**/
   public Object visitCallCommand(CallCommand ast, Object o) {
     Frame frame = (Frame) o;
     Integer argsSize = (Integer) ast.APS.visit(this, frame);
@@ -150,22 +148,7 @@ public final class Encoder implements Visitor {
     patch(jumpAddr, nextInstrAddr);
     return null;
   }
-    public Object visitElseifCommand(ElseifCommand ast, Object o) {
-    Frame frame = (Frame) o;
-    int jumpifAddr, jumpAddr;
 
-    Integer valSize = (Integer) ast.E.visit(this, frame);
-    jumpifAddr = nextInstrAddr;
-    emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, 0);
-    ast.C1.visit(this, frame);
-    jumpAddr = nextInstrAddr;
-    emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    patch(jumpifAddr, nextInstrAddr);
-    patch(jumpAddr, nextInstrAddr);
-    return null;    
-    }
-    
-    
   public Object visitLetCommand(LetCommand ast, Object o) {
     Frame frame = (Frame) o;
     int extraSize = ((Integer) ast.D.visit(this, frame)).intValue();
@@ -174,12 +157,6 @@ public final class Encoder implements Visitor {
       emit(Machine.POPop, 0, 0, extraSize);
     return null;
   }
-  
-  public Object visitLongCommand(LongCommand ast, Object o){
-      ast.L.visit(this, null);
-      ast.APS.visit(this, null);
-      return null;
-  }
 
   public Object visitSequentialCommand(SequentialCommand ast, Object o) {
     ast.C1.visit(this, o);
@@ -187,7 +164,22 @@ public final class Encoder implements Visitor {
     return null;
   }
 
-  public Object visitWhileCommand(WhileCommand ast, Object o) {
+//  public Object visitWhileCommand(WhileCommand ast, Object o) {
+//    Frame frame = (Frame) o;
+//    int jumpAddr, loopAddr;
+//
+//    jumpAddr = nextInstrAddr;
+//    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+//    loopAddr = nextInstrAddr;
+//    ast.C.visit(this, frame);
+//    patch(jumpAddr, nextInstrAddr);
+//    ast.E.visit(this, frame);
+//    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
+//    return null;
+//  }
+
+  @Override
+  public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
     Frame frame = (Frame) o;
     int jumpAddr, loopAddr;
 
@@ -201,6 +193,17 @@ public final class Encoder implements Visitor {
     return null;
   }
 
+    public Object visitLoopUntilCommand(LoopUntilCommand ast, Object o) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Object visitLoopDoWhileCommand(LoopDoWhileCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Object visitLoopDoUntilCommand(LoopDoUntilCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
   // Expressions
   public Object visitArrayExpression(ArrayExpression ast, Object o) {
@@ -287,14 +290,14 @@ public final class Encoder implements Visitor {
     ast.O.visit(this, new Frame(frame.level, valSize.intValue()));
     return valSize;
   }
-
+/**
   public Object visitVnameExpression(VnameExpression ast, Object o) {
     Frame frame = (Frame) o;
     Integer valSize = (Integer) ast.type.visit(this, null);
     encodeFetch(ast.V, frame, valSize.intValue());
     return valSize;
   }
-
+**/
 
   // Declarations
   public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast,
@@ -375,14 +378,7 @@ public final class Encoder implements Visitor {
     extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
     return new Integer(extraSize1 + extraSize2);
   }
-    public Object visitSingleDeclaration(SingleDeclaration ast, Object o) {
-        Frame frame = (Frame) o;
-        int extraSize1, extraSize2;
-        
-        extraSize1 = ((Integer) ast.S.visit(this, frame)).intValue();
-        Frame frame1 = new Frame (frame, extraSize1);
-        return new Integer(extraSize1);
-    }
+
   public Object visitTypeDeclaration(TypeDeclaration ast, Object o) {
     // just to ensure the type's representation is decided
     ast.T.visit(this, null);
@@ -539,8 +535,9 @@ public final class Encoder implements Visitor {
     return new Integer(Machine.closureSize);
   }
 
+  
   public Object visitVarActualParameter(VarActualParameter ast, Object o) {
-    encodeFetchAddress(ast.V, (Frame) o);
+    //encodeFetchAddress(ast.V, (Frame) o);
     return new Integer(Machine.addressSize);
   }
 
@@ -717,7 +714,7 @@ public final class Encoder implements Visitor {
 
 
   // Value-or-variable names
-  public Object visitDotVname(DotVname ast, Object o) {
+  public Object visitDotVarName(DotVarName ast, Object o) {
     Frame frame = (Frame) o;
     RuntimeEntity baseObject = (RuntimeEntity) ast.V.visit(this, frame);
     ast.offset = ast.V.offset + ((Field) ast.I.decl.entity).fieldOffset;
@@ -726,13 +723,13 @@ public final class Encoder implements Visitor {
     return baseObject;
   }
 
-  public Object visitSimpleVname(SimpleVname ast, Object o) {
+  public Object visitSimpleVarName(SimpleVarName ast, Object o) {
     ast.offset = 0;
     ast.indexed = false;
     return ast.I.decl.entity;
   }
 
-  public Object visitSubscriptVname(SubscriptVname ast, Object o) {
+  public Object visitSubscriptVarName(SubscriptVarName ast, Object o) {
     Frame frame = (Frame) o;
     RuntimeEntity baseObject;
     int elemSize, indexSize;
@@ -764,9 +761,9 @@ public final class Encoder implements Visitor {
 
 
   // Programs
-  public Object visitProgram(Program ast, Object o) {
-    return ast.C.visit(this, o);
-  }
+ // public Object visitProgram(Program ast, Object o) {
+ //   return ast.C.visit(this, o);
+ // }
 
   public Encoder (ErrorReporter reporter) {
     this.reporter = reporter;
@@ -948,26 +945,25 @@ public final class Encoder implements Visitor {
     }
     if (baseObject instanceof KnownAddress) {
       ObjectAddress address = ((KnownAddress) baseObject).address;
-      if (V.indexed) {
-        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
-             address.displacement + V.offset);
-        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-        emit(Machine.STOREIop, valSize, 0, 0);
-      } else {
-        emit(Machine.STOREop, valSize, displayRegister(frame.level,
-	     address.level), address.displacement + V.offset);
-      }
-    } else if (baseObject instanceof UnknownAddress) {
-      ObjectAddress address = ((UnknownAddress) baseObject).address;
-      emit(Machine.LOADop, Machine.addressSize, displayRegister(frame.level,
-           address.level), address.displacement);
-      if (V.indexed)
-        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-      if (V.offset != 0) {
-        emit(Machine.LOADLop, 0, 0, V.offset);
-        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-      }
-      emit(Machine.STOREIop, valSize, 0, 0);
+  //    if (V.indexed) {
+  //      emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+  //           address.displacement + V.offset);
+  //      emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+  //      emit(Machine.STOREIop, valSize, 0, 0);
+  //    } else {
+  //      emit(Machine.STOREop, valSize, displayRegister(frame.level,	     address.level), address.displacement + V.offset);
+  //    }
+  //  } else if (baseObject instanceof UnknownAddress) {
+  //    ObjectAddress address = ((UnknownAddress) baseObject).address;
+  //    emit(Machine.LOADop, Machine.addressSize, displayRegister(frame.level,
+  //         address.level), address.displacement);
+  //    if (V.indexed)
+  //      emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+  //    if (V.offset != 0) {
+  //      emit(Machine.LOADLop, 0, 0, V.offset);
+  //      emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+  //   }
+  //    emit(Machine.STOREIop, valSize, 0, 0);
     }
   }
 
@@ -978,6 +974,8 @@ public final class Encoder implements Visitor {
   // the constant or variable is fetched at run-time.
   // valSize is the size of the constant or variable's value.
 
+  
+  
   private void encodeFetch(Vname V, Frame frame, int valSize) {
 
     RuntimeEntity baseObject = (RuntimeEntity) V.visit(this, frame);
@@ -995,34 +993,33 @@ public final class Encoder implements Visitor {
       ObjectAddress address = (baseObject instanceof UnknownValue) ?
                               ((UnknownValue) baseObject).address :
                               ((KnownAddress) baseObject).address;
-      if (V.indexed) {
-        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
-             address.displacement + V.offset);
-        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-        emit(Machine.LOADIop, valSize, 0, 0);
-      } else
-        emit(Machine.LOADop, valSize, displayRegister(frame.level,
-	     address.level), address.displacement + V.offset);
+     // if (V.indexed) {
+     //   emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+     //        address.displacement + V.offset);
+     //   emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+     //   emit(Machine.LOADIop, valSize, 0, 0);
+     // } else
+     //   emit(Machine.LOADop, valSize, displayRegister(frame.level,
+     //     address.level), address.displacement + V.offset);
     } else if (baseObject instanceof UnknownAddress) {
       ObjectAddress address = ((UnknownAddress) baseObject).address;
       emit(Machine.LOADop, Machine.addressSize, displayRegister(frame.level,
            address.level), address.displacement);
-      if (V.indexed)
-        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-      if (V.offset != 0) {
-        emit(Machine.LOADLop, 0, 0, V.offset);
-        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-      }
+      //if (V.indexed)
+       // emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+      //if (V.offset != 0) {
+       // emit(Machine.LOADLop, 0, 0, V.offset);
+        //emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+      //}
       emit(Machine.LOADIop, valSize, 0, 0);
     }
   }
-
   // Generates code to compute and push the address of a named variable.
   // vname is the program phrase that names this variable.
   // currentLevel is the routine level where the vname occurs.
   // frameSize is the anticipated size of the local stack frame when
   // the variable is addressed at run-time.
-
+/**
   private void encodeFetchAddress (Vname V, Frame frame) {
 
     RuntimeEntity baseObject = (RuntimeEntity) V.visit(this, frame);
@@ -1045,100 +1042,104 @@ public final class Encoder implements Visitor {
       }
     }
   }
+**/
+  @Override
+  public Object visitForDeclaration(ForDeclaration ast, Object o) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public Object visitForCommand(ForCommand ast, Object o) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 
     @Override
-    public Object visitUntilCommand(UntilCommand ast, Object o) {
+    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitDoCommand(DoCommand ast, Object o) {
+    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitForDeclaration(ForDeclaration ast, Object o) {
+    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-
-
-    public Object visitForDoCommand(ForDoCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSequentialProcFunc(SequentialProcFunc ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public Object visitSingleDeclaration(Declaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitFProcFunc(FProcFunc ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitPProcFunc(PProcFunc ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitIfElseCommand(IfElseCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSimplePackageIdentifier(SimplePackageIdentifier ast, Object o){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitPackageDeclaration(PackageDeclaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitDollarVname(DollarVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitLongTypeDenoter(LongTypeDenoter ast, Object o) {
+	@Override
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+	@Override
+    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitDollarLongIdentifier(DollarLongIdentifier ast, Object o) {
+    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitLongExpression(LongExpression ast, Object o) {
+    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSingleVname(SingleVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitCompoundVname(CompoundVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitAssignCommand(AssignCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitVnameExpression(VnameExpression ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    //@Override
+    //public Object visitVarActualParameter(VarActualParameter ast, Object o) {
+    //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    //}
+
+    @Override
+    public Object visitProgram(Program ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

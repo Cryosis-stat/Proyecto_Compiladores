@@ -1,30 +1,22 @@
 /*
- * @(#)WhileCommand.java                        2.1 2003/10/07
- *
- * Copyright (C) 1999, 2003 D.A. Watt and D.F. Brown
- * Dept. of Computing Science, University of Glasgow, Glasgow G12 8QQ Scotland
- * and School of Computer and Math Sciences, The Robert Gordon University,
- * St. Andrew Street, Aberdeen AB25 1HG, Scotland.
- * All rights reserved.
- *
- * This software is provided free for educational use only. It may
- * not be used for commercial purposes without the prior written permission
- * of the authors.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-
 package Triangle.AbstractSyntaxTrees;
 
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
+/**
+ *
+ * @author WallElop
+ */
 public class ForWhileCommand extends Command {
-
-  public ForWhileCommand (Identifier iAST, Expression eAST, Expression eAST1,  Expression eAST2, Command cAST, SourcePosition thePosition) {
+  public ForWhileCommand (ForDeclaration fAST, Expression e1AST, Expression e2AST, Command cAST, SourcePosition thePosition) {
     super (thePosition);
-    E = eAST;
-    E1 = eAST1;
-    E2 = eAST2;
-    I = iAST;
-    
+    F = fAST;
+    E1 = e1AST;
+    E2 = e2AST;
     C = cAST;
   }
 
@@ -32,8 +24,8 @@ public class ForWhileCommand extends Command {
     return v.visitForWhileCommand(this, o);
   }
 
-  public Expression E,E1,E2;
+  public ForDeclaration F;
+  public Expression E1;
+  public Expression E2;
   public Command C;
-   public Identifier I;
-
 }

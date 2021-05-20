@@ -37,14 +37,12 @@ import Core.ExampleFileFilter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import Core.Visitors.TreeVisitor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * The Main class. Contains the main form.
  *
- * @author Luis Leopoldo Pï¿½rez <luiperpe@ns.isi.ulatina.ac.cr>
+ * @author Luis Leopoldo Pérez <luiperpe@ns.isi.ulatina.ac.cr>
  */
 public class Main extends javax.swing.JFrame {
 
@@ -616,22 +614,18 @@ public class Main extends javax.swing.JFrame {
             new File(desktopPane.getSelectedFrame().getTitle().replace(".tri", ".tam")).delete();
             
             output.setDelegate(delegateConsole);            
-            try {
-                if (compiler.compileProgram(desktopPane.getSelectedFrame().getTitle())) {
-                    output.setDelegate(delegateTAMCode);
-                    //disassembler.Disassemble(desktopPane.getSelectedFrame().getTitle().replace(".tri", ".tam"));
-                    ((FileFrame)desktopPane.getSelectedFrame()).setTree((DefaultMutableTreeNode)treeVisitor.visitProgram(compiler.getAST(), null));
-                    //((FileFrame)desktopPane.getSelectedFrame()).setTable(tableVisitor.getTable(compiler.getAST()));
-                    
-                    runMenuItem.setEnabled(false);
-                    buttonRun.setEnabled(false);
-                } else {
-                    ((FileFrame)desktopPane.getSelectedFrame()).highlightError(compiler.getErrorPosition());
-                    runMenuItem.setEnabled(false);
-                    buttonRun.setEnabled(false);
-                }
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            if (compiler.compileProgram(desktopPane.getSelectedFrame().getTitle())) {           
+                output.setDelegate(delegateTAMCode);
+//                disassembler.Disassemble(desktopPane.getSelectedFrame().getTitle().replace(".tri", ".tam"));
+                ((FileFrame)desktopPane.getSelectedFrame()).setTree((DefaultMutableTreeNode)treeVisitor.visitProgram(compiler.getAST(), null));
+//                ((FileFrame)desktopPane.getSelectedFrame()).setTable(tableVisitor.getTable(compiler.getAST()));
+                
+                runMenuItem.setEnabled(false);
+                buttonRun.setEnabled(true);
+            } else {
+                ((FileFrame)desktopPane.getSelectedFrame()).highlightError(compiler.getErrorPosition());
+                runMenuItem.setEnabled(false);
+                buttonRun.setEnabled(false);
             }
         }
     }//GEN-LAST:event_compileMenuItemActionPerformed

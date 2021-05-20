@@ -9,20 +9,19 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
 
 /**
  *
- * @author irsac
+ * @author Carlos
  */
-public class LongCommand extends Command {
-    public LongCommand (LongIdentifier lAST, ActualParameterSequence apsAST,
-               SourcePosition thePosition) {
+public class LoopDoUntilCommand extends Command {
+   public LoopDoUntilCommand (Command cAST, Expression eAST, SourcePosition thePosition) {
     super (thePosition);
-    L = lAST;
-    APS = apsAST;
+    E = eAST;
+    C = cAST;
   }
 
   public Object visit(Visitor v, Object o) {
-    return v.visitLongCommand(this, o);
+    return v.visitLoopDoUntilCommand (this, o);
   }
 
-  public LongIdentifier L;
-  public ActualParameterSequence APS;
+  public Expression E;
+  public Command C;
 }

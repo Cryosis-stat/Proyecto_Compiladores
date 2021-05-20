@@ -11,9 +11,23 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  *
  * @author Carlos
  */
-public abstract class LongIdentifier extends AST {
+public class CompoundProgram extends Program{
 
-    public LongIdentifier(SourcePosition thePosition) {
+    public CompoundProgram(Declaration dAST, Command cAST, SourcePosition thePosition) {
         super(thePosition);
+        this.D = dAST;
+        this.C = cAST;
     }
+
+    public Declaration getD() {
+        return D;
+    }
+
+    public Command getC() {
+        return C;
+    }
+    
+   
+    Declaration D;
+    Command C;
 }

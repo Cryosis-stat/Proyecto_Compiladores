@@ -9,18 +9,24 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
 
 /**
  *
- * @author irsac
+ * @author Carlos
  */
-public class DollarLongIdentifier extends LongIdentifier{
-    public DollarLongIdentifier (Identifier pAST, Identifier iAST, SourcePosition thePosition){
+public class SingleVname extends Vname{
+    VarName V;
+
+    public SingleVname(VarName pV,SourcePosition thePosition) {
         super(thePosition);
-        P = pAST;
-        I = iAST;
+        V=pV;
     }
-    
+
+    @Override
     public Object visit(Visitor v, Object o) {
-        return v.visitDollarLongIdentifier(this, o);
+        return v.visitSingleVname(this,o);
+    }
+
+    public VarName getV() {
+        return V;
     }
     
-    public Identifier P, I;
+    
 }

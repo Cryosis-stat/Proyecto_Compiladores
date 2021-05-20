@@ -11,23 +11,28 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  *
  * @author Carlos
  */
-public class SimpleLongIdentifier extends LongIdentifier{
+public class CompoundVname extends Vname{
 
-    Identifier identifier;
-    
-    public SimpleLongIdentifier(Identifier pIdentifier,SourcePosition thePosition) {
+    public CompoundVname(Identifier pI, VarName pV,SourcePosition thePosition) {
         super(thePosition);
-        identifier=pIdentifier;
+        I=pI;
+        V=pV;
     }
 
     @Override
     public Object visit(Visitor v, Object o) {
-        return v.visitSimpleLongIdentifier(this,o);
-        
+        return v.visitCompoundVname(this,o);
     }
 
-    public Identifier getIdentifier() {
-        return identifier;
+    public Identifier getI() {
+        return I;
+    }
+
+    public VarName getV() {
+        return V;
     }
     
+    
+    Identifier I;
+    VarName V;
 }

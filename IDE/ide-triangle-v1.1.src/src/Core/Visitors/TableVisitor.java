@@ -17,22 +17,20 @@ import Triangle.AbstractSyntaxTrees.CallExpression;
 import Triangle.AbstractSyntaxTrees.CharTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CharacterExpression;
 import Triangle.AbstractSyntaxTrees.CharacterLiteral;
+import Triangle.AbstractSyntaxTrees.CompoundLongIdentifier;
+import Triangle.AbstractSyntaxTrees.CompoundVname;
 import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
-import Triangle.AbstractSyntaxTrees.DoCommand;
-import Triangle.AbstractSyntaxTrees.DollarLongIdentifier;
-import Triangle.AbstractSyntaxTrees.DollarVname;
-import Triangle.AbstractSyntaxTrees.DotVname;
-import Triangle.AbstractSyntaxTrees.ElseifCommand;
+import Triangle.AbstractSyntaxTrees.DotVarName;
+import Triangle.AbstractSyntaxTrees.Declaration;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyExpression;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
-import Triangle.AbstractSyntaxTrees.FProcFunc;
+import Triangle.AbstractSyntaxTrees.ForCommand;
 import Triangle.AbstractSyntaxTrees.ForDeclaration;
-import Triangle.AbstractSyntaxTrees.ForDoCommand;
 import Triangle.AbstractSyntaxTrees.ForUntilCommand;
 import Triangle.AbstractSyntaxTrees.ForWhileCommand;
 import Triangle.AbstractSyntaxTrees.FuncActualParameter;
@@ -40,56 +38,57 @@ import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
 import Triangle.AbstractSyntaxTrees.Identifier;
 import Triangle.AbstractSyntaxTrees.IfCommand;
-import Triangle.AbstractSyntaxTrees.IfElseCommand;
 import Triangle.AbstractSyntaxTrees.IfExpression;
 import Triangle.AbstractSyntaxTrees.IntTypeDenoter;
 import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
-import Triangle.AbstractSyntaxTrees.LongCommand;
-import Triangle.AbstractSyntaxTrees.LongExpression;
-import Triangle.AbstractSyntaxTrees.LongIdentifier;
-import Triangle.AbstractSyntaxTrees.LongTypeDenoter;
+import Triangle.AbstractSyntaxTrees.LongIdentifierTypeDenoter;
+import Triangle.AbstractSyntaxTrees.LoopDoUntilCommand;
+import Triangle.AbstractSyntaxTrees.LoopDoWhileCommand;
+import Triangle.AbstractSyntaxTrees.LoopUntilCommand;
+import Triangle.AbstractSyntaxTrees.LoopWhileCommand;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.Operator;
-import Triangle.AbstractSyntaxTrees.PProcFunc;
 import Triangle.AbstractSyntaxTrees.PackageDeclaration;
+import Triangle.AbstractSyntaxTrees.PrivateCompound_Declaration;
 import Triangle.AbstractSyntaxTrees.ProcActualParameter;
 import Triangle.AbstractSyntaxTrees.ProcDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
+import Triangle.AbstractSyntaxTrees.ProcFuncFuncDeclaration;
+import Triangle.AbstractSyntaxTrees.ProcFuncProcDeclaration;
 import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.AbstractSyntaxTrees.RecordExpression;
 import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
-import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
+import Triangle.AbstractSyntaxTrees.RecursiveCompound_Declaration;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
-import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
 import Triangle.AbstractSyntaxTrees.SimpleLongIdentifier;
-import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
+import Triangle.AbstractSyntaxTrees.SequentialProcFuncDeclaration;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SimpleVname;
+import Triangle.AbstractSyntaxTrees.SimpleVarName;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
-import Triangle.AbstractSyntaxTrees.SingleDeclaration;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
-import Triangle.AbstractSyntaxTrees.SubscriptVname;
+import Triangle.AbstractSyntaxTrees.SingleVname;
+import Triangle.AbstractSyntaxTrees.SubscriptVarName;
 import Triangle.AbstractSyntaxTrees.TypeDeclaration;
 import Triangle.AbstractSyntaxTrees.UnaryExpression;
 import Triangle.AbstractSyntaxTrees.UnaryOperatorDeclaration;
-import Triangle.AbstractSyntaxTrees.UntilCommand;
 import Triangle.AbstractSyntaxTrees.VarActualParameter;
 import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
+import Triangle.AbstractSyntaxTrees.VarInitDeclaration;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
+//import Triangle.AbstractSyntaxTrees.WhileCommand;
 import Triangle.CodeGenerator.Field;
 import Triangle.CodeGenerator.KnownAddress;
 import Triangle.CodeGenerator.KnownRoutine;
@@ -113,17 +112,9 @@ public class TableVisitor implements Visitor {
     /** Creates a new instance of TableDetails */
     public TableVisitor() {        
     }
-    
 
   // <editor-fold defaultstate="collapsed" desc=" Commands ">
   // Commands
-    
-  public Object visitSimplePackageIdentifier(SimplePackageIdentifier ast, Object o){
-      ast.I.visit(this, null);
-      
-      return(null);
-  }  
-    
   public Object visitAssignCommand(AssignCommand ast, Object o) { 
       ast.V.visit(this, null);
       ast.E.visit(this, null);
@@ -157,13 +148,6 @@ public class TableVisitor implements Visitor {
       return(null);
   }
   
-  public Object visitLongCommand(LongCommand ast, Object o){
-      ast.L.visit(this, null);
-      ast.APS.visit(this, null);
-      
-      return(null);
-  }
-  
   public Object visitSequentialCommand(SequentialCommand ast, Object o) { 
       ast.C1.visit(this, null);
       ast.C2.visit(this, null);
@@ -171,48 +155,77 @@ public class TableVisitor implements Visitor {
       return(null);
   }
   
-  public Object visitWhileCommand(WhileCommand ast, Object o) { 
+//  public Object visitWhileCommand(WhileCommand ast, Object o) { 
+//      ast.E.visit(this, null);
+//      ast.C.visit(this, null);
+//      
+//      return(null);
+//  }
+    
+  // New Commands
+    @Override
+    public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
+        ast.E.visit(this, null);
+        ast.C.visit(this, null);
+
+        return(null);
+    }
+
+    public Object visitLoopUntilCommand(LoopUntilCommand ast, Object o) {
+        ast.E.visit(this, null);
+        ast.C.visit(this, null);
+
+        return(null);
+    }
+
+    public Object visitLoopDoWhileCommand(LoopDoWhileCommand ast, Object o) {
+        ast.C.visit(this, null);
+        ast.E.visit(this, null);
+
+        return(null);
+    }
+
+    public Object visitLoopDoUntilCommand(LoopDoUntilCommand ast, Object o) {
+        ast.C.visit(this, null);
+        ast.E.visit(this, null);
+
+        return(null);
+    }
+    
+    public Object visitForCommand(ForCommand ast, Object o) {
+      ast.F.visit(this, null);
       ast.E.visit(this, null);
       ast.C.visit(this, null);
       
       return(null);
-  }
-    
-    @Override
-    public Object visitUntilCommand(UntilCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    @Override
-    public Object visitDoCommand(DoCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    @Override
-    public Object visitElseifCommand(ElseifCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Object visitForDoCommand(ForDoCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      ast.F.visit(this, null);
+      ast.E1.visit(this, null);
+      ast.E2.visit(this, null);
+      ast.C.visit(this, null);
+      
+      return(null);
     }
 
-    @Override
     public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      ast.F.visit(this, null);
+      ast.E1.visit(this, null);
+      ast.E2.visit(this, null);
+      ast.C.visit(this, null);
+      
+      return(null);
     }
-
-    @Override
-    public Object visitIfElseCommand(IfElseCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  
   // </editor-fold>
+    
+    public Object visitForDeclaration(ForDeclaration ast, Object o) {
+      ast.I.visit(this, null);
+      ast.E.visit(this, null);
+
+      return(null);
+    }
 
   // <editor-fold defaultstate="collapsed" desc=" Expressions ">
   // Expressions
@@ -266,13 +279,6 @@ public class TableVisitor implements Visitor {
       return(null);
   }
   
-  public Object visitLongExpression(LongExpression ast, Object o){
-      ast.L.visit(this, null);
-      ast.APS.visit(this, null);
-      
-      return(null);
-  }
-  
   public Object visitRecordExpression(RecordExpression ast, Object o) {   
       ast.RA.visit(this, null);
       
@@ -295,12 +301,6 @@ public class TableVisitor implements Visitor {
   
   // <editor-fold defaultstate="collapsed" desc=" Declarations ">
   // Declarations
-  public Object visitSingleDeclaration(SingleDeclaration ast, Object o){
-      ast.S.visit(this, null);
-      return(null);
-  }
-  
-  
   public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast, Object o) {        
       return(null);
   }
@@ -393,61 +393,7 @@ public class TableVisitor implements Visitor {
       ast.T.visit(this, null);
       return(null);
   }
-   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o){
-      try {
-      addIdentifier(ast.I.spelling, 
-              "KnownAddress", 
-              (ast.entity!=null?ast.entity.size:0), 
-              ((KnownAddress)ast.entity).address.level, 
-              ((KnownAddress)ast.entity).address.displacement, 
-              -1);
-      } catch (NullPointerException e) { }
-      ast.P.visit(this, null);
-      return(null);
-   }
   
-  public Object visitPProcFunc(PProcFunc ast, Object o){
-    try {
-      addIdentifier(ast.I.spelling, "KnownRoutine", 
-              (ast.entity!=null?ast.entity.size:0), 
-              ((KnownRoutine)ast.entity).address.level, 
-              ((KnownRoutine)ast.entity).address.displacement, 
-              -1);
-      } catch (NullPointerException e) { }
-      
-      ast.FPS.visit(this, null);
-      ast.C.visit(this, null);
-            
-      return(null);     
-  }
-  
-  public Object visitFProcFunc(FProcFunc ast, Object o){
-    try {
-      addIdentifier(ast.I.spelling, 
-              "KnownRoutine", 
-              (ast.entity!=null?ast.entity.size:0), 
-              ((KnownRoutine)ast.entity).address.level, 
-              ((KnownRoutine)ast.entity).address.displacement, 
-              -1);      
-      } catch (NullPointerException e) { }
-      ast.T.visit(this, null);            
-      ast.FPS.visit(this, null);
-      ast.E.visit(this, null);
-            
-      return(null);
-  }
-  
-  public Object visitSequentialProcFunc(SequentialProcFunc ast, Object o){
-      ast.PF1.visit(this, null);
-      ast.PF2.visit(this, null);
-      
-      return(null);
-  }
- 
-    @Override
-    public Object visitForDeclaration(ForDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }  
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
@@ -642,11 +588,6 @@ public class TableVisitor implements Visitor {
       ast.FT.visit(this, null);
       return(null);
   }
-  
-  public Object visitLongTypeDenoter (LongTypeDenoter ast, Object o) {
-      ast.L.visit(this, null);
-      return(null);
-  }
 
   public Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object o) { 
       try {
@@ -701,27 +642,20 @@ public class TableVisitor implements Visitor {
 
   // <editor-fold defaultstate="collapsed" desc=" Values or Variable Names ">
   // Value-or-variable names
-  public Object visitDollarVname(DollarVname ast, Object o){
-      ast.I.visit(this, null);
-      ast.V.visit(this, null);
-      
-      return(null);
-  }
-  
-  public Object visitDotVname(DotVname ast, Object o) { 
+  public Object visitDotVarName(DotVarName ast, Object o) { 
       ast.I.visit(this, null);
       ast.V.visit(this, null);
   
       return(null);
   }
   
-  public Object visitSimpleVname(SimpleVname ast, Object o) { 
+  public Object visitSimpleVarName(SimpleVarName ast, Object o) { 
       ast.I.visit(this, null);
   
       return(null);
   }
   
-  public Object visitSubscriptVname(SubscriptVname ast, Object o) { 
+  public Object visitSubscriptVarName(SubscriptVarName ast, Object o) { 
       ast.E.visit(this, null);
       ast.V.visit(this, null);
   
@@ -732,8 +666,7 @@ public class TableVisitor implements Visitor {
   // <editor-fold defaultstate="collapsed" desc=" Table Creation Methods ">
   // Programs
   public Object visitProgram(Program ast, Object o) { 
-      ast.P.visit(this, null);
-      ast.C.visit(this, null);
+     // ast.C.visit(this, null);
       
       return(null);
   }
@@ -774,30 +707,64 @@ public class TableVisitor implements Visitor {
   // <editor-fold defaultstate="collapsed" desc=" Attributes ">
     private DefaultTableModel model;
     // </editor-fold>
-    
-  // <editor-fold defaultstate="collapsed" desc=" Program ">
-  // Program
-    
-  public Object visitPackageDeclaration(PackageDeclaration ast, Object o){
-      ast.I.visit(this, null);
-      ast.D.visit(this, null);
-      
-      return(null);
-  }
-  
-  public Object visitSimpleLongIdentifier (SimpleLongIdentifier ast, Object o){
-      ast.I.visit(this, null);
-      
-      return(null);
-  }
-  
-  public Object visitDollarLongIdentifier (DollarLongIdentifier ast, Object o) {
-      ast.P.visit(this, null);
-      ast.I.visit(this, null);
-      
-      return(null);
-  }
-  
-  // </editor-fold>
 
+    @Override
+    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+	
+	@Override
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	
+	@Override
+    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSingleVname(SingleVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitCompoundVname(CompoundVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -5,6 +5,7 @@
 
 package Triangle;
 
+import ArchivosSalida.Writer;
 import Triangle.CodeGenerator.Frame;
 import java.awt.event.ActionListener;
 import Triangle.SyntacticAnalyzer.SourceFile;
@@ -13,13 +14,6 @@ import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.SyntacticAnalyzer.Parser;
 import Triangle.ContextualAnalyzer.Checker;
 import Triangle.CodeGenerator.Encoder;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 
@@ -28,7 +22,7 @@ import java.util.List;
  * to get to the ASTs in order to draw them in the IDE without modifying the
  * original Triangle code.
  *
- * @author Luis Leopoldo Pï¿½rez <luiperpe@ns.isi.ulatina.ac.cr>
+ * @author Luis Leopoldo Pérez <luiperpe@ns.isi.ulatina.ac.cr>
  */
 public class IDECompiler {
 
@@ -37,9 +31,6 @@ public class IDECompiler {
      * Creates a new instance of IDECompiler.
      *
      */
-    
-
-    
     public IDECompiler() {
     }
     
@@ -49,63 +40,42 @@ public class IDECompiler {
      * @param sourceName Path to the source file.
      * @return True if compilation was succesful.
      */
-    public boolean compileProgram(String sourceName) throws IOException, Exception {
+    public boolean compileProgram(String sourceName) {
         System.out.println("********** " +
                            "Triangle Compiler (IDE-Triangle 1.0)" +
                            " **********");
         
-        
-        
-        
         System.out.println("Syntactic Analysis ...");
-
-        /*sourceName*/
-
         SourceFile source = new SourceFile(sourceName);
-                       
-
-        
         Scanner scanner = new Scanner(source);
         report = new IDEReporter();
         Parser parser = new Parser(scanner, report);
         boolean success = false;
         
         rootAST = parser.parseProgram();
-        
-        
         if (report.numErrors == 0) {
-            /*System.out.println("Contextual Analysis ...");
-            Checker checker = new Checker(report);
-            checker.check(rootAST);*/
+//            System.out.println("Contextual Analysis ...");
+//            Checker checker = new Checker(report);
+//            checker.check(rootAST);
             if (report.numErrors == 0) {
-                /*System.out.println("Code Generation ...");
-                Encoder encoder = new Encoder(report);
-                encoder.encodeRun(rootAST, false);*/
+//                System.out.println("Code Generation ...");
+//                Encoder encoder = new Encoder(report);
+//                encoder.encodeRun(rootAST, false);
                 
                 if (report.numErrors == 0) {
-                    //encoder.saveObjectProgram(sourceName.replace(".tri", ".tam"));
-
+//                    encoder.saveObjectProgram(sourceName.replace(".tri", ".tam"));
                     success = true;
                 }
             }
         }
 
         if (success){
-           System.out.println("Generando  Html ...");
-
-            HTMLGenerator htmlGen = new HTMLGenerator();
-            htmlGen.ParseHtml(sourceName);
-            htmlGen.createFile();
-            
-            System.out.println("Generando XML ...");
-            XMLGenerator xml = new XMLGenerator();
-            xml.generateXML(sourceName, rootAST);            
-
+            Writer write = new Writer(scanner.ficheroHTML.getNombreArchivo());
+            write.write(rootAST);
             System.out.println("Compilation was successful.");
-
-        }
-
-        else
+            
+            System.out.println("Compilation was successful.");
+        }else
             System.out.println("Compilation was unsuccessful.");
         
         return(success);

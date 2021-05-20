@@ -10,7 +10,7 @@
  * This software is provided free for educational use only. It may
  * not be used for commercial purposes without the prior written permission
  * of the authors.
- */
+ *
 
 package Triangle.AbstractSyntaxTrees;
 
@@ -31,3 +31,4 @@ public class WhileCommand extends Command {
   public Expression E;
   public Command C;
 }
+*/
