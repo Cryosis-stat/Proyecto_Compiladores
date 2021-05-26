@@ -203,11 +203,70 @@ public final class Checker implements Visitor {
     public Object visitLoopDoUntilCommand(LoopDoUntilCommand ast, Object o) {
         TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
         if (! eType.equals(StdEnvironment.booleanType))
+           
           reporter.reportError("Boolean expression expected here", "", ast.E.position);
         ast.C.visit(this, null);
         return null;
     }
   
+    
+    
+  public Object visitForCommand(ForCommand ast, Object o) {
+      
+        ast.F.visit(this, o);
+        TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+        if (! eType.equals(StdEnvironment.integerType))
+          reporter.reportError("Integer expression expected here", "", ast.E.position);
+        ast.C.visit(this, null);
+
+      return null;
+
+
+  }
+  public Object visitForDeclaration(ForDeclaration ast, Object o) {
+    idTable.enter (ast.I.spelling, ast); // permits recursion
+    if (ast.duplicated)
+        
+    reporter.reportError ("identifier \"%\" already declared", ast.I.spelling, ast.position);
+    idTable.openScope();
+    
+
+    
+    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.integerType))
+      reporter.reportError ("Integer expression expected here", "", ast.E.position);
+    idTable.closeScope();
+
+    return null;
+
+  }
+  public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
+        ast.F.visit(this, o);
+        TypeDenoter eType = (TypeDenoter) ast.E1.visit(this, null);
+        if (! eType.equals(StdEnvironment.integerType))
+          reporter.reportError("Integer expression expected here", "", ast.E1.position);
+        eType = (TypeDenoter) ast.E2.visit(this, null);
+        if (! eType.equals(StdEnvironment.booleanType))
+          reporter.reportError("Bolean expression expected here", "", ast.E2.position);
+        
+
+        ast.C.visit(this, null);
+
+      return null;  
+  }
+
+  public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
+        ast.F.visit(this, o);
+        TypeDenoter eType = (TypeDenoter) ast.E1.visit(this, null);
+        if (! eType.equals(StdEnvironment.integerType))
+          reporter.reportError("Integer expression expected here", "", ast.E1.position);
+        eType = (TypeDenoter) ast.E2.visit(this, null);
+        if (! eType.equals(StdEnvironment.booleanType))
+          reporter.reportError("Bolean expression expected here", "", ast.E2.position);
+        ast.C.visit(this, null);
+
+      return null;    }
+    
   // Expressions
 
   // Returns the TypeDenoter denoting the type of the expression. Does
@@ -997,24 +1056,9 @@ public final class Checker implements Visitor {
   }
 
   // New things
-  public Object visitForDeclaration(ForDeclaration ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
 
-  @Override
-  public Object visitForCommand(ForCommand ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
 
-  @Override
-  public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
 
-  @Override
-  public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
 
     @Override
     public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
