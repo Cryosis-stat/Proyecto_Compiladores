@@ -28,21 +28,24 @@ import Triangle.AbstractSyntaxTrees.CallExpression;
 import Triangle.AbstractSyntaxTrees.CharTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CharacterExpression;
 import Triangle.AbstractSyntaxTrees.CharacterLiteral;
-import Triangle.AbstractSyntaxTrees.CompoundLongIdentifier;
-import Triangle.AbstractSyntaxTrees.CompoundVname;
 import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
 import Triangle.AbstractSyntaxTrees.Declaration;
-import Triangle.AbstractSyntaxTrees.DotVarName;
+import Triangle.AbstractSyntaxTrees.DoCommand;
+import Triangle.AbstractSyntaxTrees.DollarLongIdentifier;
+import Triangle.AbstractSyntaxTrees.DollarVname;
+import Triangle.AbstractSyntaxTrees.DotVname;
+import Triangle.AbstractSyntaxTrees.ElseifCommand;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyExpression;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
+import Triangle.AbstractSyntaxTrees.FProcFunc;
 import Triangle.AbstractSyntaxTrees.FieldTypeDenoter;
-import Triangle.AbstractSyntaxTrees.ForCommand;
 import Triangle.AbstractSyntaxTrees.ForDeclaration;
+import Triangle.AbstractSyntaxTrees.ForDoCommand;
 import Triangle.AbstractSyntaxTrees.ForUntilCommand;
 import Triangle.AbstractSyntaxTrees.ForWhileCommand;
 import Triangle.AbstractSyntaxTrees.FormalParameter;
@@ -52,59 +55,58 @@ import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
 import Triangle.AbstractSyntaxTrees.Identifier;
 import Triangle.AbstractSyntaxTrees.IfCommand;
+import Triangle.AbstractSyntaxTrees.IfElseCommand;
 import Triangle.AbstractSyntaxTrees.IfExpression;
 import Triangle.AbstractSyntaxTrees.IntTypeDenoter;
 import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
-import Triangle.AbstractSyntaxTrees.LongIdentifierTypeDenoter;
-import Triangle.AbstractSyntaxTrees.LoopDoUntilCommand;
-import Triangle.AbstractSyntaxTrees.LoopDoWhileCommand;
-import Triangle.AbstractSyntaxTrees.LoopUntilCommand;
-import Triangle.AbstractSyntaxTrees.LoopWhileCommand;
+import Triangle.AbstractSyntaxTrees.LongCommand;
+import Triangle.AbstractSyntaxTrees.LongExpression;
+import Triangle.AbstractSyntaxTrees.LongIdentifier;
+import Triangle.AbstractSyntaxTrees.LongTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.Operator;
+import Triangle.AbstractSyntaxTrees.PProcFunc;
 import Triangle.AbstractSyntaxTrees.PackageDeclaration;
-import Triangle.AbstractSyntaxTrees.PrivateCompound_Declaration;
 import Triangle.AbstractSyntaxTrees.ProcActualParameter;
 import Triangle.AbstractSyntaxTrees.ProcDeclaration;
 import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
-import Triangle.AbstractSyntaxTrees.ProcFuncFuncDeclaration;
-import Triangle.AbstractSyntaxTrees.ProcFuncProcDeclaration;
 import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.AbstractSyntaxTrees.RecordExpression;
 import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
-import Triangle.AbstractSyntaxTrees.RecursiveCompound_Declaration;
+import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
 import Triangle.AbstractSyntaxTrees.SequentialCommand;
 import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
+import Triangle.AbstractSyntaxTrees.SequentialProcFunc;
 import Triangle.AbstractSyntaxTrees.SimpleLongIdentifier;
-import Triangle.AbstractSyntaxTrees.SequentialProcFuncDeclaration;
+import Triangle.AbstractSyntaxTrees.SimplePackageIdentifier;
 import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SimpleVarName;
+import Triangle.AbstractSyntaxTrees.SimpleVname;
 import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
+import Triangle.AbstractSyntaxTrees.SingleDeclaration;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
-import Triangle.AbstractSyntaxTrees.SingleVname;
-import Triangle.AbstractSyntaxTrees.SubscriptVarName;
+import Triangle.AbstractSyntaxTrees.SubscriptVname;
 import Triangle.AbstractSyntaxTrees.Terminal;
 import Triangle.AbstractSyntaxTrees.TypeDeclaration;
 import Triangle.AbstractSyntaxTrees.TypeDenoter;
 import Triangle.AbstractSyntaxTrees.UnaryExpression;
 import Triangle.AbstractSyntaxTrees.UnaryOperatorDeclaration;
+import Triangle.AbstractSyntaxTrees.UntilCommand;
 import Triangle.AbstractSyntaxTrees.VarActualParameter;
 import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
-import Triangle.AbstractSyntaxTrees.VarInitDeclaration;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-//import Triangle.AbstractSyntaxTrees.WhileCommand;
+import Triangle.AbstractSyntaxTrees.WhileCommand;
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
 public final class Checker implements Visitor {
@@ -112,7 +114,7 @@ public final class Checker implements Visitor {
   // Commands
 
   // Always returns null. Does not use the given object.
-/**
+
   public Object visitAssignCommand(AssignCommand ast, Object o) {
     TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
@@ -122,20 +124,21 @@ public final class Checker implements Visitor {
       reporter.reportError ("assignment incompatibilty", "", ast.position);
     return null;
   }
-**/
+
+
 
   public Object visitCallCommand(CallCommand ast, Object o) {
 
-//    Declaration binding = (Declaration) ast.I.visit(this, null);
-//    if (binding == null)
-//      reportUndeclared(ast.I);
-//    else if (binding instanceof ProcDeclaration) {
-//      ast.APS.visit(this, ((ProcDeclaration) binding).FPS);
-//    } else if (binding instanceof ProcFormalParameter) {
-//      ast.APS.visit(this, ((ProcFormalParameter) binding).FPS);
-//    } else
-//      reporter.reportError("\"%\" is not a procedure identifier",
-//                           ast.I.spelling, ast.I.position);
+    Declaration binding = (Declaration) ast.I.visit(this, null);
+    if (binding == null)
+      reportUndeclared(ast.I);
+    else if (binding instanceof ProcDeclaration) {
+      ast.APS.visit(this, ((ProcDeclaration) binding).FPS);
+    } else if (binding instanceof ProcFormalParameter) {
+      ast.APS.visit(this, ((ProcFormalParameter) binding).FPS);
+    } else
+      reporter.reportError("\"%\" is not a procedure identifier",
+                           ast.I.spelling, ast.I.position);
     return null;
   }
 
@@ -152,6 +155,97 @@ public final class Checker implements Visitor {
     return null;
   }
 
+  
+    public Object visitUntilCommand(UntilCommand ast, Object o) {
+    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+
+    return null;    }
+
+    @Override
+    public Object visitDoCommand(DoCommand ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+
+
+    return null;    }
+
+    @Override
+    public Object visitForDeclaration(ForDeclaration ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.E.visit(this, null);
+    ast.I.visit(this, null);
+
+    return null;    }
+
+
+
+    @Override
+    public Object visitForDoCommand(ForDoCommand ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+    ast.E1.visit(this, null);
+    ast.I.visit(this, null);
+
+    return null;    }
+
+    @Override
+    public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+    ast.E1.visit(this, null);
+    ast.E2.visit(this, null);
+    ast.I.visit(this, null);
+
+    return null;    }
+
+    @Override
+    public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
+           TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
+    ast.E.visit(this, null);
+    ast.E1.visit(this, null);
+    ast.E2.visit(this, null);
+    ast.I.visit(this, null);
+
+    return null;   
+    }
+  
+  
+  
+  
+  
+  public Object visitElseifCommand(ElseifCommand ast, Object o) {
+    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C1.visit(this, null);
+    return null;    }
+  
+    public Object visitIfElseCommand(IfElseCommand ast, Object o) {
+    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C1.visit(this, null);
+    ast.C2.visit(this, null);
+        
+    return null;    }
   public Object visitLetCommand(LetCommand ast, Object o) {
     idTable.openScope();
     ast.D.visit(this, null);
@@ -159,114 +253,28 @@ public final class Checker implements Visitor {
     idTable.closeScope();
     return null;
   }
+  
+  public Object visitLongCommand(LongCommand ast, Object o){
+      ast.L.visit(this, null);
+      ast.APS.visit(this, null);
+      return null;
+  }
 
   public Object visitSequentialCommand(SequentialCommand ast, Object o) {
     ast.C1.visit(this, null);
+    
     ast.C2.visit(this, null);
     return null;
   }
 
-//  public Object visitWhileCommand(WhileCommand ast, Object o) {
-//    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-//    if (! eType.equals(StdEnvironment.booleanType))
-//      reporter.reportError("Boolean expression expected here", "", ast.E.position);
-//    ast.C.visit(this, null);
-//    return null;
-//  }
-  
-    // New Commands
-    
-    public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
-        TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-        if (! eType.equals(StdEnvironment.booleanType))
-          reporter.reportError("Boolean expression expected here", "", ast.E.position);
-        ast.C.visit(this, null);
-        return null;
-    }
-
-    public Object visitLoopUntilCommand(LoopUntilCommand ast, Object o) {
-        TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-        if (! eType.equals(StdEnvironment.booleanType))
-          reporter.reportError("Boolean expression expected here", "", ast.E.position);
-        ast.C.visit(this, null);
-        return null;
-    }
-
-    public Object visitLoopDoWhileCommand(LoopDoWhileCommand ast, Object o) {
-        TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-        if (! eType.equals(StdEnvironment.booleanType))
-          reporter.reportError("Boolean expression expected here", "", ast.E.position);
-        ast.C.visit(this, null);
-        return null;
-    }
-
-    public Object visitLoopDoUntilCommand(LoopDoUntilCommand ast, Object o) {
-        TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-        if (! eType.equals(StdEnvironment.booleanType))
-           
-          reporter.reportError("Boolean expression expected here", "", ast.E.position);
-        ast.C.visit(this, null);
-        return null;
-    }
-  
-    
-    
-  public Object visitForCommand(ForCommand ast, Object o) {
-      
-        ast.F.visit(this, o);
-        TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-        if (! eType.equals(StdEnvironment.integerType))
-          reporter.reportError("Integer expression expected here", "", ast.E.position);
-        ast.C.visit(this, null);
-
-      return null;
-
-
-  }
-  public Object visitForDeclaration(ForDeclaration ast, Object o) {
-    idTable.enter (ast.I.spelling, ast); // permits recursion
-    if (ast.duplicated)
-        
-    reporter.reportError ("identifier \"%\" already declared", ast.I.spelling, ast.position);
-    idTable.openScope();
-    
-
-    
+  public Object visitWhileCommand(WhileCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-    if (! eType.equals(StdEnvironment.integerType))
-      reporter.reportError ("Integer expression expected here", "", ast.E.position);
-    idTable.closeScope();
-
+    if (! eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+    ast.C.visit(this, null);
     return null;
-
-  }
-  public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
-        ast.F.visit(this, o);
-        TypeDenoter eType = (TypeDenoter) ast.E1.visit(this, null);
-        if (! eType.equals(StdEnvironment.integerType))
-          reporter.reportError("Integer expression expected here", "", ast.E1.position);
-        eType = (TypeDenoter) ast.E2.visit(this, null);
-        if (! eType.equals(StdEnvironment.booleanType))
-          reporter.reportError("Bolean expression expected here", "", ast.E2.position);
-        
-
-        ast.C.visit(this, null);
-
-      return null;  
   }
 
-  public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
-        ast.F.visit(this, o);
-        TypeDenoter eType = (TypeDenoter) ast.E1.visit(this, null);
-        if (! eType.equals(StdEnvironment.integerType))
-          reporter.reportError("Integer expression expected here", "", ast.E1.position);
-        eType = (TypeDenoter) ast.E2.visit(this, null);
-        if (! eType.equals(StdEnvironment.booleanType))
-          reporter.reportError("Bolean expression expected here", "", ast.E2.position);
-        ast.C.visit(this, null);
-
-      return null;    }
-    
   // Expressions
 
   // Returns the TypeDenoter denoting the type of the expression. Does
@@ -310,21 +318,20 @@ public final class Checker implements Visitor {
   }
 
   public Object visitCallExpression(CallExpression ast, Object o) {
-//    Declaration binding = (Declaration) ast.I.visit(this, null);
-//    if (binding == null) {
-//      reportUndeclared(ast.I);
-//      ast.type = StdEnvironment.errorType;
-//    } else if (binding instanceof FuncDeclaration) {
-//      ast.APS.visit(this, ((FuncDeclaration) binding).FPS);
-//      ast.type = ((FuncDeclaration) binding).T;
-//    } else if (binding instanceof FuncFormalParameter) {
-//      ast.APS.visit(this, ((FuncFormalParameter) binding).FPS);
-//      ast.type = ((FuncFormalParameter) binding).T;
-//    } else
-//      reporter.reportError("\"%\" is not a function identifier",
-//                           ast.I.spelling, ast.I.position);
-//    return ast.type;
-    return null;
+    Declaration binding = (Declaration) ast.I.visit(this, null);
+    if (binding == null) {
+      reportUndeclared(ast.I);
+      ast.type = StdEnvironment.errorType;
+    } else if (binding instanceof FuncDeclaration) {
+      ast.APS.visit(this, ((FuncDeclaration) binding).FPS);
+      ast.type = ((FuncDeclaration) binding).T;
+    } else if (binding instanceof FuncFormalParameter) {
+      ast.APS.visit(this, ((FuncFormalParameter) binding).FPS);
+      ast.type = ((FuncFormalParameter) binding).T;
+    } else
+      reporter.reportError("\"%\" is not a function identifier",
+                           ast.I.spelling, ast.I.position);
+    return ast.type;
   }
 
   public Object visitCharacterExpression(CharacterExpression ast, Object o) {
@@ -349,6 +356,7 @@ public final class Checker implements Visitor {
     ast.type = e2Type;
     return ast.type;
   }
+
 
   public Object visitIntegerExpression(IntegerExpression ast, Object o) {
     ast.type = StdEnvironment.integerType;
@@ -443,7 +451,11 @@ public final class Checker implements Visitor {
     ast.D2.visit(this, null);
     return null;
   }
-
+    public Object visitSingleDeclaration(SingleDeclaration ast, Object o) {
+        ast.S.visit(this, null);
+        return null;
+    }
+    
   public Object visitTypeDeclaration(TypeDeclaration ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
     idTable.enter (ast.I.spelling, ast);
@@ -645,8 +657,6 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  
-  /**
   public Object visitVarActualParameter(VarActualParameter ast, Object o) {
     FormalParameter fp = (FormalParameter) o;
 
@@ -662,7 +672,7 @@ public final class Checker implements Visitor {
                             ast.V.position);
     return null;
   }
-**/
+
   public Object visitEmptyActualParameterSequence(EmptyActualParameterSequence ast, Object o) {
     FormalParameterSequence fps = (FormalParameterSequence) o;
     if (! (fps instanceof EmptyFormalParameterSequence))
@@ -796,7 +806,7 @@ public final class Checker implements Visitor {
   // Returns the TypeDenoter of the Vname. Does not use the
   // given object.
 
-  public Object visitDotVarName(DotVarName ast, Object o) {
+  public Object visitDotVname(DotVname ast, Object o) {
     ast.type = null;
     TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
     ast.variable = ast.V.variable;
@@ -811,7 +821,7 @@ public final class Checker implements Visitor {
     return ast.type;
   }
 
-  public Object visitSimpleVarName(SimpleVarName ast, Object o) {
+  public Object visitSimpleVname(SimpleVname ast, Object o) {
     ast.variable = false;
     ast.type = StdEnvironment.errorType;
     Declaration binding = (Declaration) ast.I.visit(this, null);
@@ -836,7 +846,7 @@ public final class Checker implements Visitor {
     return ast.type;
   }
 
-  public Object visitSubscriptVarName(SubscriptVarName ast, Object o) {
+  public Object visitSubscriptVname(SubscriptVname ast, Object o) {
     TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
     ast.variable = ast.V.variable;
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
@@ -856,7 +866,8 @@ public final class Checker implements Visitor {
   // Programs
 
   public Object visitProgram(Program ast, Object o) {
-    //ast.C.visit(this, null);
+    ast.P.visit(this, null);
+    ast.C.visit(this, null);
     return null;
   }
 
@@ -1055,80 +1066,63 @@ public final class Checker implements Visitor {
 
   }
 
-  // New things
-
-
 
 
     @Override
-    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
+    public Object visitSequentialProcFunc(SequentialProcFunc ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
+    public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+
+    @Override
+    public Object visitFProcFunc(FProcFunc ast, Object o) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    @Override
+    public Object visitPProcFunc(PProcFunc ast, Object o) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSimplePackageIdentifier(SimplePackageIdentifier ast, Object o){
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
+    public Object visitPackageDeclaration(PackageDeclaration aThis, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object visitDollarVname(DollarVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-	@Override
-    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
+    public Object visitLongTypeDenoter(LongTypeDenoter ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-	@Override
-    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
+    public Object visitDollarLongIdentifier(DollarLongIdentifier ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
+    public Object visitLongExpression(LongExpression ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    @Override
-    public Object visitSingleVname(SingleVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitCompoundVname(CompoundVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitAssignCommand(AssignCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitVarActualParameter(VarActualParameter ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
 }
