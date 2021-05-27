@@ -34,5 +34,5 @@ public class CompoundVname extends Vname{
     
     
     Identifier I;
-    VarName V;
+    public VarName V;
 }

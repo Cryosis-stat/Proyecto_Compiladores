@@ -23,5 +23,8 @@ public abstract class Vname extends AST {
     super (thePosition);
 
   }
-
+    public VarName getV() {
+        return V;
+    }
+    
 }

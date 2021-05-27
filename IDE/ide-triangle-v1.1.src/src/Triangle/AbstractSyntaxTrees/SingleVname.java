@@ -12,7 +12,7 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  * @author Carlos
  */
 public class SingleVname extends Vname{
-    VarName V;
+    public VarName V;
 
     public SingleVname(VarName pV,SourcePosition thePosition) {
         super(thePosition);
@@ -24,7 +24,7 @@ public class SingleVname extends Vname{
         return v.visitSingleVname(this,o);
     }
 
-    public VarName getV() {
+        public VarName getV() {
         return V;
     }
     

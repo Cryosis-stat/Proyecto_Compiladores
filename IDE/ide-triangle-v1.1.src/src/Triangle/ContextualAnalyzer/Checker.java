@@ -103,7 +103,9 @@ import Triangle.AbstractSyntaxTrees.VarActualParameter;
 import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.VarInitDeclaration;
+import Triangle.AbstractSyntaxTrees.VarName;
 import Triangle.AbstractSyntaxTrees.Visitor;
+import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
 //import Triangle.AbstractSyntaxTrees.WhileCommand;
 import Triangle.SyntacticAnalyzer.SourcePosition;
@@ -138,7 +140,9 @@ public final class Checker implements Visitor {
 
         TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
         TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
-    if (!ast.V.V.variable)
+       Vname vname = ast.V;
+       VarName varname = vname.getV();
+    if (!varname.variable)
       reporter.reportError ("LHS of assignment is not a variable", "", ast.V.position);
     if (! eType.equals(vType))
       reporter.reportError ("assignment incompatibilty", "", ast.position);
@@ -825,11 +829,13 @@ public final class Checker implements Visitor {
       } else if (binding instanceof VarDeclaration) {
         ast.type = ((VarDeclaration) binding).T;
         ast.variable = true;
-      } else if (binding instanceof ConstFormalParameter) {
+      }  else if (binding instanceof VarInitDeclaration) {
+        ast.type = ((VarDeclaration) binding).T;
+        ast.variable = true;
+      }else if (binding instanceof ConstFormalParameter) {
         ast.type = ((ConstFormalParameter) binding).T;
         ast.variable = false;
       }else if (binding instanceof ForDeclaration) {
-        ast.type = ((ConstFormalParameter) binding).T;
         ast.variable = false;
       } else if (binding instanceof VarFormalParameter) {
         ast.type = ((VarFormalParameter) binding).T;
