@@ -12,8 +12,10 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  * @author Carlos
  */
 public abstract class LongIdentifier extends AST {
+    public Identifier identifier;
 
     public LongIdentifier(SourcePosition thePosition) {
+        
         super(thePosition);
     }
 }

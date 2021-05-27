@@ -431,11 +431,11 @@ public Program parseProgram() {
                 Identifier iAST = parseIdentifier();
                 accept(Token.FROM);
                 eAST = parseExpression();
-                ForDeclaration dAST = new ForDeclaration(iAST, eAST, commandPos);
                 
                 accept(Token.TO);
                 Expression e1AST = parseExpression();
-               
+                ForDeclaration dAST = new ForDeclaration(iAST, eAST,e1AST, commandPos);
+
                 if(currentToken.kind ==Token.DO){
                   acceptIt();
                   cAST = parseCommand();
@@ -449,7 +449,7 @@ public Program parseProgram() {
                   cAST = parseCommand();
                   accept(Token.END);
                   finish(commandPos);
-                  commandAST = new ForWhileCommand(dAST, e1AST, e2AST, cAST, commandPos);
+                  commandAST = new ForWhileCommand(dAST,  e2AST, cAST, commandPos);
                 } else if (currentToken.kind ==Token.UNTIL){
                   acceptIt();
                   Expression e2AST = parseExpression();
@@ -457,7 +457,7 @@ public Program parseProgram() {
                   cAST = parseCommand();
                   accept(Token.END);
                   finish(commandPos);
-                  commandAST = new ForUntilCommand(dAST, e1AST, e2AST, cAST, commandPos);
+                  commandAST = new ForUntilCommand(dAST, e2AST, cAST, commandPos);
                 }
                 break;
             default:

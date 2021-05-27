@@ -119,16 +119,18 @@ public interface Visitor {
   // Programs
   public abstract Object visitProgram(Program ast, Object o);
 
-  public abstract Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o);
+  public abstract Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o);
 
-  public abstract Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o);
+  public abstract Object visitPrivateCompound_Declaration(PrivateCompound_Declaration ast, Object o);
 
-  public abstract Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o);
+  public abstract Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o);
 
     
     
     //Vname
   public abstract Object visitSingleVname(SingleVname ast, Object o);
   public abstract Object visitCompoundVname(CompoundVname ast, Object o);
+
+    public abstract Object visitSingleProgram(SingleProgram ast, Object o);
     
 }

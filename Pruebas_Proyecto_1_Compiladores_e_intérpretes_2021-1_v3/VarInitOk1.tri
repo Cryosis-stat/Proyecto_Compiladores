@@ -1,9 +1,8 @@
 let
-	var j := 5;
-	var i := 'c';
+	var j := Integer;
 	var y : Integer
 in
-	nothing
+loop for i from 5 to 6 do i:=1 end;
+i := i
 end
-
 ! OK

@@ -18,6 +18,7 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
 
 public class Program extends AST {
 
+
   public Program (SourcePosition thePosition) {
     super (thePosition);
   }

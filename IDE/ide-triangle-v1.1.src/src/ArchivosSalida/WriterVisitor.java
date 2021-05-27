@@ -643,7 +643,6 @@ public class WriterVisitor implements Visitor {
         writeLineHTML("<ForCommand>");
         ast.F.visit(this, null);
         ast.C.visit(this, null);
-        ast.E.visit(this, null);
         writeLineHTML("</ForCommand>");
         return null;
     }
@@ -653,7 +652,6 @@ public class WriterVisitor implements Visitor {
         writeLineHTML("<ForWhileCommand>");
         ast.F.visit(this, null);
         ast.C.visit(this, null);
-        ast.E1.visit(this, null);
         ast.E2.visit(this, null);
         writeLineHTML("</ForWhileCommand>");
         return null;
@@ -664,7 +662,6 @@ public class WriterVisitor implements Visitor {
         writeLineHTML("<ForUntilCommand>");
         ast.F.visit(this, null);
         ast.C.visit(this, null);
-        ast.E1.visit(this, null);
         ast.E2.visit(this, null);
         writeLineHTML("</ForUntilCommand>");
         return null;
@@ -705,6 +702,8 @@ public class WriterVisitor implements Visitor {
         writeLineHTML("<ForDeclaration>");
         ast.I.visit(this, null);
         ast.E.visit(this, null);
+        ast.E1.visit(this, null);
+
         writeLineHTML("</ForDeclaration>");
         return null;
     }
@@ -803,7 +802,6 @@ public class WriterVisitor implements Visitor {
         return null;
     }
 
-    @Override
     public Object visitCompoundVname(CompoundVname ast, Object o) {
         writeLineHTML("<CompoundVname>");
         ast.getI().visit(this, null);
@@ -811,6 +809,12 @@ public class WriterVisitor implements Visitor {
         writeLineHTML("</CompoundVname>");
         return null;
     }
+
+    public Object visitSingleProgram(SingleProgram ast, Object o) {
+        writeLineHTML("<SingleProgram>");
+        ast.C.visit(this, null);
+        writeLineHTML("<SingleProgram>");
+        return null;    }
 
     
 

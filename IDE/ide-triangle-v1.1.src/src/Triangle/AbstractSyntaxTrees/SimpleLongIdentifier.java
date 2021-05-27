@@ -13,7 +13,7 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  */
 public class SimpleLongIdentifier extends LongIdentifier{
 
-    Identifier identifier;
+    public Identifier identifier;
     
     public SimpleLongIdentifier(Identifier pIdentifier,SourcePosition thePosition) {
         super(thePosition);

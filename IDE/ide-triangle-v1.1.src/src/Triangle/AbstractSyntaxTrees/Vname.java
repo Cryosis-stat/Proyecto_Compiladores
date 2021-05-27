@@ -17,6 +17,7 @@ package Triangle.AbstractSyntaxTrees;
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
 public abstract class Vname extends AST {
+    public VarName V;
 
   public Vname (SourcePosition thePosition) {
     super (thePosition);

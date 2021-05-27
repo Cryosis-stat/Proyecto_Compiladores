@@ -76,6 +76,7 @@ import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
+import Triangle.AbstractSyntaxTrees.SingleProgram;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.SingleVname;
 import Triangle.AbstractSyntaxTrees.SubscriptVarName;
@@ -194,7 +195,6 @@ public class TableVisitor implements Visitor {
     
     public Object visitForCommand(ForCommand ast, Object o) {
       ast.F.visit(this, null);
-      ast.E.visit(this, null);
       ast.C.visit(this, null);
       
       return(null);
@@ -202,7 +202,6 @@ public class TableVisitor implements Visitor {
 
     public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
       ast.F.visit(this, null);
-      ast.E1.visit(this, null);
       ast.E2.visit(this, null);
       ast.C.visit(this, null);
       
@@ -211,7 +210,6 @@ public class TableVisitor implements Visitor {
 
     public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
       ast.F.visit(this, null);
-      ast.E1.visit(this, null);
       ast.E2.visit(this, null);
       ast.C.visit(this, null);
       
@@ -223,6 +221,7 @@ public class TableVisitor implements Visitor {
     public Object visitForDeclaration(ForDeclaration ast, Object o) {
       ast.I.visit(this, null);
       ast.E.visit(this, null);
+      ast.E1.visit(this, null);
 
       return(null);
     }
@@ -765,6 +764,11 @@ public class TableVisitor implements Visitor {
 
     @Override
     public Object visitCompoundVname(CompoundVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSingleProgram(SingleProgram ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

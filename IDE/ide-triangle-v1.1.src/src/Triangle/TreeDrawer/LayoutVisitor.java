@@ -88,6 +88,7 @@ import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
+import Triangle.AbstractSyntaxTrees.SingleProgram;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.SingleVname;
 import Triangle.AbstractSyntaxTrees.SubscriptVarName;
@@ -164,15 +165,15 @@ public class LayoutVisitor implements Visitor {
   }
   
   public Object visitForCommand(ForCommand ast, Object o) {
-    return layoutTernary("ForCom.", ast.F, ast.E, ast.C);
+    return layoutBinary("ForCom.", ast.F, ast.C);
   }
 
   public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
-    return layoutQuaternary("ForWhileCom.", ast.F, ast.E1, ast.E2, ast.C);
+    return layoutTernary("ForWhileCom.", ast.F, ast.E2, ast.C);
   }
 
   public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
-    return layoutQuaternary("ForUntilCom.", ast.F, ast.E1, ast.E2, ast.C);
+    return layoutTernary("ForUntilCom.", ast.F,  ast.E2, ast.C);
   }
 
   // Expressions
@@ -256,7 +257,7 @@ public class LayoutVisitor implements Visitor {
   
   // For Declaration
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
-    return layoutBinary("ForDeclaration.", ast.I, ast.E);
+    return layoutTernary("ForDeclaration.", ast.I, ast.E, ast.E1);
   }
 
   // Array Aggregates
@@ -658,6 +659,11 @@ public class LayoutVisitor implements Visitor {
 
     @Override
     public Object visitCompoundVname(CompoundVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSingleProgram(SingleProgram ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

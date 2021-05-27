@@ -1,0 +1,62 @@
+<?xml version="1.0" standalone="yes"?>
+<Program>
+<LetCommand>
+<SequentialDeclaration>
+<VarInitDeclaration>
+<Identifier value="j"/>
+<VnameExpression>
+<Vname>
+<VarName>
+<Identifier value="Integer"/>
+</VarName>
+</Vname>
+</VnameExpression>
+</VarInitDeclaration>
+<VarDeclaration>
+<Identifier value="y"/>
+<LongIdentifierTypeDenoter>
+<LongIdentifierTypeDenoter>
+<Identifier value="Integer"/>
+</LongIdentifierTypeDenoter>
+</LongIdentifierTypeDenoter>
+</VarDeclaration>
+</SequentialDeclaration>
+<SequentialCommand>
+<ForCommand>
+<ForDeclaration>
+<Identifier value="i"/>
+<IntegerExpression>
+<IntegerLiteral value="5"/>
+</IntegerExpression>
+</ForDeclaration>
+<AssignCommand>
+<Vname>
+<VarName>
+<Identifier value="i"/>
+</VarName>
+</Vname>
+<IntegerExpression>
+<IntegerLiteral value="1"/>
+</IntegerExpression>
+</AssignCommand>
+<IntegerExpression>
+<IntegerLiteral value="6"/>
+</IntegerExpression>
+</ForCommand>
+<AssignCommand>
+<Vname>
+<VarName>
+<Identifier value="i"/>
+</VarName>
+</Vname>
+<VnameExpression>
+<Vname>
+<VarName>
+<Identifier value="i"/>
+</VarName>
+</Vname>
+</VnameExpression>
+</AssignCommand>
+</SequentialCommand>
+</LetCommand>
+</Program>

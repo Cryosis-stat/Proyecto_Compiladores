@@ -1,0 +1,8 @@
+let
+    var j := 5;
+    var y : Integer
+in
+loop for i from 5 to 6 do i:=1 end;
+i := 1
+end
+! OK

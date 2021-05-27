@@ -76,6 +76,7 @@ import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
+import Triangle.AbstractSyntaxTrees.SingleProgram;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.SingleVname;
 import Triangle.AbstractSyntaxTrees.SubscriptVarName;
@@ -157,22 +158,22 @@ public class TreeVisitor implements Visitor {
     }
     
     public Object visitForCommand(ForCommand ast, Object o) {
-      return(createTernary("For Command", ast.F, ast.E, ast.C));
+      return(createBinary("For Command", ast.F, ast.C));
     }
 
     public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
-      return(createQuaternary("ForWhile Command", ast.F, ast.E1, ast.E2, ast.C));
+      return(createTernary("ForWhile Command", ast.F,  ast.E2, ast.C));
     }
 
     public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
-      return(createQuaternary("ForUntil Command", ast.F, ast.E1, ast.E2, ast.C));
+      return(createTernary("ForUntil Command", ast.F, ast.E2, ast.C));
     }
     
     // </editor-fold>
     
     @Override
     public Object visitForDeclaration(ForDeclaration ast, Object o) {
-      return(createBinary("For Declaration", ast.I, ast.E));
+      return(createTernary("For Declaration", ast.I, ast.E, ast.E1));
     }
     
     // <editor-fold defaultstate="collapsed" desc=" Expressions ">
@@ -554,6 +555,11 @@ public class TreeVisitor implements Visitor {
 
     @Override
     public Object visitCompoundVname(CompoundVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSingleProgram(SingleProgram ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

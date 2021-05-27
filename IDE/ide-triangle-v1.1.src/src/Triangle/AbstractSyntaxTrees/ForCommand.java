@@ -15,7 +15,6 @@ public class ForCommand extends Command {
    public ForCommand (ForDeclaration fAST, Expression eAST, Command cAST, SourcePosition thePosition) {
     super (thePosition);
     F = fAST;
-    E = eAST;
     C = cAST;
   }
 
@@ -24,6 +23,5 @@ public class ForCommand extends Command {
   }
 
   public ForDeclaration F;
-  public Expression E;
   public Command C;
 }

@@ -14,7 +14,7 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
 public class CompoundLongIdentifier extends LongIdentifier {
     
     Identifier packageIdentifier;
-    Identifier identifier;
+    public Identifier identifier;
 
     public CompoundLongIdentifier(Identifier pPackageIdentifier,Identifier pIdentifier,SourcePosition thePosition) {
         super(thePosition);

@@ -13,7 +13,7 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  */
 public class SingleProgram extends Program{
     
-    Command C;
+    public Command C;
     
     public SingleProgram(Command cAST, SourcePosition thePosition) {
         super(thePosition);
@@ -23,5 +23,9 @@ public class SingleProgram extends Program{
     public Command getC() {
         return C;
     }
+    
+   public Object visit(Visitor v, Object o) {
+    return v.visitSingleProgram(this, o);
+  }
     
 }

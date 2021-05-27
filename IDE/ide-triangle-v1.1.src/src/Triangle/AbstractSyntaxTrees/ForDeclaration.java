@@ -13,11 +13,13 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  */
 public class ForDeclaration extends Declaration{
 
-  public ForDeclaration (Identifier iAST, Expression eAST,
+  public ForDeclaration (Identifier iAST, Expression eAST, Expression eAST1,
                     SourcePosition thePosition) {
     super (thePosition);
     I = iAST;
     E = eAST;
+    E1 = eAST1;
+
   }
 
   public Object visit(Visitor v, Object o) {
@@ -25,6 +27,6 @@ public class ForDeclaration extends Declaration{
   }
 
   public Identifier I;
-  public Expression E;
+  public Expression E,E1;
   
 }
