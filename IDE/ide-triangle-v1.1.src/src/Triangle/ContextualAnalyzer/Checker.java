@@ -120,16 +120,16 @@ public final class Checker implements Visitor {
 
 
   public Object visitCallCommand(CallCommand ast, Object o) {
-//    Declaration binding = (Declaration) ast.I.visit(this, null);
-//    if (binding == null)
-//      reportUndeclared(ast.I);
-//    else if (binding instanceof ProcDeclaration) {
-//      ast.APS.visit(this, ((ProcDeclaration) binding).FPS);
-//    } else if (binding instanceof ProcFormalParameter) {
-//      ast.APS.visit(this, ((ProcFormalParameter) binding).FPS);
-//    } else
-//      reporter.reportError("\"%\" is not a procedure identifier",
-//                           ast.I.spelling, ast.I.position);
+   Declaration binding = (Declaration) ast.I.visit(this, null);
+    if (binding == null)
+      reportUndeclared(ast.I.identifier);
+    else if (binding instanceof ProcDeclaration) {
+      ast.APS.visit(this, ((ProcDeclaration) binding).FPS);
+    } else if (binding instanceof ProcFormalParameter) {
+      ast.APS.visit(this, ((ProcFormalParameter) binding).FPS);
+    } else
+      reporter.reportError("\"%\" is not a procedure identifier",
+                           ast.I.identifier.spelling, ast.I.position);
     return null;
   }
 
@@ -138,6 +138,7 @@ public final class Checker implements Visitor {
   }
     public Object visitAssignCommand(AssignCommand ast, Object o) {
 
+        
         TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
         TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
        Vname vname = ast.V;
@@ -173,16 +174,6 @@ public final class Checker implements Visitor {
     return null;
   }
 
-//  public Object visitWhileCommand(WhileCommand ast, Object o) {
-//    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-//    if (! eType.equals(StdEnvironment.booleanType))
-//      reporter.reportError("Boolean expression expected here", "", ast.E.position);
-//    ast.C.visit(this, null);
-//    return null;
-//  }
-  
-    // New Commands
-    
     public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
         TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
         if (! eType.equals(StdEnvironment.booleanType))
@@ -219,7 +210,8 @@ public final class Checker implements Visitor {
 
   public Object visitForCommand(ForCommand ast, Object o) {
       
-        ast.F.visit(this, o);
+        ast.F.visit(this, null);
+
         ast.C.visit(this, null);
         idTable.closeScope();
 
@@ -229,19 +221,22 @@ public final class Checker implements Visitor {
   }
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
      // permits recursion
-    if (ast.duplicated)    
-    reporter.reportError ("identifier \"%\" already declared", ast.I.spelling, ast.position);
+
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-    
+ 
     if (! eType.equals(StdEnvironment.integerType))
       reporter.reportError ("Integer expression expected here", "", ast.E.position);
     TypeDenoter eType1 = (TypeDenoter) ast.E1.visit(this, null);
     
      if (! eType1.equals(StdEnvironment.integerType))
           reporter.reportError("Integer expression expected here", "", ast.E1.position);
-    idTable.openScope();
+          idTable.openScope();
+
     idTable.enter (ast.I.spelling, ast);
 
+    if (ast.duplicated)    
+    reporter.reportError ("identifier \"%\" already declared", ast.I.spelling, ast.position);
+    
     return null;
   }
 
@@ -641,25 +636,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  
-  /**
-  public Object visitVarActualParameter(VarActualParameter ast, Object o) {
-    FormalParameter fp = (FormalParameter) o;
 
-    TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
-    if (! ast.V.variabl
-  public Object visitEmptyActe)
-      reporter.reportError ("actual parameter is not a variable", "",
-                            ast.V.position);
-    else if (! (fp instanceof VarFormalParameter))
-      reporter.reportError ("var actual parameter not expected here", "",
-                            ast.V.position);
-    else if (! vType.equals(((VarFormalParameter) fp).T))
-      reporter.reportError ("wrong type for var actual parameter", "",
-                            ast.V.position);
-    return null;
-  }
-**/
   public Object visitEmptyActualParameterSequence(EmptyActualParameterSequence ast, Object o) {
     FormalParameterSequence fps = (FormalParameterSequence) o;
     if (! (fps instanceof EmptyFormalParameterSequence))
@@ -832,6 +809,7 @@ public final class Checker implements Visitor {
   public Object visitSimpleVarName(SimpleVarName ast, Object o) {
     ast.variable = false;
     ast.type = StdEnvironment.errorType;
+    
     Declaration binding = (Declaration) ast.I.visit(this, null);
     if (binding == null)
       reportUndeclared(ast.I);
