@@ -90,7 +90,6 @@ import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
 import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
-import Triangle.AbstractSyntaxTrees.SingleProgram;
 import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
 import Triangle.AbstractSyntaxTrees.SingleVname;
 import Triangle.AbstractSyntaxTrees.SubscriptVarName;
@@ -113,11 +112,20 @@ public final class Checker implements Visitor {
   // Commands
 
   // Always returns null. Does not use the given object.
-
-
-
+/**
+  public Object visitAssignCommand(AssignCommand ast, Object o) {
+    TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
+    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    if (!ast.V.variable)
+      reporter.reportError ("LHS of assignment is not a variable", "", ast.V.position);
+    if (! eType.equals(vType))
+      reporter.reportError ("assignment incompatibilty", "", ast.position);
+    return null;
+  }
+**/
 
   public Object visitCallCommand(CallCommand ast, Object o) {
+
 //    Declaration binding = (Declaration) ast.I.visit(this, null);
 //    if (binding == null)
 //      reportUndeclared(ast.I);
@@ -134,17 +142,6 @@ public final class Checker implements Visitor {
   public Object visitEmptyCommand(EmptyCommand ast, Object o) {
     return null;
   }
-    public Object visitAssignCommand(AssignCommand ast, Object o) {
-
-        TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-        TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
-    if (!ast.V.V.variable)
-      reporter.reportError ("LHS of assignment is not a variable", "", ast.V.position);
-    if (! eType.equals(vType))
-      reporter.reportError ("assignment incompatibilty", "", ast.position);
-            return null;
-
-    }
 
   public Object visitIfCommand(IfCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
@@ -212,64 +209,63 @@ public final class Checker implements Visitor {
         return null;
     }
   
-
+    
+    
   public Object visitForCommand(ForCommand ast, Object o) {
       
         ast.F.visit(this, o);
+        TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+        if (! eType.equals(StdEnvironment.integerType))
+          reporter.reportError("Integer expression expected here", "", ast.E.position);
         ast.C.visit(this, null);
-        idTable.closeScope();
 
       return null;
 
 
   }
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
-     // permits recursion
-    if (ast.duplicated)    
+    idTable.enter (ast.I.spelling, ast); // permits recursion
+    if (ast.duplicated)
+        
     reporter.reportError ("identifier \"%\" already declared", ast.I.spelling, ast.position);
-    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    idTable.openScope();
     
+
+    
+    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     if (! eType.equals(StdEnvironment.integerType))
       reporter.reportError ("Integer expression expected here", "", ast.E.position);
-    TypeDenoter eType1 = (TypeDenoter) ast.E1.visit(this, null);
-    
-     if (! eType1.equals(StdEnvironment.integerType))
-          reporter.reportError("Integer expression expected here", "", ast.E1.position);
-            
-    idTable.enter (ast.I.spelling, ast);
-    idTable.openScope();
+    idTable.closeScope();
 
-    
     return null;
-  }
 
-    
-  
+  }
   public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
         ast.F.visit(this, o);
-        TypeDenoter eType = (TypeDenoter) ast.E2.visit(this, null);
+        TypeDenoter eType = (TypeDenoter) ast.E1.visit(this, null);
+        if (! eType.equals(StdEnvironment.integerType))
+          reporter.reportError("Integer expression expected here", "", ast.E1.position);
+        eType = (TypeDenoter) ast.E2.visit(this, null);
         if (! eType.equals(StdEnvironment.booleanType))
           reporter.reportError("Bolean expression expected here", "", ast.E2.position);
-
+        
 
         ast.C.visit(this, null);
-        idTable.closeScope();
 
       return null;  
   }
 
   public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
         ast.F.visit(this, o);
-        TypeDenoter eType = (TypeDenoter) ast.E2.visit(this, null);
+        TypeDenoter eType = (TypeDenoter) ast.E1.visit(this, null);
+        if (! eType.equals(StdEnvironment.integerType))
+          reporter.reportError("Integer expression expected here", "", ast.E1.position);
+        eType = (TypeDenoter) ast.E2.visit(this, null);
         if (! eType.equals(StdEnvironment.booleanType))
           reporter.reportError("Bolean expression expected here", "", ast.E2.position);
-
-
         ast.C.visit(this, null);
-        idTable.closeScope();
 
-      return null; 
-  }
+      return null;    }
     
   // Expressions
 
@@ -314,23 +310,21 @@ public final class Checker implements Visitor {
   }
 
   public Object visitCallExpression(CallExpression ast, Object o) {
-   Declaration binding = (Declaration) ast.I.visit(this, null);
-    if (binding == null) {
-     // reportUndeclared(ast.I);
-      ast.type = StdEnvironment.errorType;
-    } else if (binding instanceof FuncDeclaration) {
-      ast.APS.visit(this, ((FuncDeclaration) binding).FPS);
-      ast.type = ((FuncDeclaration) binding).T;
-    } else if (binding instanceof FuncFormalParameter) {
-      ast.APS.visit(this, ((FuncFormalParameter) binding).FPS);
-      ast.type = ((FuncFormalParameter) binding).T;
-    } else
-      reporter.reportError("\"%\" is not a function identifier",
-                           ast.I.toString(), ast.I.position);
-    /*     reporter.reportError("\"%\" is not a function identifier",
-                           ast.I.spelling, ast.I.position);*/
-    return ast.type;
-    //return null;
+//    Declaration binding = (Declaration) ast.I.visit(this, null);
+//    if (binding == null) {
+//      reportUndeclared(ast.I);
+//      ast.type = StdEnvironment.errorType;
+//    } else if (binding instanceof FuncDeclaration) {
+//      ast.APS.visit(this, ((FuncDeclaration) binding).FPS);
+//      ast.type = ((FuncDeclaration) binding).T;
+//    } else if (binding instanceof FuncFormalParameter) {
+//      ast.APS.visit(this, ((FuncFormalParameter) binding).FPS);
+//      ast.type = ((FuncFormalParameter) binding).T;
+//    } else
+//      reporter.reportError("\"%\" is not a function identifier",
+//                           ast.I.spelling, ast.I.position);
+//    return ast.type;
+    return null;
   }
 
   public Object visitCharacterExpression(CharacterExpression ast, Object o) {
@@ -395,6 +389,10 @@ public final class Checker implements Visitor {
     return ast.type;
   }
 
+  public Object visitVnameExpression(VnameExpression ast, Object o) {
+    ast.type = (TypeDenoter) ast.V.visit(this, null);
+    return ast.type;
+  }
 
   // Declarations
 
@@ -459,7 +457,15 @@ public final class Checker implements Visitor {
     return null;
   }
 
+  public Object visitVarDeclaration(VarDeclaration ast, Object o) {
+    ast.T = (TypeDenoter) ast.T.visit(this, null);
+    idTable.enter (ast.I.spelling, ast);
+    if (ast.duplicated)
+      reporter.reportError ("identifier \"%\" already declared",
+                            ast.I.spelling, ast.position);
 
+    return null;
+  }
 
   // Array Aggregates
 
@@ -645,8 +651,7 @@ public final class Checker implements Visitor {
     FormalParameter fp = (FormalParameter) o;
 
     TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
-    if (! ast.V.variabl
-  public Object visitEmptyActe)
+    if (! ast.V.variable)
       reporter.reportError ("actual parameter is not a variable", "",
                             ast.V.position);
     else if (! (fp instanceof VarFormalParameter))
@@ -702,12 +707,6 @@ public final class Checker implements Visitor {
     return ast;
   }
 
-      public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast , Object o) {///////////////////////////////////////////////////////
-    return StdEnvironment.charType;
-    
-    
-    }
-  
   public Object visitBoolTypeDenoter(BoolTypeDenoter ast, Object o) {
     return StdEnvironment.booleanType;
   }
@@ -828,33 +827,12 @@ public final class Checker implements Visitor {
       } else if (binding instanceof ConstFormalParameter) {
         ast.type = ((ConstFormalParameter) binding).T;
         ast.variable = false;
-      }else if (binding instanceof ForDeclaration) {
-        ast.type = ((ConstFormalParameter) binding).T;
-        ast.variable = false;
       } else if (binding instanceof VarFormalParameter) {
         ast.type = ((VarFormalParameter) binding).T;
         ast.variable = true;
       } else
         reporter.reportError ("\"%\" is not a const or var identifier",
                               ast.I.spelling, ast.I.position);
-    return ast.type;
-  }
-    public Object visitSingleVname(SingleVname ast, Object o) {
-        
-        return ast.getV().visit(this, o);
-
-    }
-    
-    public Object visitCompoundVname(CompoundVname ast, Object o) {
-        ast.getI().visit(this, o);
-
-        
-        return ast.getV().visit(this, o);
-
-    }
-
-   public Object visitVnameExpression(VnameExpression ast, Object o) {
-    ast.type = (TypeDenoter) ast.V.visit(this, null);
     return ast.type;
   }
 
@@ -876,17 +854,9 @@ public final class Checker implements Visitor {
   }
 
   // Programs
-    public Object visitSingleProgram(SingleProgram ast, Object o) {
-            ast.C.visit(this, null);
-                return null;
 
-    }
-    
-    
-    
   public Object visitProgram(Program ast, Object o) {
-      
-    //
+    //ast.C.visit(this, null);
     return null;
   }
 
@@ -958,7 +928,6 @@ public final class Checker implements Visitor {
   // Creates a small AST to represent the "declaration" of a standard
   // type, and enters it in the identification table.
 
-
   private ConstDeclaration declareStdConst (String id, TypeDenoter constType) {
 
     IntegerExpression constExpr;
@@ -971,25 +940,7 @@ public final class Checker implements Visitor {
     idTable.enter(id, binding);
     return binding;
   }
-  public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
-    ast.E.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
-    if (ast.duplicated)
-      reporter.reportError ("identifier \"%\" already declared",
-                            ast.I.spelling, ast.position);
 
-    return null;
-    }
-  
-    public Object visitVarDeclaration(VarDeclaration ast, Object o) {
-    ast.T = (TypeDenoter) ast.T.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
-    if (ast.duplicated)
-      reporter.reportError ("identifier \"%\" already declared",
-                            ast.I.spelling, ast.position);
-
-    return null;
-  }
   // Creates a small AST to represent the "declaration" of a standard
   // type, and enters it in the identification table.
 
@@ -1062,7 +1013,6 @@ public final class Checker implements Visitor {
     StdEnvironment.charType = new CharTypeDenoter(dummyPos);
     StdEnvironment.anyType = new AnyTypeDenoter(dummyPos);
     StdEnvironment.errorType = new ErrorTypeDenoter(dummyPos);
-    StdEnvironment.errorType = new ErrorTypeDenoter(dummyPos);
 
     StdEnvironment.booleanDecl = declareStdType("Boolean", StdEnvironment.booleanType);
     StdEnvironment.falseDecl = declareStdConst("false", StdEnvironment.booleanType);
@@ -1121,8 +1071,11 @@ public final class Checker implements Visitor {
     }
 
     @Override
+    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-
+    @Override
     public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -1152,14 +1105,30 @@ public final class Checker implements Visitor {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-
     @Override
-
-    public Object visitVarActualParameter(VarActualParameter ast, Object o) {
+    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Object visitSingleVname(SingleVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
+    @Override
+    public Object visitCompoundVname(CompoundVname ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitAssignCommand(AssignCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitVarActualParameter(VarActualParameter ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     
 }
