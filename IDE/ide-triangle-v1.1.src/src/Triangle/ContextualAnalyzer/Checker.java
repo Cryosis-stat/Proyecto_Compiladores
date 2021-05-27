@@ -239,11 +239,9 @@ public final class Checker implements Visitor {
     
      if (! eType1.equals(StdEnvironment.integerType))
           reporter.reportError("Integer expression expected here", "", ast.E1.position);
-            
-    idTable.enter (ast.I.spelling, ast);
     idTable.openScope();
+    idTable.enter (ast.I.spelling, ast);
 
-    
     return null;
   }
 
@@ -320,7 +318,7 @@ public final class Checker implements Visitor {
   public Object visitCallExpression(CallExpression ast, Object o) {
    Declaration binding = (Declaration) ast.I.visit(this, null);
     if (binding == null) {
-     // reportUndeclared(ast.I);
+      reportUndeclared(ast.I.identifier);
       ast.type = StdEnvironment.errorType;
     } else if (binding instanceof FuncDeclaration) {
       ast.APS.visit(this, ((FuncDeclaration) binding).FPS);
@@ -706,9 +704,17 @@ public final class Checker implements Visitor {
     return ast;
   }
 
-      public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast , Object o) {///////////////////////////////////////////////////////
-    return StdEnvironment.charType;
-    
+      public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast , Object o) {/////////////////////////////////////////////////////// 
+    Declaration binding = (Declaration) ast.I.visit(this, null);
+    if (binding == null) {
+      reportUndeclared (ast.I.identifier);
+      return StdEnvironment.errorType;
+    } else if (! (binding instanceof TypeDeclaration)) {
+      reporter.reportError ("\"%\" is not a type identifier",
+                            ast.I.identifier.spelling, ast.I.position);
+      return StdEnvironment.errorType;
+    }
+    return ((TypeDeclaration) binding).T;    
     
     }
   
@@ -768,7 +774,14 @@ public final class Checker implements Visitor {
       I.decl = binding;
     return binding;
   }
-
+    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
+        Identifier I= ast.identifier;
+    Declaration binding = idTable.retrieve(I.spelling);
+        if (binding != null)
+      I.decl = binding;
+    return binding;   
+    }
+    
   public Object visitIntegerLiteral(IntegerLiteral IL, Object o) {
     return StdEnvironment.integerType;
   }
@@ -830,12 +843,13 @@ public final class Checker implements Visitor {
         ast.type = ((VarDeclaration) binding).T;
         ast.variable = true;
       }  else if (binding instanceof VarInitDeclaration) {
-        ast.type = ((VarDeclaration) binding).T;
+        ast.type = ((VarInitDeclaration) binding).E.type;
         ast.variable = true;
       }else if (binding instanceof ConstFormalParameter) {
         ast.type = ((ConstFormalParameter) binding).T;
         ast.variable = false;
       }else if (binding instanceof ForDeclaration) {
+        ast.type = ((ForDeclaration) binding).E.type;
         ast.variable = false;
       } else if (binding instanceof VarFormalParameter) {
         ast.type = ((VarFormalParameter) binding).T;
@@ -1144,11 +1158,8 @@ public final class Checker implements Visitor {
     }
 
     @Override
-    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-	@Override
+
     public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

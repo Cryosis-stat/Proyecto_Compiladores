@@ -10,9 +10,10 @@
 </VarInitDeclaration>
 <VarDeclaration>
 <Identifier value="y"/>
-<CharTypeDenoter/>
+<IntTypeDenoter/>
 </VarDeclaration>
 </SequentialDeclaration>
+<SequentialCommand>
 <ForCommand>
 <ForDeclaration>
 <Identifier value="i"/>
@@ -23,7 +24,31 @@
 <IntegerLiteral value="6"/>
 </IntegerExpression>
 </ForDeclaration>
-<EmptyCommand/>
+<AssignCommand>
+<Vname>
+<VarName>
+<Identifier value="y"/>
+</VarName>
+</Vname>
+<VnameExpression>
+<Vname>
+<VarName>
+<Identifier value="i"/>
+</VarName>
+</Vname>
+</VnameExpression>
+</AssignCommand>
 </ForCommand>
+<AssignCommand>
+<Vname>
+<VarName>
+<Identifier value="j"/>
+</VarName>
+</Vname>
+<IntegerExpression>
+<IntegerLiteral value="1"/>
+</IntegerExpression>
+</AssignCommand>
+</SequentialCommand>
 </LetCommand>
 <SingleProgram>
