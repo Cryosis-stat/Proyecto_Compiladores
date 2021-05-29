@@ -394,12 +394,17 @@ public final class Checker implements Visitor {
 
 
   // Declarations
+  
+  public Object visitUnaryOperatorDeclaration(UnaryOperatorDeclaration ast, Object o) {
+    return null;
+  }
 
   // Always returns null. Does not use the given object.
   public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast, Object o) {
     return null;
   }
-
+  
+  //Single declaration 
   public Object visitConstDeclaration(ConstDeclaration ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     idTable.enter(ast.I.spelling, ast);
@@ -409,6 +414,26 @@ public final class Checker implements Visitor {
     return null;
   }
 
+  public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
+    ast.E.visit(this, null);
+    idTable.enter (ast.I.spelling, ast);
+    if (ast.duplicated)
+      reporter.reportError ("identifier \"%\" already declared",
+                            ast.I.spelling, ast.position);
+
+    return null;
+    }
+  
+    public Object visitVarDeclaration(VarDeclaration ast, Object o) {
+    ast.T = (TypeDenoter) ast.T.visit(this, null);
+    idTable.enter (ast.I.spelling, ast);
+    if (ast.duplicated)
+      reporter.reportError ("identifier \"%\" already declared",
+                            ast.I.spelling, ast.position);
+
+    return null;
+  }  
+  
   public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
     idTable.enter (ast.I.spelling, ast); // permits recursion
@@ -436,14 +461,8 @@ public final class Checker implements Visitor {
     idTable.closeScope();
     return null;
   }
-
-  public Object visitSequentialDeclaration(SequentialDeclaration ast, Object o) {
-    ast.D1.visit(this, null);
-    ast.D2.visit(this, null);
-    return null;
-  }
-
-  public Object visitTypeDeclaration(TypeDeclaration ast, Object o) {
+  
+    public Object visitTypeDeclaration(TypeDeclaration ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
     idTable.enter (ast.I.spelling, ast);
     if (ast.duplicated)
@@ -451,11 +470,42 @@ public final class Checker implements Visitor {
                             ast.I.spelling, ast.position);
     return null;
   }
-
-  public Object visitUnaryOperatorDeclaration(UnaryOperatorDeclaration ast, Object o) {
-    return null;
+    
+    //Package
+    public Object visitSequentialDeclaration(SequentialDeclaration ast, Object o) {
+        ast.D1.visit(this, null);
+        ast.D2.visit(this, null);
+        return null;
   }
+    //Compound declaration  
+    
+    @Override
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }    
+    
+    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration ast, Object o) {
+        idTable.rememberPrivate();
+        ast.visit(this, null);
+        return null;
+    }    
+    
+    // Proc Funcs
+    
+    @Override
+    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
+    @Override
+    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 
   // Array Aggregates
@@ -869,6 +919,9 @@ public final class Checker implements Visitor {
     }
     return ast.type;
   }
+  
+  
+  
 
   // Programs
     public Object visitSingleProgram(SingleProgram ast, Object o) {
@@ -966,25 +1019,7 @@ public final class Checker implements Visitor {
     idTable.enter(id, binding);
     return binding;
   }
-  public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
-    ast.E.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
-    if (ast.duplicated)
-      reporter.reportError ("identifier \"%\" already declared",
-                            ast.I.spelling, ast.position);
 
-    return null;
-    }
-  
-    public Object visitVarDeclaration(VarDeclaration ast, Object o) {
-    ast.T = (TypeDenoter) ast.T.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
-    if (ast.duplicated)
-      reporter.reportError ("identifier \"%\" already declared",
-                            ast.I.spelling, ast.position);
-
-    return null;
-  }
   // Creates a small AST to represent the "declaration" of a standard
   // type, and enters it in the identification table.
 
@@ -1104,20 +1139,8 @@ public final class Checker implements Visitor {
 
 
 
-
+        
     @Override
-    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-
-
     public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -1127,24 +1150,8 @@ public final class Checker implements Visitor {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-	@Override
-    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
-    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-
-    @Override
-
     public Object visitVarActualParameter(VarActualParameter ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
