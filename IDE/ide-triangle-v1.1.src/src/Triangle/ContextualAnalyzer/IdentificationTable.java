@@ -15,15 +15,18 @@
 package Triangle.ContextualAnalyzer;
 
 import Triangle.AbstractSyntaxTrees.Declaration;
+import java.util.*;
 
 public final class IdentificationTable {
 
   private int level;
   private IdEntry latest;
+  private Stack<IdEntry> pila;
 
   public IdentificationTable () {
     level = 0;
     latest = null;
+    pila = new Stack<IdEntry>();
   }
 
   // Opens a new level in the identification table, 1 higher than the
@@ -104,5 +107,14 @@ public final class IdentificationTable {
 
     return attr;
   }
+  
+  public void rememberPrivate(){
+       pila.push(this.latest);
+  }
+  
+  public IdEntry rememberPublic(){
+      return pila.pop();
+  }
+  
 
 }
