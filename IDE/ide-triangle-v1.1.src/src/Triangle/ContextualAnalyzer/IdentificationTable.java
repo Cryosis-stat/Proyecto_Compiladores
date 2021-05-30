@@ -26,7 +26,7 @@ public final class IdentificationTable {
   public IdentificationTable () {
     level = 0;
     latest = null;
-    latest = null;
+
   }
 
   // Opens a new level in the identification table, 1 higher than the
@@ -80,6 +80,32 @@ public final class IdentificationTable {
     entry = new IdEntry(id, attr, this.level, this.latest);
     this.latest = entry;
   }
+  
+  public void enterPackage(String packageId, String id, Declaration attr){
+    IdEntry entryPack = this.latest;
+    IdEntry entry;
+    boolean present = false, searching = true;
+
+    // Check for duplicate entry ...
+    while (searching) {
+      if (entryPack == null || entryPack.level < this.level)
+        searching = false;
+      else if (entryPack.packageId.equals(packageId)) {
+        entry = entryPack;
+        if (entry.id.equals(id)){
+          present = true;
+          searching = false;                  
+        }        
+       } else
+       entryPack = entryPack.previous;
+    }
+
+    attr.duplicated = present;
+    // Add new entry ...
+    entry = new IdEntry(packageId, id, attr, 0, this.latest);
+    this.latest = entry;
+  
+  }
 
   // Finds an entry for the given identifier in the identification table,
   // if any. If there are several entries for that identifier, finds the
@@ -114,6 +140,10 @@ public final class IdentificationTable {
   
   public void restarLevel(){
       this.latest.level--;
+  }
+  
+  public void subirLevel(){
+      this.latest.level++;
   }
   
   //Reemplaza el puntero antiguoPrev por el nuevoPrev

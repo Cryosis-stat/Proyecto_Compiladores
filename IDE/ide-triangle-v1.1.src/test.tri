@@ -1,9 +1,0 @@
-let
-    var j := 5;
-    var y : Integer
-in
-loop for j from 1 to 6 do  nothing  end;
-j:=1
-
-end
-! OK

@@ -17,13 +17,23 @@ package Triangle.ContextualAnalyzer;
 import Triangle.AbstractSyntaxTrees.Declaration;
 
 public class IdEntry {
-
+  
+  protected String packageId;
   protected String id;
   protected Declaration attr;
   protected int level;
   protected IdEntry previous;
 
   IdEntry (String id, Declaration attr, int level, IdEntry previous) {
+    this.packageId = "_main";
+    this.id = id;
+    this.attr = attr;
+    this.level = level;
+    this.previous = previous;
+  }
+  
+    IdEntry (String packageId, String id, Declaration attr, int level, IdEntry previous) {
+    this.packageId = packageId;
     this.id = id;
     this.attr = attr;
     this.level = level;
