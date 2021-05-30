@@ -1,0 +1,25 @@
+let
+	private
+		var a := 5;
+		var b := 15
+		!private
+		!var f := 10;
+		!var g := 5
+		!in
+		!var b := g + f
+		!end
+	in
+		!var c := a * b * 2
+		private
+		var h := a*b;
+		var i := 0
+		in
+		var c := h
+		end
+	end;
+	var d := 5
+in
+	putint(c)
+end
+
+! Ok

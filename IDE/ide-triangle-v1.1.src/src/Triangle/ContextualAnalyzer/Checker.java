@@ -485,8 +485,20 @@ public final class Checker implements Visitor {
     }    
     
     public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration ast, Object o) {
-        idTable.rememberPrivate();
-        ast.visit(this, null);
+        IdEntry preD1, preD2;
+        idTable.openScope();
+        
+        preD1 = idTable.getLatest();
+        ast.D1.visit(this, null);
+        
+        preD2 = idTable.getLatest();        
+        ast.D2.visit(this, null);
+        idTable.restarLevel();
+                
+        //busca que el nodo.previous == 1er parametro y reemplaza el previous por el 2ndo parametro
+        idTable.setPrevious(preD2, preD1);    
+        idTable.closeScope();
+        
         return null;
     }    
     
