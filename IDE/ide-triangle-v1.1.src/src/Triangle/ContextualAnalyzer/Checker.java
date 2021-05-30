@@ -744,13 +744,10 @@ public final class Checker implements Visitor {
   }
 
       public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast , Object o) {/////////////////////////////////////////////////////// 
-    Declaration binding = (Declaration) ast.I.visit(this, null);
-    if (binding == null) {
-      reportUndeclared (ast.I.identifier);
-      return StdEnvironment.errorType;
-    } else if (! (binding instanceof TypeDeclaration)) {
+     Declaration binding = (Declaration) ast.I.visit(this, null);
+   if (! (binding instanceof TypeDeclaration)) {
       reporter.reportError ("\"%\" is not a type identifier",
-                            ast.I.identifier.spelling, ast.I.position);
+                            ast.I.getIdentifier().spelling, ast.I.position);
       return StdEnvironment.errorType;
     }
     return ((TypeDeclaration) binding).T;    
