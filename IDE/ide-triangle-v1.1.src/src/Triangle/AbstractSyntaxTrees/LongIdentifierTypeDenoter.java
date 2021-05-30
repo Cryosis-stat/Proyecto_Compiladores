@@ -26,4 +26,5 @@ public class LongIdentifierTypeDenoter extends TypeDenoter {
   }
 
   public LongIdentifier I;
+
 }

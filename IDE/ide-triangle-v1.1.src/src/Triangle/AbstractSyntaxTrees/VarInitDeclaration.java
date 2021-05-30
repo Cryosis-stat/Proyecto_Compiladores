@@ -23,7 +23,9 @@ public class VarInitDeclaration extends Declaration {
   public Object visit(Visitor v, Object o) {
     return v.visitVarInitDeclaration(this, o);
   }
-
+  public Identifier getIdentifier (){
+      return I;
+  }
   public Identifier I;
   public Expression E;
 }

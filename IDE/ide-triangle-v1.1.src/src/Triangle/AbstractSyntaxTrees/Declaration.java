@@ -24,4 +24,9 @@ public abstract class Declaration extends AST {
   }
 
   public boolean duplicated;
+  public Identifier I;
+
+  public Identifier getIdentifier (){
+      return I;
+  }
 }

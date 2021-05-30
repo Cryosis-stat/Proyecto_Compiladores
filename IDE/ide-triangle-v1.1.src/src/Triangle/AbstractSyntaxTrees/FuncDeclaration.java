@@ -32,6 +32,9 @@ public class FuncDeclaration extends Declaration {
     return v.visitFuncDeclaration(this, o);
   }
 
+  public Identifier getIdentifier (){
+      return I;
+  }
   public Identifier I;
   public FormalParameterSequence FPS;
   public TypeDenoter T;

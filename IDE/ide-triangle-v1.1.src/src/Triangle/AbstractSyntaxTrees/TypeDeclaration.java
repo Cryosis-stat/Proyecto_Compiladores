@@ -28,7 +28,9 @@ public class TypeDeclaration extends Declaration {
   public Object visit(Visitor v, Object o) {
     return v.visitTypeDeclaration(this, o);
   }
-
+  public Identifier getIdentifier (){
+      return I;
+  }
   public Identifier I;
   public TypeDenoter T;
 }

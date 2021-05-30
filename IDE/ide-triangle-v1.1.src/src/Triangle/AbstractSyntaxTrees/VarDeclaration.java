@@ -28,7 +28,9 @@ public class VarDeclaration extends Declaration {
   public Object visit(Visitor v, Object o) {
     return v.visitVarDeclaration(this, o);
   }
-
+  public Identifier getIdentifier (){
+      return I;
+  }
   public Identifier I;
   public TypeDenoter T;
 }

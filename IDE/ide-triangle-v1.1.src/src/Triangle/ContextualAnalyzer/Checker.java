@@ -122,14 +122,16 @@ public final class Checker implements Visitor {
   public Object visitCallCommand(CallCommand ast, Object o) {
    Declaration binding = (Declaration) ast.I.visit(this, null);
     if (binding == null)
-      reportUndeclared(ast.I.identifier);
+      reportUndeclared(ast.I.getIdentifier());
     else if (binding instanceof ProcDeclaration) {
       ast.APS.visit(this, ((ProcDeclaration) binding).FPS);
     } else if (binding instanceof ProcFormalParameter) {
       ast.APS.visit(this, ((ProcFormalParameter) binding).FPS);
-    } else
+    } else if (binding instanceof ProcFuncProcDeclaration) {
+      ast.APS.visit(this, ((ProcFuncProcDeclaration) binding).FPS);
+    }else
       reporter.reportError("\"%\" is not a procedure identifier",
-                           ast.I.identifier.spelling, ast.I.position);
+                           ast.I.getIdentifier().spelling, ast.I.position);
     return null;
   }
 
@@ -152,6 +154,7 @@ public final class Checker implements Visitor {
     }
 
   public Object visitIfCommand(IfCommand ast, Object o) {
+      
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     if (! eType.equals(StdEnvironment.booleanType))
       reporter.reportError("Boolean expression expected here", "", ast.E.position);
@@ -284,7 +287,13 @@ public final class Checker implements Visitor {
   public Object visitBinaryExpression(BinaryExpression ast, Object o) {
 
     TypeDenoter e1Type = (TypeDenoter) ast.E1.visit(this, null);
+        if(e1Type.getClass().equals(LongIdentifierTypeDenoter.class)){
+        e1Type = (TypeDenoter)e1Type.visit(this, null);
+    }
     TypeDenoter e2Type = (TypeDenoter) ast.E2.visit(this, null);
+    if(e2Type.getClass().equals(LongIdentifierTypeDenoter.class)){
+        e2Type=(TypeDenoter) e2Type.visit(this, null);
+    }
     Declaration binding = (Declaration) ast.O.visit(this, null);
 
     if (binding == null)
@@ -313,7 +322,7 @@ public final class Checker implements Visitor {
   public Object visitCallExpression(CallExpression ast, Object o) {
    Declaration binding = (Declaration) ast.I.visit(this, null);
     if (binding == null) {
-      reportUndeclared(ast.I.identifier);
+      reportUndeclared(ast.I.getIdentifier());
       ast.type = StdEnvironment.errorType;
     } else if (binding instanceof FuncDeclaration) {
       ast.APS.visit(this, ((FuncDeclaration) binding).FPS);
@@ -321,11 +330,14 @@ public final class Checker implements Visitor {
     } else if (binding instanceof FuncFormalParameter) {
       ast.APS.visit(this, ((FuncFormalParameter) binding).FPS);
       ast.type = ((FuncFormalParameter) binding).T;
-    } else
+    } else if (binding instanceof ProcFuncFuncDeclaration) {
+      ast.APS.visit(this, ((ProcFuncFuncDeclaration) binding).FPS);
+      ast.type = ((ProcFuncFuncDeclaration) binding).T;
+    }else if (binding instanceof ProcFuncProcDeclaration) {
+      ast.APS.visit(this, ((ProcFuncProcDeclaration) binding).FPS);
+    }else
       reporter.reportError("\"%\" is not a function identifier",
-                           ast.I.toString(), ast.I.position);
-    /*     reporter.reportError("\"%\" is not a function identifier",
-                           ast.I.spelling, ast.I.position);*/
+                           ast.I.getIdentifier().spelling, ast.I.position);
     return ast.type;
     //return null;
   }
@@ -346,7 +358,13 @@ public final class Checker implements Visitor {
       reporter.reportError ("Boolean expression expected here", "",
                             ast.E1.position);
     TypeDenoter e2Type = (TypeDenoter) ast.E2.visit(this, null);
+        if(e2Type.getClass().equals(LongIdentifierTypeDenoter.class)){
+        e2Type=(TypeDenoter) e2Type.visit(this, null);
+    }
     TypeDenoter e3Type = (TypeDenoter) ast.E3.visit(this, null);
+        if(e3Type.getClass().equals(LongIdentifierTypeDenoter.class)){
+        e3Type=(TypeDenoter) e3Type.visit(this, null);
+    }
     if (! e2Type.equals(e3Type))
       reporter.reportError ("incompatible limbs in if-expression", "", ast.position);
     ast.type = e2Type;
@@ -471,12 +489,7 @@ public final class Checker implements Visitor {
     return null;
   }
     
-    //Package
-    public Object visitSequentialDeclaration(SequentialDeclaration ast, Object o) {
-        ast.D1.visit(this, null);
-        ast.D2.visit(this, null);
-        return null;
-  }
+
     //Compound declaration  
     
         
@@ -501,50 +514,69 @@ public final class Checker implements Visitor {
     
     // Proc Funcs
     
-    @Override
     public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
-        idTable.openScope();
         ast.D1.visit(this, null);
-        idTable.closeScope();
         return null;
     }
     
     public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
+        
         ast.T = (TypeDenoter) ast.T.visit(this, null);
-        idTable.enter (ast.I.spelling, ast); // permits recursion
-        if (ast.duplicated)
-          reporter.reportError ("identifier \"%\" already declared",
-                                ast.I.spelling, ast.position);
-        idTable.openScope();
+
+                idTable.openScope();
+
         ast.FPS.visit(this, null);
         TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-        idTable.closeScope();
         if (! ast.T.equals(eType))
           reporter.reportError ("body of function \"%\" has wrong type",
                                 ast.I.spelling, ast.E.position);
+                                idTable.closeScope();
+
         return null;
     }
 
     public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
-        idTable.enter (ast.I.spelling, ast); // permits recursion
-        if (ast.duplicated)
-          reporter.reportError ("identifier \"%\" already declared",
-                                ast.I.spelling, ast.position);
-        idTable.openScope();
+                idTable.openScope();
+
         ast.FPS.visit(this, null);
+
         ast.C.visit(this, null);
-        idTable.closeScope();
+                        idTable.closeScope();
+
         return null;
     }
 
-    @Override
     public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
+
+        if(!(ast.D1.getClass().equals(SequentialProcFuncDeclaration.class))){
+                idTable.enter (ast.D1.getIdentifier().spelling, ast.D1); // permits recursion
+        if (ast.D1.duplicated)
+          reporter.reportError ("identifier \"%\" already declared",
+                                ast.D1.getIdentifier().spelling, ast.position);
+        
+        
+    }
+        if(!(ast.D2.getClass().equals(SequentialProcFuncDeclaration.class))){
+        idTable.enter (ast.D2.getIdentifier().spelling, ast.D2); // permits recursion
+
+        if (ast.D2.duplicated)
+          reporter.reportError ("identifier \"%\" already declared",
+                                ast.D1.getIdentifier().spelling, ast.position);
+
+    }
+
+        ast.D1.visit(this, null);
+        ast.D2.visit(this, null);
+
+        return null;
+    }
+
+    public Object visitSequentialDeclaration(SequentialDeclaration ast, Object o) {
+        
         ast.D1.visit(this, null);
         ast.D2.visit(this, null);
         return null;
-    }
-
-
+  }
   // Array Aggregates
 
   // Returns the TypeDenoter for the Array Aggregate. Does not use the
@@ -615,6 +647,7 @@ public final class Checker implements Visitor {
   public Object visitProcFormalParameter(ProcFormalParameter ast, Object o) {
     idTable.openScope();
     ast.FPS.visit(this, null);
+    
     idTable.closeScope();
     idTable.enter (ast.I.spelling, ast);
     if (ast.duplicated)
@@ -658,7 +691,7 @@ public final class Checker implements Visitor {
     if (! (fp instanceof ConstFormalParameter))
       reporter.reportError ("const actual parameter not expected here", "",
                             ast.position);
-    else if (! eType.equals(((ConstFormalParameter) fp).T))
+    else if (! eType.equals(((ConstFormalParameter) fp).T.visit(this, null)))
       reporter.reportError ("wrong type for const actual parameter", "",
                             ast.E.position);
     return null;

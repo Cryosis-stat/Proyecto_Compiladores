@@ -23,7 +23,9 @@ public class ProcFuncProcDeclaration extends Declaration {
   public Object visit (Visitor v, Object o) {
     return v.visitProcFuncProcDeclaration(this, o);
   }
-
+  public Identifier getIdentifier (){
+      return I;
+  }
   public Identifier I;
   public FormalParameterSequence FPS;
   public Command C;

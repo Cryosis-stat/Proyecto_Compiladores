@@ -1013,8 +1013,7 @@ Declaration parseProc_FuncsDeclaration() throws SyntaxError {
         accept(Token.PIPE);
         Declaration d2AST = parseProcFuncDeclaration();
         finish(declarationPos); //deberia ser un proc-func linea 895
-        declarationAST = new SequentialProcFuncDeclaration(declarationAST,
-            d2AST, declarationPos );
+        declarationAST = new SequentialProcFuncDeclaration(declarationAST,  d2AST, declarationPos );
     } while (currentToken.kind == Token.PIPE);
     
     return declarationAST;
