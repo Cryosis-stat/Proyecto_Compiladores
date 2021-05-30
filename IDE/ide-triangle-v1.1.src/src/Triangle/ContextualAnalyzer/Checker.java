@@ -852,7 +852,11 @@ public final class Checker implements Visitor {
     }
     return ast.type;
   }
+      public Object visitVarActualParameter(VarActualParameter ast, Object o) {
+          ast.V.visit(this, null);
+          return null;
 
+    }
   public Object visitSimpleVarName(SimpleVarName ast, Object o) {
     ast.variable = false;
     ast.type = StdEnvironment.errorType;
@@ -921,7 +925,7 @@ public final class Checker implements Visitor {
   }
   
   
-  
+
 
   // Programs
     public Object visitSingleProgram(SingleProgram ast, Object o) {
@@ -933,8 +937,6 @@ public final class Checker implements Visitor {
     
     
   public Object visitProgram(Program ast, Object o) {
-      
-    //
     return null;
   }
 
@@ -1151,11 +1153,7 @@ public final class Checker implements Visitor {
     }
 
 
-    @Override
-    public Object visitVarActualParameter(VarActualParameter ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+  
 
 
     
