@@ -21,12 +21,12 @@ public final class IdentificationTable {
 
   private int level;
   private IdEntry latest;
-  private Stack<IdEntry> pila;
+  
 
   public IdentificationTable () {
     level = 0;
     latest = null;
-    pila = new Stack<IdEntry>();
+    latest = null;
   }
 
   // Opens a new level in the identification table, 1 higher than the
@@ -108,13 +108,23 @@ public final class IdentificationTable {
     return attr;
   }
   
-  public void rememberPrivate(){
-       pila.push(this.latest);
+  public IdEntry getLatest(){
+      return this.latest;
   }
   
-  public IdEntry rememberPublic(){
-      return pila.pop();
+  public void restarLevel(){
+      this.latest.level--;
   }
+  
+  //Reemplaza el puntero antiguoPrev por el nuevoPrev
+  public void setPrevious(IdEntry prev, IdEntry nuevoPrev){
+      IdEntry entry = this.latest;
+      while(entry.previous != prev){
+          entry = entry.previous;          
+      }
+      entry.previous = nuevoPrev;
+  }
+
   
 
 }

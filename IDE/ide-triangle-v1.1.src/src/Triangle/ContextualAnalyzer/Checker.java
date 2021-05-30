@@ -479,32 +479,69 @@ public final class Checker implements Visitor {
   }
     //Compound declaration  
     
-    @Override
-    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }    
+        
     
     public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration ast, Object o) {
-        idTable.rememberPrivate();
-        ast.visit(this, null);
+        IdEntry preD1, preD2;
+        idTable.openScope();
+        
+        preD1 = idTable.getLatest();
+        ast.D1.visit(this, null);
+        
+        preD2 = idTable.getLatest();        
+        ast.D2.visit(this, null);
+        idTable.restarLevel();
+                
+        //busca que el nodo.previous == 1er parametro y reemplaza el previous por el 2ndo parametro
+        idTable.setPrevious(preD2, preD1);    
+        idTable.closeScope();
+        
         return null;
     }    
     
     // Proc Funcs
     
     @Override
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
+        idTable.openScope();
+        ast.D1.visit(this, null);
+        idTable.closeScope();
+        return null;
+    }
+    
     public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ast.T = (TypeDenoter) ast.T.visit(this, null);
+        idTable.enter (ast.I.spelling, ast); // permits recursion
+        if (ast.duplicated)
+          reporter.reportError ("identifier \"%\" already declared",
+                                ast.I.spelling, ast.position);
+        idTable.openScope();
+        ast.FPS.visit(this, null);
+        TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+        idTable.closeScope();
+        if (! ast.T.equals(eType))
+          reporter.reportError ("body of function \"%\" has wrong type",
+                                ast.I.spelling, ast.E.position);
+        return null;
     }
 
-    @Override
     public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        idTable.enter (ast.I.spelling, ast); // permits recursion
+        if (ast.duplicated)
+          reporter.reportError ("identifier \"%\" already declared",
+                                ast.I.spelling, ast.position);
+        idTable.openScope();
+        ast.FPS.visit(this, null);
+        ast.C.visit(this, null);
+        idTable.closeScope();
+        return null;
     }
 
     @Override
-    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
+        ast.D1.visit(this, null);
+        ast.D2.visit(this, null);
+        return null;
     }
 
 
@@ -1149,7 +1186,15 @@ public final class Checker implements Visitor {
 
     @Override
     public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Identifier I1 = ast.getPackageIdentifier();
+        Identifier I2 = ast.getIdentifier();
+        Declaration binding = idTable.retrieve(I1.spelling);
+        if(binding != null)
+            I1.decl = binding;
+        Declaration binding2 = idTable.retrieve(I2.spelling);
+        if(binding2 != null)
+            I2.decl = binding2;
+	return binding;
     }
 
 
