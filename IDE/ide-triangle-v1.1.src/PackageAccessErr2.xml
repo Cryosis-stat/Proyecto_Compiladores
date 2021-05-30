@@ -1,0 +1,52 @@
+<?xml version="1.0" standalone="yes"?>
+<Program>
+<LetCommand>
+<VarDeclaration>
+<Identifier value="b"/>
+<LongIdentifierTypeDenoter>
+<LongIdentifierTypeDenoter>
+<Identifier value="Integer"/>
+</LongIdentifierTypeDenoter>
+</LongIdentifierTypeDenoter>
+</VarDeclaration>
+<SequentialCommand>
+<AssignCommand>
+<Vname>
+<VarName>
+<Identifier value="b"/>
+</VarName>
+</Vname>
+<IntegerExpression>
+<IntegerLiteral value="1"/>
+</IntegerExpression>
+</AssignCommand>
+<CallCommand>
+<LongIdentifierTypeDenoter>
+<Identifier value="put"/>
+</LongIdentifierTypeDenoter>
+<SingleActualParameterSequence>
+<ConstActualParameter>
+<VnameExpression>
+<Vname>
+<VarName>
+<Identifier value="myP"/>
+</VarName>
+</Vname>
+</VnameExpression>
+</ConstActualParameter>
+</SingleActualParameterSequence>
+</CallCommand>
+</SequentialCommand>
+</LetCommand>
+<PackageDeclaration>
+<Identifier value="myP"/>
+<VarDeclaration>
+<Identifier value="a"/>
+<LongIdentifierTypeDenoter>
+<LongIdentifierTypeDenoter>
+<Identifier value="Integer"/>
+</LongIdentifierTypeDenoter>
+</LongIdentifierTypeDenoter>
+</VarDeclaration>
+</PackageDeclaration>
+</Program>

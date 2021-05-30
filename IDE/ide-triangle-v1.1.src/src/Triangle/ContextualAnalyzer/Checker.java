@@ -235,7 +235,7 @@ public final class Checker implements Visitor {
           reporter.reportError("Integer expression expected here", "", ast.E1.position);
           idTable.openScope();
 
-    idTable.enter (ast.I.spelling, ast);
+    idTable.enter ("_main",ast.I.spelling, ast);
 
     if (ast.duplicated)    
     reporter.reportError ("identifier \"%\" already declared", ast.I.spelling, ast.position);
@@ -425,7 +425,7 @@ public final class Checker implements Visitor {
   //Single declaration 
   public Object visitConstDeclaration(ConstDeclaration ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-    idTable.enter(ast.I.spelling, ast);
+    idTable.enter((String)o,ast.I.spelling, ast);
     if (ast.duplicated)
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
@@ -434,7 +434,7 @@ public final class Checker implements Visitor {
 
   public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
     ast.E.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
+    idTable.enter ((String)o,ast.I.spelling, ast);
     if (ast.duplicated)
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
@@ -444,7 +444,7 @@ public final class Checker implements Visitor {
   
     public Object visitVarDeclaration(VarDeclaration ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
+    idTable.enter ((String)o,ast.I.spelling, ast);
     if (ast.duplicated)
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
@@ -454,7 +454,7 @@ public final class Checker implements Visitor {
   
   public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
-    idTable.enter (ast.I.spelling, ast); // permits recursion
+    idTable.enter ((String)o,ast.I.spelling, ast); // permits recursion
     if (ast.duplicated)
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
@@ -469,7 +469,7 @@ public final class Checker implements Visitor {
   }
 
   public Object visitProcDeclaration(ProcDeclaration ast, Object o) {
-    idTable.enter (ast.I.spelling, ast); // permits recursion
+    idTable.enter ((String)o,ast.I.spelling, ast); // permits recursion
     if (ast.duplicated)
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
@@ -482,7 +482,7 @@ public final class Checker implements Visitor {
   
     public Object visitTypeDeclaration(TypeDeclaration ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
+    idTable.enter ((String)o,ast.I.spelling, ast);
     if (ast.duplicated)
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
@@ -549,7 +549,7 @@ public final class Checker implements Visitor {
     public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
 
         if(!(ast.D1.getClass().equals(SequentialProcFuncDeclaration.class))){
-                idTable.enter (ast.D1.getIdentifier().spelling, ast.D1); // permits recursion
+                idTable.enter ("_main",ast.D1.getIdentifier().spelling, ast.D1); // permits recursion
         if (ast.D1.duplicated)
           reporter.reportError ("identifier \"%\" already declared",
                                 ast.D1.getIdentifier().spelling, ast.position);
@@ -557,7 +557,7 @@ public final class Checker implements Visitor {
         
     }
         if(!(ast.D2.getClass().equals(SequentialProcFuncDeclaration.class))){
-        idTable.enter (ast.D2.getIdentifier().spelling, ast.D2); // permits recursion
+        idTable.enter ("_main",ast.D2.getIdentifier().spelling, ast.D2); // permits recursion
 
         if (ast.D2.duplicated)
           reporter.reportError ("identifier \"%\" already declared",
@@ -625,7 +625,7 @@ public final class Checker implements Visitor {
 
   public Object visitConstFormalParameter(ConstFormalParameter ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
-    idTable.enter(ast.I.spelling, ast);
+    idTable.enter("_main",ast.I.spelling, ast);
     if (ast.duplicated)
       reporter.reportError ("duplicated formal parameter \"%\"",
                             ast.I.spelling, ast.position);
@@ -637,7 +637,7 @@ public final class Checker implements Visitor {
     ast.FPS.visit(this, null);
     idTable.closeScope();
     ast.T = (TypeDenoter) ast.T.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
+    idTable.enter ("_main",ast.I.spelling, ast);
     if (ast.duplicated)
       reporter.reportError ("duplicated formal parameter \"%\"",
                             ast.I.spelling, ast.position);
@@ -649,7 +649,7 @@ public final class Checker implements Visitor {
     ast.FPS.visit(this, null);
     
     idTable.closeScope();
-    idTable.enter (ast.I.spelling, ast);
+    idTable.enter ("_main",ast.I.spelling, ast);
     if (ast.duplicated)
       reporter.reportError ("duplicated formal parameter \"%\"",
                             ast.I.spelling, ast.position);
@@ -658,7 +658,7 @@ public final class Checker implements Visitor {
 
   public Object visitVarFormalParameter(VarFormalParameter ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
+    idTable.enter ("_main",ast.I.spelling, ast);
     if (ast.duplicated)
       reporter.reportError ("duplicated formal parameter \"%\"",
                             ast.I.spelling, ast.position);
@@ -862,15 +862,15 @@ public final class Checker implements Visitor {
     return StdEnvironment.charType;
   }
 
-  public Object visitIdentifier(Identifier I, Object o) {
-    Declaration binding = idTable.retrieve(I.spelling);
+  public Object visitIdentifier(Identifier I, Object o) { 
+    Declaration binding = idTable.retrieve("_main",I.spelling);
     if (binding != null)
       I.decl = binding;
     return binding;
   }
     public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
         Identifier I= ast.identifier;
-    Declaration binding = idTable.retrieve(I.spelling);
+    Declaration binding = idTable.retrieve("_main",I.spelling);
         if (binding != null)
       I.decl = binding;
     return binding;   
@@ -881,7 +881,7 @@ public final class Checker implements Visitor {
   }
 
   public Object visitOperator(Operator O, Object o) {
-    Declaration binding = idTable.retrieve(O.spelling);
+    Declaration binding = idTable.retrieve("_main",O.spelling);
     if (binding != null)
       O.decl = binding;
     return binding;
@@ -1071,7 +1071,7 @@ public final class Checker implements Visitor {
     TypeDeclaration binding;
 
     binding = new TypeDeclaration(new Identifier(id, dummyPos), typedenoter, dummyPos);
-    idTable.enter(id, binding);
+    idTable.enter("_main",id, binding);
     return binding;
   }
 
@@ -1088,7 +1088,7 @@ public final class Checker implements Visitor {
     constExpr = new IntegerExpression(null, dummyPos);
     constExpr.type = constType;
     binding = new ConstDeclaration(new Identifier(id, dummyPos), constExpr, dummyPos);
-    idTable.enter(id, binding);
+    idTable.enter("_main",id, binding);
     return binding;
   }
 
@@ -1101,7 +1101,7 @@ public final class Checker implements Visitor {
 
     binding = new ProcDeclaration(new Identifier(id, dummyPos), fps,
                                   new EmptyCommand(dummyPos), dummyPos);
-    idTable.enter(id, binding);
+    idTable.enter("_main",id, binding);
     return binding;
   }
 
@@ -1115,7 +1115,7 @@ public final class Checker implements Visitor {
 
     binding = new FuncDeclaration(new Identifier(id, dummyPos), fps, resultType,
                                   new EmptyExpression(dummyPos), dummyPos);
-    idTable.enter(id, binding);
+    idTable.enter("_main",id, binding);
     return binding;
   }
 
@@ -1130,7 +1130,7 @@ public final class Checker implements Visitor {
 
     binding = new UnaryOperatorDeclaration (new Operator(op, dummyPos),
                                             argType, resultType, dummyPos);
-    idTable.enter(op, binding);
+    idTable.enter("_main",op, binding);
     return binding;
   }
 
@@ -1145,7 +1145,7 @@ public final class Checker implements Visitor {
 
     binding = new BinaryOperatorDeclaration (new Operator(op, dummyPos),
                                              arg1Type, arg2type, resultType, dummyPos);
-    idTable.enter(op, binding);
+    idTable.enter("_main",op, binding);
     return binding;
   }
 
@@ -1207,26 +1207,25 @@ public final class Checker implements Visitor {
 
   }
 
-  // New things
-
+  // Packages
+    @Override
+    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+	ast.D.visit(this, ast.I.spelling);
+        return null;
+    }
 
 
         
-    @Override
-    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
+
+    
     public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
-        Identifier I1 = ast.getPackageIdentifier();
+        Identifier I1 = ast.getPackageIdentifier(); 
         Identifier I2 = ast.getIdentifier();
-        Declaration binding = idTable.retrieve(I1.spelling);
+       
+        Declaration binding = idTable.retrieve(I1.spelling,I2.spelling);
         if(binding != null)
-            I1.decl = binding;
-        Declaration binding2 = idTable.retrieve(I2.spelling);
-        if(binding2 != null)
-            I2.decl = binding2;
+            I2.decl = binding;
 	return binding;
     }
 

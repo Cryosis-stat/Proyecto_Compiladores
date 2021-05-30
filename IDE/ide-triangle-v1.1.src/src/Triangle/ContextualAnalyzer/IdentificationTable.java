@@ -25,7 +25,7 @@ public final class IdentificationTable {
 
   public IdentificationTable () {
     level = 0;
-    latest = null;
+    latest = null; 
 
   }
 
@@ -59,8 +59,8 @@ public final class IdentificationTable {
   // duplicated is set to to true iff there is already an entry for the
   // same identifier at the current level.
 
-  public void enter (String id, Declaration attr) {
-
+  public void enter (String packageId,String id, Declaration attr) {
+    if (packageId.equals("_main")){
     IdEntry entry = this.latest;
     boolean present = false, searching = true;
 
@@ -79,8 +79,31 @@ public final class IdentificationTable {
     // Add new entry ...
     entry = new IdEntry(id, attr, this.level, this.latest);
     this.latest = entry;
+    } else{
+    IdEntry entryPack = this.latest;
+    IdEntry entry;
+    boolean present = false, searching = true;
+// Check for duplicate entry ...
+    while (searching) {
+      if (entryPack == null || entryPack.level < this.level)
+        searching = false;
+      else if (entryPack.packageId.equals(packageId)) {
+        entry = entryPack;
+        if (entry.id.equals(id)){
+          present = true;
+          searching = false;                  
+        }        
+       } else
+       entryPack = entryPack.previous;
+    }
+
+    attr.duplicated = present;
+    // Add new entry ...
+    entry = new IdEntry(packageId, id, attr, 0, this.latest);
+    this.latest = entry;        
+    }
   }
-  
+  /*
   public void enterPackage(String packageId, String id, Declaration attr){
     IdEntry entryPack = this.latest;
     IdEntry entry;
@@ -105,7 +128,7 @@ public final class IdentificationTable {
     entry = new IdEntry(packageId, id, attr, 0, this.latest);
     this.latest = entry;
   
-  }
+  }*/
 
   // Finds an entry for the given identifier in the identification table,
   // if any. If there are several entries for that identifier, finds the
@@ -113,7 +136,7 @@ public final class IdentificationTable {
   // Returns null iff no entry is found.
   // otherwise returns the attribute field of the entry found.
 
-  public Declaration retrieve (String id) {
+  public Declaration retrieve (String packageId,String id) {
 
     IdEntry entry;
     Declaration attr = null;
@@ -123,10 +146,12 @@ public final class IdentificationTable {
     while (searching) {
       if (entry == null)
         searching = false;
-      else if (entry.id.equals(id)) {
-        present = true;
-        searching = false;
-        attr = entry.attr;
+      else if (entry.packageId.equals(packageId)){                         
+        if (entry.id.equals(id)) {
+            present = true;
+            searching = false;
+            attr = entry.attr;
+        }
       } else
         entry = entry.previous;
     }
