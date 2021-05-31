@@ -330,8 +330,10 @@ public Program parseProgram() {
       {
         Identifier iAST = parseIdentifier();
         LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
+
         if (currentToken.kind == Token.LPAREN) {
           acceptIt();
+
           ActualParameterSequence apsAST = parseActualParameterSequence();
           accept(Token.RPAREN);
           finish(commandPos);
@@ -634,9 +636,18 @@ public Program parseProgram() {
     case Token.IDENTIFIER:
       {
         Identifier iAST = parseIdentifier();
-        LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
-        if (currentToken.kind == Token.LPAREN) {
+        
+
+        if  (currentToken.kind == Token.DOLLAR) {
+          Vname vAST = parseRestOfVname(iAST);
+          finish(expressionPos);
+          expressionAST = new VnameExpression(vAST, expressionPos);
+        }
+        else  if (currentToken.kind == Token.LPAREN) {
           acceptIt();
+                  LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
+
+  
           ActualParameterSequence apsAST = parseActualParameterSequence();
           accept(Token.RPAREN);
           finish(expressionPos);
@@ -1317,7 +1328,8 @@ Declaration parseProc_FuncsDeclaration() throws SyntaxError {
     SourcePosition longPos = new SourcePosition();
     longPos = identifierAST.position;
     if (currentToken.kind== Token.DOLLAR){
-        acceptIt();
+                  acceptIt();
+
         Identifier i2AST = parseIdentifier(); 
         finish(longPos);
         LongIdentifier longIdentifierAST = new CompoundLongIdentifier(identifierAST,i2AST,longPos);

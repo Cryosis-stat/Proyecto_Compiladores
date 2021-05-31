@@ -132,5 +132,7 @@ public interface Visitor {
   public abstract Object visitCompoundVname(CompoundVname ast, Object o);
 
     public abstract Object visitSingleProgram(SingleProgram ast, Object o);
+
+    public Object visitCompoundProgram(CompoundProgram aThis, Object o);
     
 }

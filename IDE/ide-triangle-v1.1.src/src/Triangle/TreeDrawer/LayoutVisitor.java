@@ -30,6 +30,7 @@ import Triangle.AbstractSyntaxTrees.CharTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CharacterExpression;
 import Triangle.AbstractSyntaxTrees.CharacterLiteral;
 import Triangle.AbstractSyntaxTrees.CompoundLongIdentifier;
+import Triangle.AbstractSyntaxTrees.CompoundProgram;
 import Triangle.AbstractSyntaxTrees.CompoundVname;
 import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
@@ -664,6 +665,11 @@ public class LayoutVisitor implements Visitor {
 
     @Override
     public Object visitSingleProgram(SingleProgram ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitCompoundProgram(CompoundProgram aThis, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

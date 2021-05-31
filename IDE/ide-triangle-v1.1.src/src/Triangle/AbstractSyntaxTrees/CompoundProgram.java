@@ -26,8 +26,10 @@ public class CompoundProgram extends Program{
     public Command getC() {
         return C;
     }
-    
+       public Object visit(Visitor v, Object o) {
+    return v.visitCompoundProgram(this, o);
+  }
    
-    Declaration D;
-    Command C;
+    public  Declaration D;
+    public Command C;
 }

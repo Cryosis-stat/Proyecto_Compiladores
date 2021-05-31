@@ -711,7 +711,7 @@ public class WriterVisitor implements Visitor {
     @Override
     public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
         writeLineHTML("<PackageDeclaration>");
-        ast.I.visit(this, null);
+        //ast.I.visit(this, null);
         ast.D.visit(this, null);
         writeLineHTML("</PackageDeclaration>");
         return null;
@@ -815,6 +815,14 @@ public class WriterVisitor implements Visitor {
         ast.C.visit(this, null);
         writeLineHTML("<SingleProgram>");
         return null;    }
+
+    public Object visitCompoundProgram(CompoundProgram ast, Object o) {
+        writeLineHTML("<CompoundProgram>");
+                ast.D.visit(this, null);
+
+        ast.C.visit(this, null);
+        writeLineHTML("<CompoundProgram>");
+        return null;       }
 
     
 

@@ -60,7 +60,7 @@ public final class IdentificationTable {
   // same identifier at the current level.
 
   public void enter (String packageId,String id, Declaration attr) {
-    if (packageId.equals("_main")){
+    if (packageId==("_main")||packageId==null){
     IdEntry entry = this.latest;
     boolean present = false, searching = true;
 
@@ -77,7 +77,7 @@ public final class IdentificationTable {
 
     attr.duplicated = present;
     // Add new entry ...
-    entry = new IdEntry(id, attr, this.level, this.latest);
+    entry = new IdEntry("_main", id, attr, this.level, this.latest);
     this.latest = entry;
     } else{
     IdEntry entryPack = this.latest;
@@ -137,7 +137,10 @@ public final class IdentificationTable {
   // otherwise returns the attribute field of the entry found.
 
   public Declaration retrieve (String packageId,String id) {
-
+      
+      if(packageId==null){
+         packageId=  ("_main");
+      }
     IdEntry entry;
     Declaration attr = null;
     boolean present = false, searching = true;
@@ -146,16 +149,17 @@ public final class IdentificationTable {
     while (searching) {
       if (entry == null)
         searching = false;
-      else if (entry.packageId.equals(packageId)){                         
-        if (entry.id.equals(id)) {
+      else if (entry.id.equals(id)&& entry.packageId.equals(packageId) ){                         
             present = true;
             searching = false;
             attr = entry.attr;
-        }
-      } else
-        entry = entry.previous;
-    }
 
+    }else
+        entry = entry.previous;
+      } 
+
+
+    
     return attr;
   }
   

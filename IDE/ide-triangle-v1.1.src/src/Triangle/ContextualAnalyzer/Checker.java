@@ -29,6 +29,7 @@ import Triangle.AbstractSyntaxTrees.CharTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CharacterExpression;
 import Triangle.AbstractSyntaxTrees.CharacterLiteral;
 import Triangle.AbstractSyntaxTrees.CompoundLongIdentifier;
+import Triangle.AbstractSyntaxTrees.CompoundProgram;
 import Triangle.AbstractSyntaxTrees.CompoundVname;
 import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
@@ -139,10 +140,9 @@ public final class Checker implements Visitor {
     return null;
   }
     public Object visitAssignCommand(AssignCommand ast, Object o) {
-
-        
         TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
         TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
+        
        Vname vname = ast.V;
        VarName varname = vname.getV();
     if (!varname.variable)
@@ -863,7 +863,7 @@ public final class Checker implements Visitor {
   }
 
   public Object visitIdentifier(Identifier I, Object o) { 
-    Declaration binding = idTable.retrieve("_main",I.spelling);
+    Declaration binding = idTable.retrieve((String)o,I.spelling);
     if (binding != null)
       I.decl = binding;
     return binding;
@@ -924,14 +924,17 @@ public final class Checker implements Visitor {
   }
       public Object visitVarActualParameter(VarActualParameter ast, Object o) {
           ast.V.visit(this, null);
+    if (!ast.V.getV().variable)
+      reporter.reportError ("LHS of assignment is not a variable", "", ast.V.position);
           return null;
 
     }
   public Object visitSimpleVarName(SimpleVarName ast, Object o) {
     ast.variable = false;
+    
     ast.type = StdEnvironment.errorType;
     
-    Declaration binding = (Declaration) ast.I.visit(this, null);
+    Declaration binding = (Declaration) ast.I.visit(this, o);
     if (binding == null)
       reportUndeclared(ast.I);
     else
@@ -953,7 +956,12 @@ public final class Checker implements Visitor {
       } else if (binding instanceof VarFormalParameter) {
         ast.type = ((VarFormalParameter) binding).T;
         ast.variable = true;
-      } else
+      }else if (binding instanceof PackageDeclaration	) {
+          ((PackageDeclaration) binding).D.getIdentifier().visit(this, null);
+          ((PackageDeclaration) ast.I.decl).D.visit(this, ((PackageDeclaration) binding).D.getIdentifier().spelling);
+
+
+      }else
         reporter.reportError ("\"%\" is not a const or var identifier",
                               ast.I.spelling, ast.I.position);
     return ast.type;
@@ -965,15 +973,16 @@ public final class Checker implements Visitor {
     }
     
     public Object visitCompoundVname(CompoundVname ast, Object o) {
-        ast.getI().visit(this, o);
+        Declaration binding = (Declaration) ast.getI().visit(this, o);
 
         
-        return ast.getV().visit(this, o);
+        return ast.getV().visit(this, ast.getI().spelling);
 
     }
 
    public Object visitVnameExpression(VnameExpression ast, Object o) {
     ast.type = (TypeDenoter) ast.V.visit(this, null);
+    
     return ast.type;
   }
 
@@ -999,11 +1008,17 @@ public final class Checker implements Visitor {
 
   // Programs
     public Object visitSingleProgram(SingleProgram ast, Object o) {
+        
             ast.C.visit(this, null);
-                return null;
+            return null;
 
     }
-    
+        public Object visitCompoundProgram(CompoundProgram ast, Object o) {
+               ast.D.visit(this, null);
+               ast.C.visit(this, null);
+               return null;
+    }
+
     
     
   public Object visitProgram(Program ast, Object o) {
@@ -1208,8 +1223,10 @@ public final class Checker implements Visitor {
   }
 
   // Packages
-    @Override
     public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+        
+       idTable.enter("_main",ast.I.spelling, ast);
+
 	ast.D.visit(this, ast.I.spelling);
         return null;
     }
@@ -1228,6 +1245,7 @@ public final class Checker implements Visitor {
             I2.decl = binding;
 	return binding;
     }
+
 
 
   

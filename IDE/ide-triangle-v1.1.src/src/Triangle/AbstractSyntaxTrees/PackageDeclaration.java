@@ -26,4 +26,5 @@ public class PackageDeclaration extends Declaration{
   public Identifier I;
   public Declaration D;
 
+  
 }
