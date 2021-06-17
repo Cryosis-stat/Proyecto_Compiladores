@@ -245,7 +245,7 @@ public final class Checker implements Visitor {
 
     
   
-  public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
+    public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
         ast.F.visit(this, o);
         TypeDenoter eType = (TypeDenoter) ast.E2.visit(this, null);
         if (! eType.equals(StdEnvironment.booleanType))

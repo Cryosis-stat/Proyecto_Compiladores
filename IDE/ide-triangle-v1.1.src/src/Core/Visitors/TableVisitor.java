@@ -393,7 +393,118 @@ public class TableVisitor implements Visitor {
       ast.T.visit(this, null);
       return(null);
   }
-  
+    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
+              try {
+      addIdentifier(ast.I.spelling, 
+              "KnownRoutine", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownRoutine)ast.entity).address.level, 
+              ((KnownRoutine)ast.entity).address.displacement, 
+              -1);      
+      } catch (NullPointerException e) { }
+      ast.T.visit(this, null);            
+      ast.FPS.visit(this, null);
+      ast.E.visit(this, null);
+      return(null);
+    }
+
+    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
+             try {
+      addIdentifier(ast.I.spelling, 
+              "KnownRoutine", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownRoutine)ast.entity).address.level, 
+              ((KnownRoutine)ast.entity).address.displacement, 
+              -1);      
+      } catch (NullPointerException e) { }
+      ast.FPS.visit(this, null);
+      ast.C.visit(this, null);         
+
+      return(null);    }
+
+    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
+             try {
+      addIdentifier(ast.I.spelling, 
+              "KnownAddress", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownRoutine)ast.entity).address.level, 
+              ((KnownRoutine)ast.entity).address.displacement, 
+              -1);      
+      } catch (NullPointerException e) { }
+      ast.E.visit(this, null);
+
+      return(null);   
+    }
+
+    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+             try {
+      addIdentifier(ast.I.spelling, 
+              "KnownAddress", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownRoutine)ast.entity).address.level, 
+              ((KnownRoutine)ast.entity).address.displacement, 
+              -1);      
+      } catch (NullPointerException e) { }
+      ast.D.visit(this, null);
+
+      return(null);      }
+    
+    
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
+        
+                     try {
+      addIdentifier(ast.I.spelling, 
+              "KnownRoutine", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownRoutine)ast.entity).address.level, 
+              ((KnownRoutine)ast.entity).address.displacement, 
+              -1);      
+      } catch (NullPointerException e) { }
+      ast.D1.visit(this, null);
+            return(null); 
+
+    }
+
+
+	
+    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration ast, Object o) {
+                     try {
+      addIdentifier(ast.I.spelling, 
+              "KnownRoutine", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownRoutine)ast.entity).address.level, 
+              ((KnownRoutine)ast.entity).address.displacement, 
+              -1);      
+      } catch (NullPointerException e) { }
+      ast.D1.visit(this, null);
+      ast.D2.visit(this, null);         
+      return(null); 
+      
+    }
+
+    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
+                     try {
+      addIdentifier(ast.I.spelling, 
+              "KnownRoutine", 
+              (ast.entity!=null?ast.entity.size:0), 
+              ((KnownRoutine)ast.entity).address.level, 
+              ((KnownRoutine)ast.entity).address.displacement, 
+              -1);      
+      } catch (NullPointerException e) { }
+      ast.D1.visit(this, null);
+      ast.D2.visit(this, null);         
+
+      return(null); 
+     }
+
+    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
+
+      ast.I.visit(this, null);         
+      return(null); 
+
+
+    }
+
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
@@ -621,14 +732,34 @@ public class TableVisitor implements Visitor {
 
   // <editor-fold defaultstate="collapsed" desc=" Literals, Identifiers and Operators ">
   // Literals, Identifiers and Operators
+  
+  
+    public Object visitSingleVname(SingleVname ast, Object o) {
+        ast.getV().visit(this, null);
+              return(null);
+
+    }
+
+    public Object visitCompoundVname(CompoundVname ast, Object o) {
+        ast.getV().visit(this, null);
+        ast.getI().visit(this, null);
+        return(null);
+
+    }
   public Object visitCharacterLiteral(CharacterLiteral ast, Object o) {   
       return(null);
   }
-  
+      public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
+      return(null);////checkear despues si esta bueno//////////////////////////////////////////////////////////////////////////
+    }
+	
   public Object visitIdentifier(Identifier ast, Object o) {             
       return(null);
   }
-  
+      public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
+      return(null);
+
+    }
   public Object visitIntegerLiteral(IntegerLiteral ast, Object o) { 
       return(null);
   }
@@ -666,11 +797,20 @@ public class TableVisitor implements Visitor {
   // <editor-fold defaultstate="collapsed" desc=" Table Creation Methods ">
   // Programs
   public Object visitProgram(Program ast, Object o) { 
-     // ast.C.visit(this, null);
+     //ast.C.visit(this, null);
       
       return(null);
   }
-  
+      public Object visitSingleProgram(SingleProgram ast, Object o) {
+              ast.C.visit(this, null);
+      return(null);
+
+    }
+    public Object visitCompoundProgram(CompoundProgram ast, Object o) {
+        ast.D.visit(this, null);
+        ast.C.visit(this, null);
+      return(null);
+    }
     /**
      * Adds an identifier to the table.
      */
@@ -708,73 +848,12 @@ public class TableVisitor implements Visitor {
     private DefaultTableModel model;
     // </editor-fold>
 
-    @Override
-    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  
 
-    @Override
-    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-	
-	@Override
-    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	
-	@Override
-    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSingleVname(SingleVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitCompoundVname(CompoundVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSingleProgram(SingleProgram ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitCompoundProgram(CompoundProgram aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

@@ -1,0 +1,63 @@
+<?xml version="1.0" standalone="yes"?>
+<SingleProgram>
+<LetCommand>
+<SequentialDeclaration>
+<SequentialDeclaration>
+<SequentialDeclaration>
+<VarDeclaration>
+<Identifier value="i"/>
+<CharTypeDenoter/>
+</VarDeclaration>
+<VarDeclaration>
+<Identifier value="j"/>
+<IntTypeDenoter/>
+</VarDeclaration>
+</SequentialDeclaration>
+<ConstDeclaration>
+<Identifier value="k"/>
+<IntegerExpression>
+<IntegerLiteral value="8"/>
+</IntegerExpression>
+</ConstDeclaration>
+</SequentialDeclaration>
+<TypeDeclaration>
+<Identifier value="dia"/>
+<IntTypeDenoter/>
+</TypeDeclaration>
+</SequentialDeclaration>
+<SequentialCommand>
+<CallCommand>
+<LongIdentifierTypeDenoter>
+<Identifier value="put"/>
+</LongIdentifierTypeDenoter>
+<SingleActualParameterSequence>
+<ConstActualParameter>
+<VnameExpression>
+<Vname>
+<VarName>
+<Identifier value="i"/>
+</VarName>
+</Vname>
+</VnameExpression>
+</ConstActualParameter>
+</SingleActualParameterSequence>
+</CallCommand>
+<CallCommand>
+<LongIdentifierTypeDenoter>
+<Identifier value="put"/>
+</LongIdentifierTypeDenoter>
+<SingleActualParameterSequence>
+<ConstActualParameter>
+<VnameExpression>
+<Vname>
+<VarName>
+<Identifier value="i"/>
+</VarName>
+</Vname>
+</VnameExpression>
+</ConstActualParameter>
+</SingleActualParameterSequence>
+</CallCommand>
+</SequentialCommand>
+</LetCommand>
+<SingleProgram>
