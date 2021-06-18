@@ -257,6 +257,34 @@ public class TreeVisitor implements Visitor {
     public Object visitVarDeclaration(VarDeclaration ast, Object obj) {
         return(createBinary("Variable Declaration", ast.I, ast.T));
     }
+
+    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
+        return(createBinary("Variable Init Declaration", ast.getIdentifier(), ast.E));
+    }
+
+    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+        return(createBinary("Package Declaration", ast.I, ast.D));
+    }
+    
+    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
+        return(createQuaternary("Proc Func Function Declaration", ast.getIdentifier(), ast.FPS, ast.T, ast.E));
+    }
+
+    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
+        return(createTernary("Proc Func Procedure", ast.getIdentifier(), ast.FPS, ast.C));
+    }
+	
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
+        return(createUnary("Recursive Compound Declaration", ast.D1));
+    }
+
+    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
+        return(createBinary("Private Compound Declaration", aThis.D1, aThis.D2));
+    }
+
+    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
+        return(createBinary("Sequential ProcFunc Declaration", aThis.D1, aThis.D2));
+    }
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
@@ -380,6 +408,10 @@ public class TreeVisitor implements Visitor {
     public Object visitSingleFieldTypeDenoter(SingleFieldTypeDenoter ast, Object obj) {
         return(createBinary("Single Field Type Denoter", ast.I, ast.T));
     }
+
+    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
+        return(createUnary("LongIdentifier TypeDenoter", ast.I));
+    }
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc=" Literals, Identifiers and Operators ">
@@ -398,6 +430,14 @@ public class TreeVisitor implements Visitor {
     
     public Object visitOperator(Operator ast, Object obj) {
         return(createNullary(ast.spelling));
+    }
+    
+    public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
+        return(createBinary("Compound LongIdentifier", ast.getPackageIdentifier(), ast.getIdentifier()));
+    }
+
+    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
+        return(createUnary("Simple LongIdentifier", ast.getIdentifier()));
     }
     // </editor-fold>
     
@@ -418,6 +458,23 @@ public class TreeVisitor implements Visitor {
     public Object visitProgram(Program ast, Object obj) {
         //return(createUnary("Program", ast.C));
         return null;
+    }
+    
+    public Object visitSingleProgram(SingleProgram ast, Object o) {
+        return(createUnary("Single Program", ast.getC()));
+    }
+
+    public Object visitCompoundProgram(CompoundProgram ast, Object o) {
+        return(createBinary("Compound Program", ast.getD(), ast.getC()));
+    }
+    
+    public Object visitSingleVname(SingleVname ast, Object o) {
+        return(createUnary("Single Vname", ast.getV()));
+    }
+
+    @Override
+    public Object visitCompoundVname(CompoundVname ast, Object o) {
+        return(createBinary("Compount Vname", ast.getI(),ast.getV()));
     }
     // </editor-fold>
 
@@ -499,73 +556,4 @@ public class TreeVisitor implements Visitor {
     }
     // </editor-fold>
 
-    @Override
-    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-	
-	@Override
-    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-	@Override
-    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSingleVname(SingleVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitCompoundVname(CompoundVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSingleProgram(SingleProgram ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitCompoundProgram(CompoundProgram aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }
