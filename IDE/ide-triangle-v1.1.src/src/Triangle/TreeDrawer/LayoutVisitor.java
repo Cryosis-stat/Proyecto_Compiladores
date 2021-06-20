@@ -603,9 +603,6 @@ public class LayoutVisitor implements Visitor {
     return r;
   }
 
-    public Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object obj) {
-    return layoutTernary("Mult.F.TypeD.", ast.I, ast.T, ast.FT);
-  }
   
     @Override
     public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
