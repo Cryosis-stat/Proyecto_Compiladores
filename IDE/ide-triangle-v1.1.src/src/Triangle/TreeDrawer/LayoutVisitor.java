@@ -603,74 +603,78 @@ public class LayoutVisitor implements Visitor {
     return r;
   }
 
+    public Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object obj) {
+    return layoutTernary("Mult.F.TypeD.", ast.I, ast.T, ast.FT);
+  }
+  
     @Override
     public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return layoutQuaternary("Proc.Func.Func.", ast.E, ast.FPS, ast.I, ast.T);
     }
 
     @Override
     public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return layoutTernary("Proc.Func.", ast.I, ast.FPS, ast.C);
     }
 
     @Override
     public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return layoutBinary("Var.Init.Dec", ast.I, ast.E);
     }
 
     @Override
     public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	return layoutBinary("Package.Dec", ast.I, ast.D);
     }
 
     @Override
     public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	return layoutBinary("Compound.Id", ast.getPackageIdentifier(), ast.getIdentifier());
     }
 
 	@Override
-    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
+        return layoutBinary("Recursive.Compound", ast.I, ast.D1);
     }
 
     @Override
     public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	return layoutUnary("Simple.Long.Id", ast.getIdentifier());
     }
 
 	@Override
-    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration ast, Object o) {
+        return layoutTernary("Private.Compound", ast.I, ast.D1, ast.D2);
     }
 
     @Override
-    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
+        return layoutTernary("Seq.Proc.Func", ast.I, ast.D1, ast.D2);
     }
 
     @Override
     public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return layoutUnary("Long.Id.TD", ast.I);
     }
 
     @Override
     public Object visitSingleVname(SingleVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return layoutUnary("SingleV", ast.getV());
     }
 
     @Override
     public Object visitCompoundVname(CompoundVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return layoutBinary("CompoundV", ast.getI(), ast.getV());
     }
 
     @Override
     public Object visitSingleProgram(SingleProgram ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return layoutUnary("Single.Prog", ast.getC());
     }
 
     @Override
-    public Object visitCompoundProgram(CompoundProgram aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Object visitCompoundProgram(CompoundProgram ast, Object o) {
+        return layoutBinary("Compound.Prog", ast.getD(), ast.getC());
     }
 
 }
