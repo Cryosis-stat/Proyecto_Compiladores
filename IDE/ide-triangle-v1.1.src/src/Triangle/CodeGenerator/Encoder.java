@@ -180,32 +180,7 @@ public final class Encoder implements Visitor {
 //    return null;
 //  }
 
-  @Override
-  public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
-    Frame frame = (Frame) o;
-    int jumpAddr, loopAddr;
 
-    jumpAddr = nextInstrAddr;
-    emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    loopAddr = nextInstrAddr;
-    ast.C.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
-    ast.E.visit(this, frame);
-    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
-    return null;
-  }
-
-    public Object visitLoopUntilCommand(LoopUntilCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public Object visitLoopDoWhileCommand(LoopDoWhileCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public Object visitLoopDoUntilCommand(LoopDoUntilCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
   // Expressions
   public Object visitArrayExpression(ArrayExpression ast, Object o) {
@@ -1045,6 +1020,46 @@ public final class Encoder implements Visitor {
     }
   }
 **/
+  
+  
+
+  @Override
+  public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
+    Frame frame = (Frame) o;
+    int jumpAddr, loopAddr;
+
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    patch(jumpAddr, nextInstrAddr);
+    ast.E.visit(this, frame);
+    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
+    return null;
+  }  
+  
+    public Object visitLoopUntilCommand(LoopUntilCommand ast, Object o) {
+      Frame frame = (Frame) o;
+      int p1, rep, eval;
+      
+      p1 = nextInstrAddr;
+      emit(Machine.JUMPop, 0, Machine.CBr, 0);
+      rep = nextInstrAddr;
+      ast.C.visit(this, frame);
+      patch(p1, nextInstrAddr);
+      ast.E.visit(this, frame);
+      emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, rep);
+      return null;
+    }
+
+    public Object visitLoopDoWhileCommand(LoopDoWhileCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Object visitLoopDoUntilCommand(LoopDoUntilCommand ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+  
   @Override
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
