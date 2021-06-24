@@ -799,7 +799,7 @@ public class TableVisitor implements Visitor {
   public Object visitProgram(Program ast, Object o) { 
      //ast.C.visit(this, null);
       
-      return(null);
+      return ast.visit(this, o);
   }
       public Object visitSingleProgram(SingleProgram ast, Object o) {
               ast.C.visit(this, null);

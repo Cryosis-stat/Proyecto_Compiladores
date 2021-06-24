@@ -267,14 +267,18 @@ public final class Encoder implements Visitor {
     ast.O.visit(this, new Frame(frame.level, valSize.intValue()));
     return valSize;
   }
-/**
+  
+      public Object visitSingleVname(SingleVname ast, Object o) {
+            return ast.getV().visit(this, o);
+        }
+
   public Object visitVnameExpression(VnameExpression ast, Object o) {
     Frame frame = (Frame) o;
     Integer valSize = (Integer) ast.type.visit(this, null);
     encodeFetch(ast.V, frame, valSize.intValue());
     return valSize;
   }
-**/
+
 
   // Declarations
   public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast,
@@ -638,7 +642,15 @@ public final class Encoder implements Visitor {
   public Object visitCharacterLiteral(CharacterLiteral ast, Object o) {
     return null;
   }
+    public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
+            ast.getPackageIdentifier().visit(this, o);
+            return ast.getIdentifier().visit(this, o);
 
+    }
+    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
+            return ast.getIdentifier().visit(this, o);
+
+    }
   public Object visitIdentifier(Identifier ast, Object o) {
     Frame frame = (Frame) o;
     if (ast.decl.entity instanceof KnownRoutine) {
@@ -738,9 +750,23 @@ public final class Encoder implements Visitor {
 
 
   // Programs
- // public Object visitProgram(Program ast, Object o) {
- //   return ast.C.visit(this, o);
- // }
+
+      @Override
+    public Object visitProgram(Program ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object visitSingleProgram(SingleProgram ast, Object o) {
+       return ast.C.visit(this, o);
+    }
+
+    @Override
+    public Object visitCompoundProgram(CompoundProgram ast, Object o) {//////////checkear si esta bueno
+            ast.D.visit(this, o);
+           return ast.C.visit(this, o);
+
+    }
 
   public Encoder (ErrorReporter reporter) {
     this.reporter = reporter;
@@ -1100,10 +1126,7 @@ public final class Encoder implements Visitor {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Object visitCompoundLongIdentifier(CompoundLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
 
 	@Override
     public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
@@ -1111,11 +1134,7 @@ public final class Encoder implements Visitor {
     }
 
     @Override
-    public Object visitSimpleLongIdentifier(SimpleLongIdentifier ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-	@Override
     public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -1130,10 +1149,7 @@ public final class Encoder implements Visitor {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Object visitSingleVname(SingleVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
 
     @Override
     public Object visitCompoundVname(CompoundVname ast, Object o) {
@@ -1145,28 +1161,12 @@ public final class Encoder implements Visitor {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Object visitVnameExpression(VnameExpression ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
 
     //@Override
     //public Object visitVarActualParameter(VarActualParameter ast, Object o) {
     //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     //}
 
-    @Override
-    public Object visitProgram(Program ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitSingleProgram(SingleProgram ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitCompoundProgram(CompoundProgram aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

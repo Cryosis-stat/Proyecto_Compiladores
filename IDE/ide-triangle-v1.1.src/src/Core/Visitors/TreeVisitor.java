@@ -456,8 +456,9 @@ public class TreeVisitor implements Visitor {
     }
     
     public Object visitProgram(Program ast, Object obj) {
-        //return(createUnary("Program", ast.C));
-        return null;
+
+        return ast.visit(this, obj);
+
     }
     
     public Object visitSingleProgram(SingleProgram ast, Object o) {
