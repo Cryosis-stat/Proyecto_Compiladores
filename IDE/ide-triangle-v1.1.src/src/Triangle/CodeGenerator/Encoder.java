@@ -110,7 +110,6 @@ import Triangle.AbstractSyntaxTrees.VarInitDeclaration;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-//import Triangle.AbstractSyntaxTrees.WhileCommand;
 
 public final class Encoder implements Visitor {
 
@@ -256,7 +255,11 @@ public final class Encoder implements Visitor {
       public Object visitSingleVname(SingleVname ast, Object o) {
             return ast.getV().visit(this, o);
         }
+    public Object visitCompoundVname(CompoundVname ast, Object o) {
+        ast.getI().visit(this, o);//////////////////////////////////////////////
+        return ast.getV().visit(this, o);
 
+    }
   public Object visitVnameExpression(VnameExpression ast, Object o) {
     Frame frame = (Frame) o;
     Integer valSize = (Integer) ast.type.visit(this, null);
@@ -291,12 +294,92 @@ public final class Encoder implements Visitor {
     writeTableDetails(ast);
     return new Integer(extraSize);
   }
+  
+    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {////////////////////////solo copie codigo de const delcaration
+    Frame frame = (Frame) o;
+    int extraSize = 0;
+
+    if (ast.E instanceof CharacterExpression) {
+        CharacterLiteral CL = ((CharacterExpression) ast.E).CL;
+        ast.entity = new KnownValue(Machine.characterSize,
+                                 characterValuation(CL.spelling));
+    } else if (ast.E instanceof IntegerExpression) {
+        IntegerLiteral IL = ((IntegerExpression) ast.E).IL;
+        ast.entity = new KnownValue(Machine.integerSize,
+				 Integer.parseInt(IL.spelling));
+    } else {
+      int valSize = ((Integer) ast.E.visit(this, frame)).intValue();
+      ast.entity = new UnknownValue(valSize, frame.level, frame.size);
+      extraSize = valSize;
+    }
+    writeTableDetails(ast);
+    return new Integer(extraSize);
+    }
+          
+          
+          
+      public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {////////////////////////solo copie codigo de proc delcaration
+        Frame frame = (Frame) o;
+        int jumpAddr = nextInstrAddr;
+        int argsSize = 0;
+
+        emit(Machine.JUMPop, 0, Machine.CBr, 0);
+        ast.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
+        writeTableDetails(ast);
+        if (frame.level == Machine.maxRoutineLevel)
+            reporter.reportRestriction("can't nest routines so deeply");
+        else {
+            Frame frame1 = new Frame(frame.level + 1, 0);
+            argsSize = ((Integer) ast.FPS.visit(this, frame1)).intValue();
+            Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
+            ast.C.visit(this, frame2);
+        }
+        emit(Machine.RETURNop, 0, 0, argsSize);
+        patch(jumpAddr, nextInstrAddr);
+        return new Integer(0);   
+      }
+      
+      
+      
+    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {////////////////////////solo copie codigo de func delcaration
+        Frame frame = (Frame) o;
+        
+        int jumpAddr = nextInstrAddr;
+        int argsSize = 0, valSize = 0;
+        emit(Machine.JUMPop, 0, Machine.CBr, 0);
+        ast.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
+        writeTableDetails(ast);
+        if (frame.level == Machine.maxRoutineLevel)
+      reporter.reportRestriction("can't nest routines more than 7 deep");
+           else {
+      Frame frame1 = new Frame(frame.level + 1, 0);
+      argsSize = ((Integer) ast.FPS.visit(this, frame1)).intValue();
+      Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
+      valSize = ((Integer) ast.E.visit(this, frame2)).intValue();
+    } 
+        emit(Machine.RETURNop, valSize, 0, argsSize);
+        patch(jumpAddr, nextInstrAddr);
+    return new Integer(0);
+
+    }
+
+    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
+        Frame frame = (Frame) o;
+        int extraSize1, extraSize2;
+
+        extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
+        Frame frame1 = new Frame (frame, extraSize1);
+        extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
+        return new Integer(extraSize1 + extraSize2);
+        
+    }
+    
 
   public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
+      
     Frame frame = (Frame) o;
     int jumpAddr = nextInstrAddr;
     int argsSize = 0, valSize = 0;
-
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
     ast.entity = new KnownRoutine(Machine.closureSize, frame.level, nextInstrAddr);
     writeTableDetails(ast);
@@ -319,8 +402,7 @@ public final class Encoder implements Visitor {
     int argsSize = 0;
 
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    ast.entity = new KnownRoutine (Machine.closureSize, frame.level,
-                                nextInstrAddr);
+    ast.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
     writeTableDetails(ast);
     if (frame.level == Machine.maxRoutineLevel)
       reporter.reportRestriction("can't nest routines so deeply");
@@ -334,6 +416,23 @@ public final class Encoder implements Visitor {
     patch(jumpAddr, nextInstrAddr);
     return new Integer(0);
   }
+  
+  
+  
+  
+    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration ast, Object o) {//////////check solo copie sequential
+    Frame frame = (Frame) o;
+        int extraSize = ((Integer) ast.I.visit(this, frame)).intValue();
+
+    int extraSize1, extraSize2;
+
+    extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
+    Frame frame1 = new Frame (frame, extraSize1);
+    extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
+    return new Integer(extraSize1 + extraSize2);
+
+
+    }
 
   public Object visitSequentialDeclaration(SequentialDeclaration ast, Object o) {
     Frame frame = (Frame) o;
@@ -461,6 +560,7 @@ public final class Encoder implements Visitor {
     return ast.E.visit (this, o);
   }
 
+
   public Object visitFuncActualParameter(FuncActualParameter ast, Object o) {
     Frame frame = (Frame) o;
     if (ast.I.decl.entity instanceof KnownRoutine) {
@@ -529,6 +629,9 @@ public final class Encoder implements Visitor {
 
 
   // Type Denoters
+    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
   public Object visitAnyTypeDenoter(AnyTypeDenoter ast, Object o) {
     return new Integer(0);
   }
@@ -550,11 +653,13 @@ public final class Encoder implements Visitor {
       ast.entity = new TypeRepresentation(Machine.booleanSize);
       writeTableDetails(ast);
     }
+    
     return new Integer(Machine.booleanSize);
   }
 
   public Object visitCharTypeDenoter(CharTypeDenoter ast, Object o) {
     if (ast.entity == null) {
+        
       ast.entity = new TypeRepresentation(Machine.characterSize);
       writeTableDetails(ast);
     }
@@ -565,13 +670,14 @@ public final class Encoder implements Visitor {
     return new Integer(0);
   }
 
-  public Object visitSimpleTypeDenoter(SimpleTypeDenoter ast,
-					   Object o) {
+  public Object visitSimpleTypeDenoter(SimpleTypeDenoter ast,  Object o) {
     return new Integer(0);
   }
 
+
   public Object visitIntTypeDenoter(IntTypeDenoter ast, Object o) {
     if (ast.entity == null) {
+        
       ast.entity = new TypeRepresentation(Machine.integerSize);
       writeTableDetails(ast);
     }
@@ -736,7 +842,6 @@ public final class Encoder implements Visitor {
 
   // Programs
 
-      @Override
     public Object visitProgram(Program ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -1086,11 +1191,8 @@ public final class Encoder implements Visitor {
     }
   
 
-  @Override
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
     Frame frame = (Frame) o;
-
-
     int extraSize = ((Integer) ast.I.visit(this, frame)).intValue();
     
     ast.E1.visit(this, frame);
@@ -1098,7 +1200,6 @@ public final class Encoder implements Visitor {
     return null;
   }
 
-  @Override
   public Object visitForCommand(ForCommand ast, Object o) {
     Frame frame = (Frame) o;
     int loopAddr, jumpAddr;
@@ -1130,20 +1231,8 @@ public final class Encoder implements Visitor {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
-    @Override
-    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
@@ -1159,40 +1248,7 @@ public final class Encoder implements Visitor {
 
 
 	@Override
-    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration aThis, Object o) {
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    @Override
-
-    public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration aThis, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-
-
-    @Override
-    public Object visitCompoundVname(CompoundVname ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-   
-
-
-    //@Override
-    //public Object visitVarActualParameter(VarActualParameter ast, Object o) {
-    //    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    //}
-
-
 }
