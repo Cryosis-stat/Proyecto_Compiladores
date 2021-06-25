@@ -114,7 +114,7 @@ import Triangle.AbstractSyntaxTrees.VnameExpression;
 
 public final class Encoder implements Visitor {
 
-/**
+
   // Commands
   public Object visitAssignCommand(AssignCommand ast, Object o) {
     Frame frame = (Frame) o;
@@ -123,7 +123,7 @@ public final class Encoder implements Visitor {
 		valSize.intValue());
     return null;
   }
-**/
+
   public Object visitCallCommand(CallCommand ast, Object o) {
     Frame frame = (Frame) o;
     Integer argsSize = (Integer) ast.APS.visit(this, frame);
@@ -165,21 +165,6 @@ public final class Encoder implements Visitor {
     ast.C2.visit(this, o);
     return null;
   }
-
-//  public Object visitWhileCommand(WhileCommand ast, Object o) {
-//    Frame frame = (Frame) o;
-//    int jumpAddr, loopAddr;
-//
-//    jumpAddr = nextInstrAddr;
-//    emit(Machine.JUMPop, 0, Machine.CBr, 0);
-//    loopAddr = nextInstrAddr;
-//    ast.C.visit(this, frame);
-//    patch(jumpAddr, nextInstrAddr);
-//    ast.E.visit(this, frame);
-//    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
-//    return null;
-//  }
-
 
 
   // Expressions
@@ -518,7 +503,7 @@ public final class Encoder implements Visitor {
 
   
   public Object visitVarActualParameter(VarActualParameter ast, Object o) {
-    //encodeFetchAddress(ast.V, (Frame) o);
+    encodeFetchAddress(ast.V, (Frame) o);
     return new Integer(Machine.addressSize);
   }
 
@@ -948,25 +933,25 @@ public final class Encoder implements Visitor {
     }
     if (baseObject instanceof KnownAddress) {
       ObjectAddress address = ((KnownAddress) baseObject).address;
-  //    if (V.indexed) {
-  //      emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
-  //           address.displacement + V.offset);
-  //      emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-  //      emit(Machine.STOREIop, valSize, 0, 0);
-  //    } else {
-  //      emit(Machine.STOREop, valSize, displayRegister(frame.level,	     address.level), address.displacement + V.offset);
-  //    }
-  //  } else if (baseObject instanceof UnknownAddress) {
-  //    ObjectAddress address = ((UnknownAddress) baseObject).address;
-  //    emit(Machine.LOADop, Machine.addressSize, displayRegister(frame.level,
-  //         address.level), address.displacement);
-  //    if (V.indexed)
-  //      emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-  //    if (V.offset != 0) {
-  //      emit(Machine.LOADLop, 0, 0, V.offset);
-  //      emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-  //   }
-  //    emit(Machine.STOREIop, valSize, 0, 0);
+     if (V.getV().indexed) {
+        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+             address.displacement + V.getV().offset);
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+        emit(Machine.STOREIop, valSize, 0, 0);
+      } else {
+        emit(Machine.STOREop, valSize, displayRegister(frame.level,	     address.level), address.displacement + V.getV().offset);
+      }
+    } else if (baseObject instanceof UnknownAddress) {
+      ObjectAddress address = ((UnknownAddress) baseObject).address;
+      emit(Machine.LOADop, Machine.addressSize, displayRegister(frame.level,
+           address.level), address.displacement);
+      if (V.getV().indexed)
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+      if (V.getV().offset != 0) {
+        emit(Machine.LOADLop, 0, 0, V.getV().offset);
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+     }
+      emit(Machine.STOREIop, valSize, 0, 0);
     }
   }
 
@@ -996,24 +981,24 @@ public final class Encoder implements Visitor {
       ObjectAddress address = (baseObject instanceof UnknownValue) ?
                               ((UnknownValue) baseObject).address :
                               ((KnownAddress) baseObject).address;
-     // if (V.indexed) {
-     //   emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
-     //        address.displacement + V.offset);
-     //   emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-     //   emit(Machine.LOADIop, valSize, 0, 0);
-     // } else
-     //   emit(Machine.LOADop, valSize, displayRegister(frame.level,
-     //     address.level), address.displacement + V.offset);
+      if (V.getV().indexed) {
+        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+             address.displacement + V.getV().offset);
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+        emit(Machine.LOADIop, valSize, 0, 0);
+      } else
+        emit(Machine.LOADop, valSize, displayRegister(frame.level,
+          address.level), address.displacement + V.getV().offset);
     } else if (baseObject instanceof UnknownAddress) {
       ObjectAddress address = ((UnknownAddress) baseObject).address;
       emit(Machine.LOADop, Machine.addressSize, displayRegister(frame.level,
            address.level), address.displacement);
-      //if (V.indexed)
-       // emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-      //if (V.offset != 0) {
-       // emit(Machine.LOADLop, 0, 0, V.offset);
-        //emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-      //}
+      if (V.getV().indexed)
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+      if (V.getV().offset != 0) {
+        emit(Machine.LOADLop, 0, 0, V.getV().offset);
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+      }
       emit(Machine.LOADIop, valSize, 0, 0);
     }
   }
@@ -1022,7 +1007,7 @@ public final class Encoder implements Visitor {
   // currentLevel is the routine level where the vname occurs.
   // frameSize is the anticipated size of the local stack frame when
   // the variable is addressed at run-time.
-/**
+
   private void encodeFetchAddress (Vname V, Frame frame) {
 
     RuntimeEntity baseObject = (RuntimeEntity) V.visit(this, frame);
@@ -1030,26 +1015,25 @@ public final class Encoder implements Visitor {
     if (baseObject instanceof KnownAddress) {
       ObjectAddress address = ((KnownAddress) baseObject).address;
       emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
-           address.displacement + V.offset);
-      if (V.indexed)
+           address.displacement + V.getV().offset);
+      if (V.getV().indexed)
         emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
     } else if (baseObject instanceof UnknownAddress) {
       ObjectAddress address = ((UnknownAddress) baseObject).address;
       emit(Machine.LOADop, Machine.addressSize,displayRegister(frame.level,
            address.level), address.displacement);
-      if (V.indexed)
+      if (V.getV().indexed)
         emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-      if (V.offset != 0) {
-        emit(Machine.LOADLop, 0, 0, V.offset);
+      if (V.getV().offset != 0) {
+        emit(Machine.LOADLop, 0, 0, V.getV().offset);
         emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
       }
     }
   }
-**/
+
   
   
 
-  @Override
   public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
     Frame frame = (Frame) o;
     int jumpAddr, loopAddr;
@@ -1121,7 +1105,7 @@ public final class Encoder implements Visitor {
 
     ast.F.visit(this, frame);
     jumpAddr = nextInstrAddr;
-    emit(Machine.JUMPop, 0, Machine.CBr, 0)
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
     loopAddr = nextInstrAddr;
     ast.C.visit(this, frame);
     //emit(Machine.CALLop, succ);
@@ -1129,7 +1113,7 @@ public final class Encoder implements Visitor {
     //emit(Machine.LOADop)
     //emit(Machine.CALLop, ge)
     emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
-    emit(Machine.POPop, 0, 0, 2)
+    emit(Machine.POPop, 0, 0, 2);
     return null;
   }
 
@@ -1202,11 +1186,7 @@ public final class Encoder implements Visitor {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Object visitAssignCommand(AssignCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+   
 
 
     //@Override
