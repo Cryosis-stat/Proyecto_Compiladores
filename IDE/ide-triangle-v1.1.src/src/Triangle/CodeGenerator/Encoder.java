@@ -1193,26 +1193,31 @@ public final class Encoder implements Visitor {
 
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
     Frame frame = (Frame) o;
-    int extraSize = ((Integer) ast.I.visit(this, frame)).intValue();
+
+    int extraSize1, extraSize2;
+
+    extraSize1 = ((Integer) ast.E1.visit(this, frame)).intValue();
+    Frame frame1 = new Frame (frame, extraSize1);
+    extraSize2 = ((Integer) ast.E.visit(this, frame1)).intValue();
     
-    ast.E1.visit(this, frame);
-    ast.E.visit(this, frame);
-    return null;
+    ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
+    writeTableDetails(ast);
+    return new Integer(extraSize1 + extraSize2);
   }
 
   public Object visitForCommand(ForCommand ast, Object o) {
     Frame frame = (Frame) o;
     int loopAddr, jumpAddr;
-
+    
     ast.F.visit(this, frame);
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
     loopAddr = nextInstrAddr;
     ast.C.visit(this, frame);
-    //emit(Machine.CALLop, succ);
+    emit(Machine.CALLop, 0, 0, Machine.succDisplacement);
     patch(jumpAddr, nextInstrAddr);
-    //emit(Machine.LOADop)
-    //emit(Machine.CALLop, ge)
+    emit(Machine.LOADop, 2, Machine.STr, -2);
+    emit(Machine.CALLop, 0, 0, Machine.geDisplacement);
     emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
     emit(Machine.POPop, 0, 0, 2);
     return null;
