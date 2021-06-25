@@ -1066,39 +1066,79 @@ public final class Encoder implements Visitor {
   
     public Object visitLoopUntilCommand(LoopUntilCommand ast, Object o) {
       Frame frame = (Frame) o;
-      int p1, rep, eval;
+      int jumpAddr, loopAddr, eval;
       
-      p1 = nextInstrAddr;
+      jumpAddr = nextInstrAddr;
       emit(Machine.JUMPop, 0, Machine.CBr, 0);
-      rep = nextInstrAddr;
+      loopAddr = nextInstrAddr;
       ast.C.visit(this, frame);
-      patch(p1, nextInstrAddr);
+      patch(jumpAddr, nextInstrAddr);
       ast.E.visit(this, frame);
-      emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, rep);
+      emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, loopAddr);
       return null;
     }
 
     public Object visitLoopDoWhileCommand(LoopDoWhileCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      Frame frame = (Frame) o;
+      int loopAddr;
+  
+      loopAddr = nextInstrAddr;
+      ast.C.visit(this, frame);
+      ast.E.visit(this, frame);
+      emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
+      return null;
+
     }
 
     public Object visitLoopDoUntilCommand(LoopDoUntilCommand ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      Frame frame = (Frame) o;
+      int loopAddr;
+  
+      loopAddr = nextInstrAddr;
+      ast.C.visit(this, frame);
+      ast.E.visit(this, frame);
+      emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, loopAddr);
+      return null;
     }
   
+
   @Override
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    Frame frame = (Frame) o;
+
+
+    int extraSize = ((Integer) ast.I.visit(this, frame)).intValue();
+    
+    ast.E1.visit(this, frame);
+    ast.E.visit(this, frame);
+    return null;
   }
 
   @Override
   public Object visitForCommand(ForCommand ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    Frame frame = (Frame) o;
+    int loopAddr, jumpAddr;
+
+    ast.F.visit(this, frame);
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0)
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    //emit(Machine.CALLop, succ);
+    patch(jumpAddr, nextInstrAddr);
+    //emit(Machine.LOADop)
+    //emit(Machine.CALLop, ge)
+    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
+    emit(Machine.POPop, 0, 0, 2)
+    return null;
   }
 
   @Override
   public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
+    //Frame frame = (Frame) o;
+    //int extraSize = ((Integer) ast.F.visit()
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
   }
 
   @Override
@@ -1123,7 +1163,13 @@ public final class Encoder implements Visitor {
 
     @Override
     public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      Frame frame = (Frame) o;
+      int extraSize1, extraSize2;
+  
+      extraSize1 = ((Integer) ast.I.visit(this, frame)).intValue();
+      Frame frame1 = new Frame (frame, extraSize1);
+      extraSize2 = ((Integer) ast.D.visit(this, frame1)).intValue();
+      return new Integer(extraSize1 + extraSize2);
     }
 
 
