@@ -462,7 +462,8 @@ public class TreeVisitor implements Visitor {
     }
     
     public Object visitSingleProgram(SingleProgram ast, Object o) {
-        return(createUnary("Single Program", ast.getC()));
+        
+        return(createUnary("Single Program", ast.C));
     }
 
     public Object visitCompoundProgram(CompoundProgram ast, Object o) {

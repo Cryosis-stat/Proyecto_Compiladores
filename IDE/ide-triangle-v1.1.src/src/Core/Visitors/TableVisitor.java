@@ -427,8 +427,8 @@ public class TableVisitor implements Visitor {
       addIdentifier(ast.I.spelling, 
               "KnownAddress", 
               (ast.entity!=null?ast.entity.size:0), 
-              ((KnownRoutine)ast.entity).address.level, 
-              ((KnownRoutine)ast.entity).address.displacement, 
+              ((KnownAddress)ast.entity).address.level, 
+              ((KnownAddress)ast.entity).address.displacement, 
               -1);      
       } catch (NullPointerException e) { }
       ast.E.visit(this, null);
@@ -798,12 +798,12 @@ public class TableVisitor implements Visitor {
   // Programs
   public Object visitProgram(Program ast, Object o) { 
      //ast.C.visit(this, null);
-      
-      return ast.visit(this, o);
+      ast.visit(this, o);
+      return (null);
   }
       public Object visitSingleProgram(SingleProgram ast, Object o) {
               ast.C.visit(this, null);
-      return(null);
+      return (null);
 
     }
     public Object visitCompoundProgram(CompoundProgram ast, Object o) {

@@ -294,22 +294,31 @@ public final class Encoder implements Visitor {
     writeTableDetails(ast);
     return new Integer(extraSize);
   }
-  
+    public Object visitVarDeclaration(VarDeclaration ast, Object o) {
+    Frame frame = (Frame) o;
+    int extraSize;
+
+    extraSize = ((Integer) ast.T.visit(this, null)).intValue();
+    emit(Machine.PUSHop, 0, 0, extraSize);
+    ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
+    writeTableDetails(ast);
+    return new Integer(extraSize);
+  }
+    
+    
     public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {////////////////////////solo copie codigo de const delcaration
     Frame frame = (Frame) o;
     int extraSize = 0;
-
     if (ast.E instanceof CharacterExpression) {
         CharacterLiteral CL = ((CharacterExpression) ast.E).CL;
-        ast.entity = new KnownValue(Machine.characterSize,
-                                 characterValuation(CL.spelling));
+        ast.entity = new KnownAddress(Machine.addressSize,characterValuation(CL.spelling), frame.size);
     } else if (ast.E instanceof IntegerExpression) {
         IntegerLiteral IL = ((IntegerExpression) ast.E).IL;
-        ast.entity = new KnownValue(Machine.integerSize,
-				 Integer.parseInt(IL.spelling));
+        ast.entity = new KnownAddress(Machine.addressSize,Integer.parseInt(IL.spelling), -frame.size - Machine.addressSize);
+
     } else {
       int valSize = ((Integer) ast.E.visit(this, frame)).intValue();
-      ast.entity = new UnknownValue(valSize, frame.level, frame.size);
+      ast.entity = new UnknownAddress(valSize, frame.level, frame.size);
       extraSize = valSize;
     }
     writeTableDetails(ast);
@@ -455,16 +464,7 @@ public final class Encoder implements Visitor {
     return new Integer(0);
   }
 
-  public Object visitVarDeclaration(VarDeclaration ast, Object o) {
-    Frame frame = (Frame) o;
-    int extraSize;
 
-    extraSize = ((Integer) ast.T.visit(this, null)).intValue();
-    emit(Machine.PUSHop, 0, 0, extraSize);
-    ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
-    writeTableDetails(ast);
-    return new Integer(extraSize);
-  }
 
 
   // Array Aggregates
@@ -964,6 +964,7 @@ public final class Encoder implements Visitor {
   boolean tableDetailsReqd;
 
   public static void writeTableDetails(AST ast) {
+      
   }
 
   // OBJECT CODE
@@ -1139,19 +1140,7 @@ public final class Encoder implements Visitor {
   
   
 
-  public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
-    Frame frame = (Frame) o;
-    int jumpAddr, loopAddr;
 
-    jumpAddr = nextInstrAddr;
-    emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    loopAddr = nextInstrAddr;
-    ast.C.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
-    ast.E.visit(this, frame);
-    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
-    return null;
-  }  
   
     public Object visitLoopUntilCommand(LoopUntilCommand ast, Object o) {
       Frame frame = (Frame) o;
@@ -1223,7 +1212,20 @@ public final class Encoder implements Visitor {
     return null;
   }
 
-  @Override
+   public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
+    Frame frame = (Frame) o;
+    int jumpAddr, loopAddr;
+
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    patch(jumpAddr, nextInstrAddr);
+    ast.E.visit(this, frame);
+    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
+    return null;
+  }  
+   
   public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
     //Frame frame = (Frame) o;
     //int extraSize = ((Integer) ast.F.visit()
