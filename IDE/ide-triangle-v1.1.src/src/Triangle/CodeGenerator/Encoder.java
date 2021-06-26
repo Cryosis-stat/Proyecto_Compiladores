@@ -309,8 +309,8 @@ public final class Encoder implements Visitor {
     public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {////////////////////////solo copie codigo de const delcaration
     Frame frame = (Frame) o;
     int extraSize;
-
-    extraSize = ((Integer) ast.E.visit(this, null)).intValue();
+    
+    extraSize = ((Integer) ast.E.visit(this, frame)).intValue();
     emit(Machine.PUSHop, 0, 0, extraSize);
     ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
     writeTableDetails(ast);
@@ -423,7 +423,6 @@ public final class Encoder implements Visitor {
   
     public Object visitPrivateCompound_Declaration(PrivateCompound_Declaration ast, Object o) {//////////check solo copie sequential
     Frame frame = (Frame) o;
-        int extraSize = ((Integer) ast.I.visit(this, frame)).intValue();
 
     int extraSize1, extraSize2;
 
@@ -1248,6 +1247,7 @@ public final class Encoder implements Visitor {
 
 	@Override
     public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
+        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
