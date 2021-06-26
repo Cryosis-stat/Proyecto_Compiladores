@@ -1179,8 +1179,8 @@ public final class Encoder implements Visitor {
     extraSize1 = ((Integer) ast.E1.visit(this, frame)).intValue();
     Frame frame1 = new Frame (frame, extraSize1);
     extraSize2 = ((Integer) ast.E.visit(this, frame1)).intValue();
-    
-    ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
+    IntegerLiteral IL = ((IntegerExpression) ast.E).IL; 
+    ast.entity = new KnownValue(Machine.integerSize, Integer.parseInt(IL.spelling));
     writeTableDetails(ast);
     return new Integer(extraSize1 + extraSize2);
   }
@@ -1194,10 +1194,10 @@ public final class Encoder implements Visitor {
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
     loopAddr = nextInstrAddr;
     ast.C.visit(this, frame);
-    emit(Machine.CALLop, 0, 0, Machine.succDisplacement);
+    emit(Machine.CALLop, 0, Machine.STr, Machine.succDisplacement);
     patch(jumpAddr, nextInstrAddr);
     emit(Machine.LOADop, 2, Machine.STr, -2);
-    emit(Machine.CALLop, 0, 0, Machine.geDisplacement);
+    emit(Machine.CALLop, 0, Machine.STr, Machine.geDisplacement);
     emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
     emit(Machine.POPop, 0, 0, 2);
     return null;
@@ -1218,10 +1218,10 @@ public final class Encoder implements Visitor {
   }  
    
   public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
-    //Frame frame = (Frame) o;
-    //int extraSize = ((Integer) ast.F.visit()
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
+    Frame frame = (Frame) o;
+    
+    
+    return null;
   }
 
   @Override
