@@ -308,19 +308,11 @@ public final class Encoder implements Visitor {
     
     public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {////////////////////////solo copie codigo de const delcaration
     Frame frame = (Frame) o;
-    int extraSize = 0;
-    if (ast.E instanceof CharacterExpression) {
-        CharacterLiteral CL = ((CharacterExpression) ast.E).CL;
-        ast.entity = new KnownAddress(Machine.addressSize,characterValuation(CL.spelling), frame.size);
-    } else if (ast.E instanceof IntegerExpression) {
-        IntegerLiteral IL = ((IntegerExpression) ast.E).IL;
-        ast.entity = new KnownAddress(Machine.addressSize,Integer.parseInt(IL.spelling), -frame.size - Machine.addressSize);
+    int extraSize;
 
-    } else {
-      int valSize = ((Integer) ast.E.visit(this, frame)).intValue();
-      ast.entity = new UnknownAddress(valSize, frame.level, frame.size);
-      extraSize = valSize;
-    }
+    extraSize = ((Integer) ast.E.visit(this, null)).intValue();
+    emit(Machine.PUSHop, 0, 0, extraSize);
+    ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
     writeTableDetails(ast);
     return new Integer(extraSize);
     }
