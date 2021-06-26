@@ -117,6 +117,7 @@ public final class Encoder implements Visitor {
   // Commands
   public Object visitAssignCommand(AssignCommand ast, Object o) {
     Frame frame = (Frame) o;
+    
     Integer valSize = (Integer) ast.E.visit(this, frame);
     encodeStore(ast.V, new Frame (frame, valSize.intValue()),
 		valSize.intValue());
@@ -126,7 +127,7 @@ public final class Encoder implements Visitor {
   public Object visitCallCommand(CallCommand ast, Object o) {
     Frame frame = (Frame) o;
     Integer argsSize = (Integer) ast.APS.visit(this, frame);
-    ast.I.visit(this, new Frame(frame.level, argsSize));
+    ast.I.getIdentifier().visit(this, new Frame(frame.level, argsSize));
     return null;
   }
 
@@ -134,21 +135,7 @@ public final class Encoder implements Visitor {
     return null;
   }
 
-  public Object visitIfCommand(IfCommand ast, Object o) {
-    Frame frame = (Frame) o;
-    int jumpifAddr, jumpAddr;
 
-    Integer valSize = (Integer) ast.E.visit(this, frame);
-    jumpifAddr = nextInstrAddr;
-    emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, 0);
-    ast.C1.visit(this, frame);
-    jumpAddr = nextInstrAddr;
-    emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    patch(jumpifAddr, nextInstrAddr);
-    ast.C2.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
-    return null;
-  }
 
   public Object visitLetCommand(LetCommand ast, Object o) {
     Frame frame = (Frame) o;
@@ -187,7 +174,7 @@ public final class Encoder implements Visitor {
     Frame frame = (Frame) o;
     Integer valSize = (Integer) ast.type.visit(this, null);
     Integer argsSize = (Integer) ast.APS.visit(this, frame);
-    ast.I.visit(this, new Frame(frame.level, argsSize));
+    ast.I.getIdentifier().visit(this, new Frame(frame.level, argsSize));
     return valSize;
   }
 
@@ -269,15 +256,13 @@ public final class Encoder implements Visitor {
 
 
   // Declarations
-  public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast,
-					       Object o){
+  public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast,Object o){
     return new Integer(0);
   }
 
   public Object visitConstDeclaration(ConstDeclaration ast, Object o) {
     Frame frame = (Frame) o;
     int extraSize = 0;
-
     if (ast.E instanceof CharacterExpression) {
         CharacterLiteral CL = ((CharacterExpression) ast.E).CL;
         ast.entity = new KnownValue(Machine.characterSize,
@@ -311,8 +296,8 @@ public final class Encoder implements Visitor {
     int extraSize;
     
     extraSize = ((Integer) ast.E.visit(this, frame)).intValue();
-    emit(Machine.PUSHop, 0, 0, extraSize);
-    ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
+    //emit(Machine.PUSHop, 0, 0, extraSize);
+    ast.entity = new KnownAddress(extraSize, frame.level, frame.size);
     writeTableDetails(ast);
     return new Integer(extraSize);
     }
@@ -349,6 +334,7 @@ public final class Encoder implements Visitor {
         int argsSize = 0, valSize = 0;
         emit(Machine.JUMPop, 0, Machine.CBr, 0);
         ast.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
+        System.out.print(ast.I.spelling + ": closureSize: "+ Machine.closureSize + " closureSize: "+ frame.level + " nextInstrAddr: "+ nextInstrAddr);
         writeTableDetails(ast);
         if (frame.level == Machine.maxRoutineLevel)
       reporter.reportRestriction("can't nest routines more than 7 deep");
@@ -359,11 +345,12 @@ public final class Encoder implements Visitor {
       valSize = ((Integer) ast.E.visit(this, frame2)).intValue();
     } 
         emit(Machine.RETURNop, valSize, 0, argsSize);
+        System.out.print("argsSize: "+argsSize+ "valSize: "+valSize);
+
         patch(jumpAddr, nextInstrAddr);
     return new Integer(0);
 
     }
-
     public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
         Frame frame = (Frame) o;
         int extraSize1, extraSize2;
@@ -372,9 +359,18 @@ public final class Encoder implements Visitor {
         Frame frame1 = new Frame (frame, extraSize1);
         extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
         return new Integer(extraSize1 + extraSize2);
-        
+
     }
-    
+        public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
+        Frame frame = (Frame) o;
+        int extraSize1;
+
+        extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
+        
+       // ast.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
+
+        return new Integer(extraSize1 );
+    }
 
   public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
       
@@ -621,7 +617,8 @@ public final class Encoder implements Visitor {
 
   // Type Denoters
     public Object visitLongIdentifierTypeDenoter(LongIdentifierTypeDenoter ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Integer(0);
+  
     }
   public Object visitAnyTypeDenoter(AnyTypeDenoter ast, Object o) {
     return new Integer(0);
@@ -629,6 +626,7 @@ public final class Encoder implements Visitor {
 
   public Object visitArrayTypeDenoter(ArrayTypeDenoter ast, Object o) {
     int typeSize;
+    
     if (ast.entity == null) {
       int elemSize = ((Integer) ast.T.visit(this, null)).intValue();
       typeSize = Integer.parseInt(ast.IL.spelling) * elemSize;
@@ -1173,36 +1171,62 @@ public final class Encoder implements Visitor {
 
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
     Frame frame = (Frame) o;
-
+    int varForControl;
     int extraSize1, extraSize2;
 
     extraSize1 = ((Integer) ast.E1.visit(this, frame)).intValue();
     Frame frame1 = new Frame (frame, extraSize1);
+    varForControl = nextInstrAddr;
+
     extraSize2 = ((Integer) ast.E.visit(this, frame1)).intValue();
-    IntegerLiteral IL = ((IntegerExpression) ast.E).IL; 
-    ast.entity = new KnownValue(Machine.integerSize, Integer.parseInt(IL.spelling));
+    ast.entity = new KnownAddress(Machine.addressSize, frame1.level, frame1.size);
     writeTableDetails(ast);
+
     return new Integer(extraSize1 + extraSize2);
   }
 
+
+  
+  
   public Object visitForCommand(ForCommand ast, Object o) {
-    Frame frame = (Frame) o;
+   Frame frame = (Frame) o;
     int loopAddr, jumpAddr;
-    
-    ast.F.visit(this, frame);
+
+    Integer valSize = (Integer)ast.F.visit(this, frame);
     jumpAddr = nextInstrAddr;
-    emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    loopAddr = nextInstrAddr;
-    ast.C.visit(this, frame);
-    emit(Machine.CALLop, 0, Machine.STr, Machine.succDisplacement);
+
+    emit(Machine.JUMPop, 0, Machine.CBr,0);
+    
+   Frame frame2 = new Frame (frame, valSize );
+        loopAddr = nextInstrAddr;
+
+    ast.C.visit(this, frame2);
+    
+    emit(Machine.CALLop,loopAddr-2, Machine.PBr, Machine.succDisplacement);
     patch(jumpAddr, nextInstrAddr);
-    emit(Machine.LOADop, 2, Machine.STr, -2);
-    emit(Machine.CALLop, 0, Machine.STr, Machine.geDisplacement);
+    emit(Machine.LOADop, valSize, Machine.STr, -2);
+    emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.geDisplacement);
     emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
-    emit(Machine.POPop, 0, 0, 2);
+    emit(Machine.POPop, 0, 0, valSize);
     return null;
   }
+  public Object visitIfCommand(IfCommand ast, Object o) {
+    Frame frame = (Frame) o;
+    int jumpifAddr, jumpAddr;
 
+    Integer valSize = (Integer) ast.E.visit(this, frame);
+    jumpifAddr = nextInstrAddr;
+    emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, 0);
+    ast.C1.visit(this, frame);
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    patch(jumpifAddr, nextInstrAddr);
+    ast.C2.visit(this, frame);
+    patch(jumpAddr, nextInstrAddr);
+    return null;
+  }
+  
+  
    public Object visitLoopWhileCommand(LoopWhileCommand ast, Object o) {
     Frame frame = (Frame) o;
     int jumpAddr, loopAddr;
@@ -1245,9 +1269,6 @@ public final class Encoder implements Visitor {
 
 
 
-	@Override
-    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
-        
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	
+
 }
