@@ -127,7 +127,7 @@ public final class Encoder implements Visitor {
   public Object visitCallCommand(CallCommand ast, Object o) {
     Frame frame = (Frame) o;
     Integer argsSize = (Integer) ast.APS.visit(this, frame);
-    ast.I.getIdentifier().visit(this, new Frame(frame.level, argsSize));
+    ast.I.visit(this, new Frame(frame.level, argsSize));
     return null;
   }
 
@@ -171,6 +171,7 @@ public final class Encoder implements Visitor {
   // Expressions
   public Object visitArrayExpression(ArrayExpression ast, Object o) {
     ast.type.visit(this, null);
+    
     return ast.AA.visit(this, o);
   }
 
@@ -257,8 +258,14 @@ public final class Encoder implements Visitor {
       public Object visitSingleVname(SingleVname ast, Object o) {
             return ast.getV().visit(this, o);
         }
+      
+   public Object visitSimpleVarName(SimpleVarName ast, Object o) {
+    ast.offset = 0;
+    ast.indexed = false;
+    return ast.I.decl.entity;
+  }
     public Object visitCompoundVname(CompoundVname ast, Object o) {
-        ast.getI().visit(this, o);//////////////////////////////////////////////
+
         return ast.getV().visit(this, o);
 
     }
@@ -275,8 +282,10 @@ public final class Encoder implements Visitor {
     return new Integer(0);
   }
 
+    
   public Object visitConstDeclaration(ConstDeclaration ast, Object o) {
     Frame frame = (Frame) o;
+    
     int extraSize = 0;
     if (ast.E instanceof CharacterExpression) {
         CharacterLiteral CL = ((CharacterExpression) ast.E).CL;
@@ -305,21 +314,21 @@ public final class Encoder implements Visitor {
     return new Integer(extraSize);
   }
     
-    
-    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {////////////////////////solo copie codigo de const delcaration
+
+        
+    public Object visitVarInitDeclaration(VarInitDeclaration ast, Object o) {
     Frame frame = (Frame) o;
     int extraSize;
-    
-    extraSize = ((Integer) ast.E.visit(this, frame)).intValue();
-    //emit(Machine.PUSHop, 0, 0, extraSize);
-    ast.entity = new KnownAddress(extraSize, frame.level, frame.size);
+    int valSize = (Integer) ast.E.visit(this, frame);
+    ast.entity = new KnownAddress(valSize, frame.level, frame.size);
+    extraSize = valSize;
     writeTableDetails(ast);
-    return new Integer(extraSize);
+    return extraSize;
     }
           
           
           
-      public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {////////////////////////solo copie codigo de proc delcaration
+      public Object visitProcFuncProcDeclaration(ProcFuncProcDeclaration ast, Object o) {
         Frame frame = (Frame) o;
         int jumpAddr = nextInstrAddr;
         int argsSize = 0;
@@ -340,32 +349,6 @@ public final class Encoder implements Visitor {
         return new Integer(0);   
       }
       
-      
-      
-    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {////////////////////////solo copie codigo de func delcaration
-        Frame frame = (Frame) o;
-        
-        int jumpAddr = nextInstrAddr;
-        int argsSize = 0, valSize = 0;
-        emit(Machine.JUMPop, 0, Machine.CBr, 0);
-        ast.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
-        System.out.print(ast.I.spelling + ": closureSize: "+ Machine.closureSize + " closureSize: "+ frame.level + " nextInstrAddr: "+ nextInstrAddr);
-        writeTableDetails(ast);
-        if (frame.level == Machine.maxRoutineLevel)
-      reporter.reportRestriction("can't nest routines more than 7 deep");
-           else {
-      Frame frame1 = new Frame(frame.level + 1, 0);
-      argsSize = ((Integer) ast.FPS.visit(this, frame1)).intValue();
-      Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
-      valSize = ((Integer) ast.E.visit(this, frame2)).intValue();
-    } 
-        emit(Machine.RETURNop, valSize, 0, argsSize);
-        System.out.print("argsSize: "+argsSize+ "valSize: "+valSize);
-
-        patch(jumpAddr, nextInstrAddr);
-    return new Integer(0);
-
-    }
     public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
         Frame frame = (Frame) o;
         int extraSize1, extraSize2;
@@ -373,17 +356,38 @@ public final class Encoder implements Visitor {
         extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
         Frame frame1 = new Frame (frame, extraSize1);
         extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
+       
         return new Integer(extraSize1 + extraSize2);
 
     }
-        public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
+      
+    public Object visitProcFuncFuncDeclaration(ProcFuncFuncDeclaration ast, Object o) {////////////////////////solo copie codigo de func delcaration
+    Frame frame = (Frame) o;
+    int jumpAddr = nextInstrAddr;
+    int argsSize = 0, valSize = 0;
+
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    writeTableDetails(ast);
+    if (frame.level == Machine.maxRoutineLevel)
+      reporter.reportRestriction("can't nest routines more than 7 deep");
+    else {
+      Frame frame1 = new Frame(frame.level + 1, 0);
+      argsSize = ((Integer) ast.FPS.visit(this, frame1)).intValue();
+      Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
+      valSize = ((Integer) ast.E.visit(this, frame2)).intValue();
+    }
+    emit(Machine.RETURNop, valSize, 0, argsSize);
+    patch(jumpAddr, nextInstrAddr);
+    return new Integer(0);
+
+    }
+
+    public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
         Frame frame = (Frame) o;
         int extraSize1;
 
         extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
         
-       // ast.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
-
         return new Integer(extraSize1 );
     }
 
@@ -445,6 +449,17 @@ public final class Encoder implements Visitor {
 
     }
 
+   public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+      Frame frame = (Frame) o;
+      int extraSize;     
+      
+      extraSize = ((Integer) ast.D.visit(this, frame)).intValue();
+      ast.entity = new UnknownValue(extraSize, frame.level, frame.size);
+     writeTableDetails(ast);
+      return new Integer(extraSize);
+    }
+
+    
   public Object visitSequentialDeclaration(SequentialDeclaration ast, Object o) {
     Frame frame = (Frame) o;
     int extraSize1, extraSize2;
@@ -807,11 +822,6 @@ public final class Encoder implements Visitor {
     return baseObject;
   }
 
-  public Object visitSimpleVarName(SimpleVarName ast, Object o) {
-    ast.offset = 0;
-    ast.indexed = false;
-    return ast.I.decl.entity;
-  }
 
   public Object visitSubscriptVarName(SubscriptVarName ast, Object o) {
     Frame frame = (Frame) o;
@@ -857,8 +867,11 @@ public final class Encoder implements Visitor {
 
     @Override
     public Object visitCompoundProgram(CompoundProgram ast, Object o) {//////////checkear si esta bueno
-            ast.D.visit(this, o);
-           return ast.C.visit(this, o);
+            Frame frame = (Frame) o;
+          int extrasize =  ((Integer) ast.D.visit(this, frame)).intValue();
+           Frame frame1 = new Frame (frame, extrasize);
+
+           return ast.C.visit(this, frame1);
 
     }
 
@@ -1076,7 +1089,7 @@ public final class Encoder implements Visitor {
   
   private void encodeFetch(Vname V, Frame frame, int valSize) {
 
-    RuntimeEntity baseObject = (RuntimeEntity) V.visit(this, frame);
+    RuntimeEntity baseObject = (RuntimeEntity) V.getV().visit(this, frame);
     // If indexed = true, code will have been generated to load an index value.
     if (valSize > 255) {
       reporter.reportRestriction("can't load values larger than 255 words");
@@ -1326,16 +1339,7 @@ public final class Encoder implements Visitor {
 
 
 
-    @Override
-    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
-      Frame frame = (Frame) o;
-      int extraSize1, extraSize2;
-  
-      extraSize1 = ((Integer) ast.I.visit(this, frame)).intValue();
-      Frame frame1 = new Frame (frame, extraSize1);
-      extraSize2 = ((Integer) ast.D.visit(this, frame1)).intValue();
-      return new Integer(extraSize1 + extraSize2);
-    }
+
 
 
 

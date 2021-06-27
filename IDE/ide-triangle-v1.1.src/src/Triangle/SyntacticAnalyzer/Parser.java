@@ -329,10 +329,17 @@ public Program parseProgram() {
     case Token.IDENTIFIER:
       {
         Identifier iAST = parseIdentifier();
-        LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
-
-        if (currentToken.kind == Token.LPAREN) {
+        if (currentToken.kind == Token.DOLLAR) {
+            
+          Vname vAST = parseRestOfVname(iAST);
+          accept(Token.BECOMES);
+          Expression eAST = parseExpression();
+          finish(commandPos);
+          commandAST = new AssignCommand(vAST, eAST, commandPos);
+        }
+        else if (currentToken.kind == Token.LPAREN) {
           acceptIt();
+        LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
 
           ActualParameterSequence apsAST = parseActualParameterSequence();
           accept(Token.RPAREN);
@@ -645,7 +652,7 @@ public Program parseProgram() {
         }
         else  if (currentToken.kind == Token.LPAREN) {
           acceptIt();
-                  LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
+        LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
 
   
           ActualParameterSequence apsAST = parseActualParameterSequence();
