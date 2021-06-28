@@ -857,8 +857,11 @@ public final class Encoder implements Visitor {
 
     @Override
     public Object visitCompoundProgram(CompoundProgram ast, Object o) {//////////checkear si esta bueno
-            ast.D.visit(this, o);
-           return ast.C.visit(this, o);
+            Frame frame = (Frame) o;
+          int extrasize =  ((Integer) ast.D.visit(this, frame)).intValue();
+           Frame frame1 = new Frame (frame, extrasize);
+
+           return ast.C.visit(this, frame1);
 
     }
 
