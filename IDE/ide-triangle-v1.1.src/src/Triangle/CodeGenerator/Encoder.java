@@ -349,7 +349,7 @@ public final class Encoder implements Visitor {
         int argsSize = 0, valSize = 0;
         emit(Machine.JUMPop, 0, Machine.CBr, 0);
         ast.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
-        System.out.print(ast.I.spelling + ": closureSize: "+ Machine.closureSize + " closureSize: "+ frame.level + " nextInstrAddr: "+ nextInstrAddr);
+        //System.out.print(ast.I.spelling + ": closureSize: "+ Machine.closureSize + " closureSize: "+ frame.level + " nextInstrAddr: "+ nextInstrAddr);
         writeTableDetails(ast);
         if (frame.level == Machine.maxRoutineLevel)
       reporter.reportRestriction("can't nest routines more than 7 deep");
@@ -360,7 +360,7 @@ public final class Encoder implements Visitor {
       valSize = ((Integer) ast.E.visit(this, frame2)).intValue();
     } 
         emit(Machine.RETURNop, valSize, 0, argsSize);
-        System.out.print("argsSize: "+argsSize+ "valSize: "+valSize);
+        //System.out.print("argsSize: "+argsSize+ "valSize: "+valSize);
 
         patch(jumpAddr, nextInstrAddr);
     return new Integer(0);
@@ -369,7 +369,7 @@ public final class Encoder implements Visitor {
    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
         Frame frame = (Frame) o;
         int jumpAddr, recAddr;
-        
+
         if (ast.D1 instanceof ProcFuncProcDeclaration){
             jumpAddr = nextInstrAddr;
             int argsSize = 0;
@@ -426,7 +426,18 @@ public final class Encoder implements Visitor {
         return new Integer(0);
         
         }
-        
+        if (ast.D1 instanceof SequentialProcFuncDeclaration){
+              jumpAddr = nextInstrAddr;
+               emit(Machine.JUMPop, 0, Machine.CBr, 0);
+              ast.D2.visit(this, frame);
+              patch(jumpAddr, nextInstrAddr);
+
+              ast.D1.visit(this, frame);
+              
+            return new Integer(0);               
+
+              
+        }
         return null;
     }
         public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
