@@ -439,10 +439,10 @@ public class TableVisitor implements Visitor {
     public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
              try {
       addIdentifier(ast.I.spelling, 
-              "KnownAddress", 
+              "UnknownValue", 
               (ast.entity!=null?ast.entity.size:0), 
-              ((KnownRoutine)ast.entity).address.level, 
-              ((KnownRoutine)ast.entity).address.displacement, 
+              ((UnknownValue)ast.entity).address.level, 
+              ((UnknownValue)ast.entity).address.displacement, 
               -1);      
       } catch (NullPointerException e) { }
       ast.D.visit(this, null);

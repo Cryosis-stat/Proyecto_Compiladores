@@ -105,10 +105,10 @@ import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.VarName;
 import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import java.io.FileNotFoundException; //para la creación del archivo
-import java.io.IOException;           //para la creación del archivo
-import java.util.logging.Level;       //para la creación del archivo
-import java.util.logging.Logger;      //para la creación del archivo
+import java.io.FileNotFoundException; //para la creaci?n del archivo
+import java.io.IOException;           //para la creaci?n del archivo
+import java.util.logging.Level;       //para la creaci?n del archivo
+import java.util.logging.Logger;      //para la creaci?n del archivo
 //import Triangle.AbstractSyntaxTrees.WhileCommand;
 
 public class Parser {
@@ -329,10 +329,17 @@ public Program parseProgram() {
     case Token.IDENTIFIER:
       {
         Identifier iAST = parseIdentifier();
-        LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
-
-        if (currentToken.kind == Token.LPAREN) {
+        if (currentToken.kind == Token.DOLLAR) {
+            
+          Vname vAST = parseRestOfVname(iAST);
+          accept(Token.BECOMES);
+          Expression eAST = parseExpression();
+          finish(commandPos);
+          commandAST = new AssignCommand(vAST, eAST, commandPos);
+        }
+        else if (currentToken.kind == Token.LPAREN) {
           acceptIt();
+        LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
 
           ActualParameterSequence apsAST = parseActualParameterSequence();
           accept(Token.RPAREN);
@@ -505,7 +512,7 @@ public Program parseProgram() {
       accept(Token.THEN);
       c1AST = parseCommand();
       Command restAST = parseRestOfIf();
-      finish(commandPos); // NO SÉ
+      finish(commandPos); // NO S?
       commandAST = new IfCommand(eAST,c1AST,restAST,commandPos);
       break;
     }
@@ -645,7 +652,7 @@ public Program parseProgram() {
         }
         else  if (currentToken.kind == Token.LPAREN) {
           acceptIt();
-                  LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
+        LongIdentifier longAST = parseRestOfLongIdentifier(iAST);
 
   
           ActualParameterSequence apsAST = parseActualParameterSequence();
@@ -844,7 +851,7 @@ public Program parseProgram() {
     case Token.VAR:
       {
         acceptIt();
-        Identifier iAST = parseIdentifier(); //Modificaciï¿½n David
+        Identifier iAST = parseIdentifier(); //Modificaci?n David
         
         
         if (currentToken.kind == Token.COLON){
