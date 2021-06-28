@@ -1,0 +1,56 @@
+<?xml version="1.0" standalone="yes"?>
+<CompoundProgram>
+<PackageDeclaration>
+<VarInitDeclaration>
+<Identifier value="a"/>
+<IntegerExpression>
+<IntegerLiteral value="100"/>
+</IntegerExpression>
+</VarInitDeclaration>
+</PackageDeclaration>
+<LetCommand>
+<VarDeclaration>
+<Identifier value="b"/>
+<IntTypeDenoter/>
+</VarDeclaration>
+<SequentialCommand>
+<AssignCommand>
+<Vname>
+<VarName>
+<Identifier value="b"/>
+</VarName>
+</Vname>
+<IntegerExpression>
+<IntegerLiteral value="2"/>
+</IntegerExpression>
+</AssignCommand>
+<CallCommand>
+<LongIdentifierTypeDenoter>
+<Identifier value="putint"/>
+</LongIdentifierTypeDenoter>
+<SingleActualParameterSequence>
+<ConstActualParameter>
+<BinaryExpression>
+<VnameExpression>
+<Vname>
+<VarName>
+<Identifier value="b"/>
+</VarName>
+</Vname>
+</VnameExpression>
+<Operator value="+"/>
+<VnameExpression>
+<CompoundVname>
+<Identifier value="myP"/>
+<VarName>
+<Identifier value="a"/>
+</VarName>
+</CompoundVname>
+</VnameExpression>
+</BinaryExpression>
+</ConstActualParameter>
+</SingleActualParameterSequence>
+</CallCommand>
+</SequentialCommand>
+</LetCommand>
+<CompoundProgram>

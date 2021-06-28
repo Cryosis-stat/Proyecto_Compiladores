@@ -314,7 +314,7 @@ public final class Encoder implements Visitor {
     //emit(Machine.PUSHop, 0, 0, extraSize);
     ast.entity = new KnownAddress(extraSize, frame.level, frame.size);
     writeTableDetails(ast);
-    return new Integer(extraSize);
+    return extraSize;
     }
           
           
@@ -1329,15 +1329,14 @@ public final class Encoder implements Visitor {
 
 
 
-    @Override
-    public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
+public Object visitPackageDeclaration(PackageDeclaration ast, Object o) {
       Frame frame = (Frame) o;
-      int extraSize1, extraSize2;
-  
-      extraSize1 = ((Integer) ast.I.visit(this, frame)).intValue();
-      Frame frame1 = new Frame (frame, extraSize1);
-      extraSize2 = ((Integer) ast.D.visit(this, frame1)).intValue();
-      return new Integer(extraSize1 + extraSize2);
+      int extraSize;
+
+      extraSize = ((Integer) ast.D.visit(this, frame)).intValue();
+      ast.entity = new UnknownValue(extraSize, frame.level, frame.size);
+     writeTableDetails(ast);
+      return new Integer(extraSize);
     }
 
 
