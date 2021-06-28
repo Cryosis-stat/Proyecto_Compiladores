@@ -366,15 +366,68 @@ public final class Encoder implements Visitor {
     return new Integer(0);
 
     }
-    public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
+   public Object visitSequentialProcFuncDeclaration(SequentialProcFuncDeclaration ast, Object o) {
         Frame frame = (Frame) o;
-        int extraSize1, extraSize2;
+        int jumpAddr, recAddr;
+        
+        if (ast.D1 instanceof ProcFuncProcDeclaration){
+            jumpAddr = nextInstrAddr;
+            int argsSize = 0;
+            ProcFuncProcDeclaration astProc = (ProcFuncProcDeclaration) ast.D1;
 
-        extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
-        Frame frame1 = new Frame (frame, extraSize1);
-        extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
-        return new Integer(extraSize1 + extraSize2);
+            
+            emit(Machine.JUMPop, 0, Machine.CBr, 0);
+            astProc.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
+            writeTableDetails(astProc);
+            if (frame.level == Machine.maxRoutineLevel)
+                reporter.reportRestriction("can't nest routines so deeply");
+            else {
+                Frame frame1 = new Frame(frame.level + 1, 0);
+                argsSize = ((Integer) astProc.FPS.visit(this, frame1)).intValue();
+                Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
+                recAddr = nextInstrAddr;
+                emit(Machine.JUMPop, 0, Machine.CBr, 0);
+                ast.D2.visit(this, frame);
+                patch(recAddr, nextInstrAddr);
+                astProc.C.visit(this, frame2);
+            }
+            emit(Machine.RETURNop, 0, 0, argsSize);
+            patch(jumpAddr, nextInstrAddr);
+            return new Integer(0);               
+        }
+        if (ast.D1 instanceof ProcFuncFuncDeclaration){
+            jumpAddr = nextInstrAddr;
+            int argsSize = 0, valSize = 0;
+            ProcFuncFuncDeclaration astFunc = (ProcFuncFuncDeclaration) ast.D1;
+            recAddr = nextInstrAddr;
+            ast.D2.visit(this, frame);
+            patch(recAddr, nextInstrAddr);
+            
+            emit(Machine.JUMPop, 0, Machine.CBr, 0);
+            astFunc.entity = new KnownRoutine (Machine.closureSize, frame.level, nextInstrAddr);
+            //System.out.print(astFunc.I.spelling + ": closureSize: "+ Machine.closureSize + " closureSize: "+ frame.level + " nextInstrAddr: "+ nextInstrAddr);
+            writeTableDetails(astFunc);
+            if (frame.level == Machine.maxRoutineLevel)
+                reporter.reportRestriction("can't nest routines more than 7 deep");
+                else {
+                    Frame frame1 = new Frame(frame.level + 1, 0);
+                    argsSize = ((Integer) astFunc.FPS.visit(this, frame1)).intValue();
+                    Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
+                    recAddr = nextInstrAddr;
+                    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+                    ast.D2.visit(this, frame);
+                    patch(recAddr, nextInstrAddr);
+                    valSize = ((Integer) astFunc.E.visit(this, frame2)).intValue();
+                } 
+            emit(Machine.RETURNop, valSize, 0, argsSize);
+            //System.out.print("argsSize: "+argsSize+ "valSize: "+valSize);
 
+            patch(jumpAddr, nextInstrAddr);
+        return new Integer(0);
+        
+        }
+        
+        return null;
     }
         public Object visitRecursiveCompound_Declaration(RecursiveCompound_Declaration ast, Object o) {
         Frame frame = (Frame) o;
